@@ -1,0 +1,33 @@
+{
+  "extends": ["airbnb", "prettier", "openlayers"],
+  "plugins": ["prettier", "@openlayers"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "valid-jsdoc": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "@openlayers/valid-tsdoc": [
+      "error",
+      {
+        "requireReturn": false
+      }
+    ],
+    "no-underscore-dangle": "off",
+    "one-var": "off",
+    "camelcase": "off",
+    "no-bitwise": "off",
+    "func-names": "off",
+    "no-plusplus": "off",
+    "no-param-reassign": "off",
+    "prefer-destructuring": "off",
+    "prefer-template": "off",
+    "no-restricted-syntax": "off"
+  }
+}

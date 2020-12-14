@@ -1,0 +1,15 @@
+rect {
+  fill-opacity: 0.8;
+}
+
+.bg {
+  fill-opacity: 0.3;
+}
+
+.plan:hover rect {
+  fill-opacity: 1;
+}
+
+.axis {
+  font-size: smaller;
+}
