@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 import { Offset, PlanOptions, Sides, TaskOptions, TimelineOptions } from "./types"
 
+import Columns from './columns';
 import Task from "./task"
 import dayjs from 'dayjs';
 import deepmerge from './deepmerge';
@@ -9,6 +10,7 @@ import minMax from 'dayjs/plugin/minMax'
 
 export default class View {
   private svg: any
+  private graph: any
   private x: any
   private y: any
   private groups: any
@@ -21,11 +23,14 @@ export default class View {
 
   private options: TimelineOptions
 
+  private columns: Columns
+
   constructor(selector: string, taskOptions: TaskOptions[], options: TimelineOptions) {
     dayjs.extend(minMax)
     this.options = options
 
-    this.tasks = taskOptions.map(t => new Task(t))
+    this.tasks = taskOptions.map(t => new Task(t, this.options))
+    this.columns = new Columns(this.tasks, this.options)
 
     this.parent = document.body.querySelector(selector)
     const bounds = this.getBounds()
@@ -35,6 +40,8 @@ export default class View {
       .append('svg')
       .attr('width', bounds.width)
       .attr('height', bounds.height)
+
+    this.graph = this.svg
       .append('g')
       .attr('transform', `translate(30, 30)`)
 
@@ -48,17 +55,20 @@ export default class View {
       .domain([this.minDate.add(-7, 'day').toDate(), this.maxDate.toDate()])
       .nice()
 
-    this.svg
-      .append('g')
-      .call(d3.axisTop(this.x))
-
-    this.svg.append('g')
+    this.graph.append('g')
       .call(d3.axisLeft(this.y).tickFormat(() => '').tickSize(0))
 
+    this.graph
+      .append('g')
+      .attr("class", "x axis")
+      .call(d3.axisTop(this.x))
+      .selectAll('text')
+        .attr('x', 0)
+        .attr('text-anchor', 'start')
 
     console.log([this.minDate.toDate(), this.maxDate.toDate()])
 
-    this.groups = this.svg.selectAll('.group')
+    this.groups = this.graph.selectAll('.group')
       .data(this.tasks)
       .enter()
       .append('g')
@@ -69,6 +79,10 @@ export default class View {
       const group = d3.select(arr[idx]);
       task.render(this.x, this.y, group, offset)
     });
+
+    this.columns.render(this.svg)
+    this.graph.attr('transform', `translate(${this.columns.dom.attr('width')}, 30)`)
+    this.svg.attr('width', bounds.width + this.columns.getWidth())
   }
 
   private getBounds(): DOMRect {

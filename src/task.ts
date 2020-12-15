@@ -1,12 +1,15 @@
-import { Offset, TaskOptions } from "./types";
+import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj } from "./types";
 import { applyStyle, clamp } from "./util";
 
 import Plan from "./plan";
+import deepmerge from "./deepmerge";
 
 export default class Task {
   rows: Plan[][]
   heights: number[]
-  constructor(options: TaskOptions) {
+  labels: {[key: string]: LabelOptions[];}
+  options: TaskOptions & obj
+  constructor(options: TaskOptions & obj, timelineOptions: TimelineOptions) {
     if (options.plan) {
       this.rows = [[new Plan(options.plan)]]
     } else if (options.plans && Array.isArray(options.plans)) {
@@ -22,7 +25,16 @@ export default class Task {
       console.error('Plans object is not an array')
     }
 
+    this.options = options
+
     this.computeRowHeights()
+    this.labels = {}
+
+    if (timelineOptions.columns.length == 0) return
+
+    timelineOptions.columns.forEach((c: ColumnOptions, idx: number) => {
+      this.labels[c.field] = this.prepareOptions(c)
+    })
   }
 
   computeRowHeights(): void {
@@ -62,4 +74,48 @@ export default class Task {
     applyStyle(rect, plan.progressStyle)
   }
 
+  private prepareOptions(columnOptions: ColumnOptions): LabelOptions[] {
+    let options = this.options[columnOptions.field]
+    if (!options) return []
+
+    if (typeof options == 'string' || typeof options == 'number') {
+      options = { label: options }
+    }
+
+    if (options.label) {
+      options = [options]
+    }
+
+    console.assert(Array.isArray(options), "Column options isn't a string, array, nor label")
+    ;(<obj[]>options).forEach((v, idx) => {
+      if (typeof v == 'string' || typeof v == 'number') {
+        v = { label: v }
+      }
+
+      options[idx] = v
+      const defaults = columnOptions.defaults || {}
+      if (defaults) {
+        v.labelStyle = deepmerge.all([{
+          fill: '#000000'
+        },  defaults.labelStyle || {}, v.labelStyle || {}])
+
+        console.log(v)
+        v.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, v.backgroundStyle || {})
+        // v.verticalAlign = v.verticalAlign || defaults.verticalAlign || VERTICAL_ALIGN.MIDDLE
+        // v.horizontalAlign = v.horizontalAlign || defaults.horizontalAlign || HORIZONTAL_ALIGN.LEFT
+      } else {
+        // v.verticalAlign = v.verticalAlign || VERTICAL_ALIGN.MIDDLE
+        // v.horizontalAlign = v.horizontalAlign || HORIZONTAL_ALIGN.LEFT
+      }
+    })
+
+    if (options.length < this.rows.length) {
+      options = options.concat(new Array(this.rows.length - options.length).fill({}))
+    }
+
+    if (options.length > this.rows.length) {
+      options = options.slice(0, this.rows.length)
+    }
+    return options
+  }
 }

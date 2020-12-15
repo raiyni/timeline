@@ -2,7 +2,8 @@ import { Style } from "./types"
 
 export const applyStyle = (el: any, style: Style): any => {
   Object.keys(style).forEach(k => {
-    el.style(k, style[k])
+    // el.style(k, style[k])
+    el.attr(k, style[k])
   })
 }
 

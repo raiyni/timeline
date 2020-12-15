@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 
 export type Style = {[key: string]: any;}
+export type obj = { [key: string]: any }
 
 export interface PlanOptions {
   start: string | dayjs.Dayjs
@@ -23,7 +24,8 @@ export interface TaskOptions {
 export interface ColumnOptions {
   text: string
   field: string
-  defaults?: object
+  padding?: number
+  defaults?: obj
 }
 
 export interface Sides {
@@ -41,4 +43,10 @@ export interface TimelineOptions {
 export interface Offset {
   x: number,
   y: number
+}
+
+export interface LabelOptions {
+  label: string
+  labelStyle?: any
+  backgroundStyle?: any
 }

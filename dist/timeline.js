@@ -55,12 +55,147 @@ var Timeline = (function (d3) {
 
   var applyStyle = function applyStyle(el, style) {
     Object.keys(style).forEach(function (k) {
-      el.style(k, style[k]);
+      // el.style(k, style[k])
+      el.attr(k, style[k]);
     });
   };
   var clamp = function clamp(num, min, max) {
     return Math.min(Math.max(num, 0), 1);
   };
+
+  var Column = /*#__PURE__*/function () {
+    function Column(tasks, options) {
+      _classCallCheck(this, Column);
+
+      _defineProperty(this, "tasks", void 0);
+
+      _defineProperty(this, "options", void 0);
+
+      _defineProperty(this, "dom", void 0);
+
+      _defineProperty(this, "parent", void 0);
+
+      this.tasks = tasks;
+      this.options = options;
+      this.options.padding = this.options.padding || 5;
+    }
+
+    _createClass(Column, [{
+      key: "render",
+      value: function render(parent) {
+        var _this = this;
+
+        this.parent = parent;
+        this.dom = parent.append('g').attr('class', 'column');
+        var title = this.dom.append('text').text(this.options.text);
+        var offset = {
+          x: this.options.padding,
+          y: 10
+        };
+        this.tasks.forEach(function (task, idx) {
+          offset.y += 5;
+          var labels = task.labels[_this.options.field];
+          labels.forEach(function (l, idx2) {
+            var height = task.heights[idx2];
+
+            var label = _this.dom.append('text').text(l.label).attr('y', offset.y + height / 2).attr('alignment-baseline', 'central').attr('x', offset.x);
+
+            offset.y += height;
+            applyStyle(label, l.labelStyle || {});
+          });
+        });
+        var width = this.getBounds().width + this.options.padding;
+        this.dom.attr('width', width);
+        title.attr('x', width / 2).attr('text-anchor', 'middle');
+        this.dom.selectAll('[textAnchor=end]').each(function (_, i, a) {
+          var node = a[i];
+          node.setAttribute('text-anchor', 'end');
+          node.setAttribute('x', width - _this.options.padding);
+        });
+        this.dom.selectAll('[textAnchor=middle]').each(function (_, i, a) {
+          var node = a[i];
+          node.setAttribute('text-anchor', 'middle');
+          node.setAttribute('x', width / 2);
+        });
+        offset.y = 10;
+        offset.x = 0;
+        this.tasks.forEach(function (task, idx) {
+          offset.y += 5;
+          var labels = task.labels[_this.options.field];
+          labels.forEach(function (l, idx2) {
+            var height = task.heights[idx2];
+            var style = l.backgroundStyle || {};
+
+            if (Object.keys(style).length == 0) {
+              offset.y += height;
+              return;
+            }
+
+            var rect = _this.dom.insert('rect', ':first-child').attr('y', offset.y).attr('x', offset.x).attr('height', height).attr('width', width);
+
+            offset.y += height;
+            applyStyle(rect, style);
+          });
+        });
+      }
+    }, {
+      key: "getBounds",
+      value: function getBounds() {
+        return this.dom.node().getBBox();
+      }
+    }]);
+
+    return Column;
+  }();
+
+  var Columns = /*#__PURE__*/function () {
+    function Columns(tasks, options) {
+      var _this = this;
+
+      _classCallCheck(this, Columns);
+
+      _defineProperty(this, "tasks", void 0);
+
+      _defineProperty(this, "options", void 0);
+
+      _defineProperty(this, "columns", void 0);
+
+      _defineProperty(this, "dom", void 0);
+
+      this.tasks = tasks;
+      this.options = options;
+      this.columns = options.columns.map(function (o) {
+        return new Column(_this.tasks, o);
+      });
+    }
+
+    _createClass(Columns, [{
+      key: "render",
+      value: function render(svg) {
+        var _this2 = this;
+
+        this.dom = svg.append('g').attr('class', 'columns').attr('transform', 'translate(0, 0)');
+        if (this.columns.length == 0) return;
+        var offset = {
+          x: 0,
+          y: 20
+        };
+        this.columns.forEach(function (c, idx) {
+          c.render(_this2.dom);
+          c.dom.attr('transform', "translate(".concat(offset.x, ", ").concat(offset.y, ")"));
+          offset.x += Number(c.dom.attr('width'));
+        });
+        this.dom.attr('width', offset.x);
+      }
+    }, {
+      key: "getWidth",
+      value: function getWidth() {
+        return this.dom.node().getBBox().width;
+      }
+    }]);
+
+    return Columns;
+  }();
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -178,12 +313,18 @@ var Timeline = (function (d3) {
   };
 
   var Task = /*#__PURE__*/function () {
-    function Task(options) {
+    function Task(options, timelineOptions) {
+      var _this = this;
+
       _classCallCheck(this, Task);
 
       _defineProperty(this, "rows", void 0);
 
       _defineProperty(this, "heights", void 0);
+
+      _defineProperty(this, "labels", void 0);
+
+      _defineProperty(this, "options", void 0);
 
       if (options.plan) {
         this.rows = [[new Plan(options.plan)]];
@@ -202,7 +343,13 @@ var Timeline = (function (d3) {
         console.error('Plans object is not an array');
       }
 
+      this.options = options;
       this.computeRowHeights();
+      this.labels = {};
+      if (timelineOptions.columns.length == 0) return;
+      timelineOptions.columns.forEach(function (c, idx) {
+        _this.labels[c.field] = _this.prepareOptions(c);
+      });
     }
 
     _createClass(Task, [{
@@ -219,18 +366,18 @@ var Timeline = (function (d3) {
     }, {
       key: "render",
       value: function render(x, y, group, offset) {
-        var _this = this;
+        var _this2 = this;
 
         offset.y += 5;
         this.rows.forEach(function (row, idx) {
           row.forEach(function (plan, idx2) {
             var layer = group.append('g').attr('class', 'plan');
 
-            _this.drawBackground(x, y, layer, plan, offset);
+            _this2.drawBackground(x, y, layer, plan, offset);
 
-            _this.drawProgress(x, y, layer, plan, offset);
+            _this2.drawProgress(x, y, layer, plan, offset);
           });
-          offset.y += _this.heights[idx];
+          offset.y += _this2.heights[idx];
         });
       }
     }, {
@@ -244,6 +391,53 @@ var Timeline = (function (d3) {
       value: function drawProgress(x, y, group, plan, offset) {
         var rect = group.append('rect').attr('x', x(plan.start.toDate())).attr('y', offset.y).attr('height', plan.height).attr('width', (x(plan.end.toDate()) - x(plan.start.toDate())) * clamp(plan.progress / 100));
         applyStyle(rect, plan.progressStyle);
+      }
+    }, {
+      key: "prepareOptions",
+      value: function prepareOptions(columnOptions) {
+        var options = this.options[columnOptions.field];
+        if (!options) return [];
+
+        if (typeof options == 'string' || typeof options == 'number') {
+          options = {
+            label: options
+          };
+        }
+
+        if (options.label) {
+          options = [options];
+        }
+
+        console.assert(Array.isArray(options), "Column options isn't a string, array, nor label");
+        options.forEach(function (v, idx) {
+          if (typeof v == 'string' || typeof v == 'number') {
+            v = {
+              label: v
+            };
+          }
+
+          options[idx] = v;
+          var defaults = columnOptions.defaults || {};
+
+          if (defaults) {
+            v.labelStyle = deepmerge.all([{
+              fill: '#000000'
+            }, defaults.labelStyle || {}, v.labelStyle || {}]);
+            console.log(v);
+            v.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, v.backgroundStyle || {}); // v.verticalAlign = v.verticalAlign || defaults.verticalAlign || VERTICAL_ALIGN.MIDDLE
+            // v.horizontalAlign = v.horizontalAlign || defaults.horizontalAlign || HORIZONTAL_ALIGN.LEFT
+          }
+        });
+
+        if (options.length < this.rows.length) {
+          options = options.concat(new Array(this.rows.length - options.length).fill({}));
+        }
+
+        if (options.length > this.rows.length) {
+          options = options.slice(0, this.rows.length);
+        }
+
+        return options;
       }
     }]);
 
@@ -262,6 +456,8 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "svg", void 0);
 
+      _defineProperty(this, "graph", void 0);
+
       _defineProperty(this, "x", void 0);
 
       _defineProperty(this, "y", void 0);
@@ -278,25 +474,29 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "options", void 0);
 
+      _defineProperty(this, "columns", void 0);
+
       dayjs_min.extend(minMax);
       this.options = options;
       this.tasks = taskOptions.map(function (t) {
-        return new Task(t);
+        return new Task(t, _this.options);
       });
+      this.columns = new Columns(this.tasks, this.options);
       this.parent = document.body.querySelector(selector);
       var bounds = this.getBounds();
-      this.svg = d3.select(this.parent).append('svg').attr('width', bounds.width).attr('height', bounds.height).append('g').attr('transform', "translate(30, 30)");
+      this.svg = d3.select(this.parent).append('svg').attr('width', bounds.width).attr('height', bounds.height);
+      this.graph = this.svg.append('g').attr('transform', "translate(30, 30)");
       this.computeBoundingDates();
       this.y = d3.scaleBand().range([bounds.height, 0]).domain(this.tasks.map(function (c, i) {
         return i + '';
       })).padding(0.1);
       this.x = d3.scaleTime().range([0, bounds.width]).domain([this.minDate.add(-7, 'day').toDate(), this.maxDate.toDate()]).nice();
-      this.svg.append('g').call(d3.axisTop(this.x));
-      this.svg.append('g').call(d3.axisLeft(this.y).tickFormat(function () {
+      this.graph.append('g').call(d3.axisLeft(this.y).tickFormat(function () {
         return '';
       }).tickSize(0));
+      this.graph.append('g').attr("class", "x axis").call(d3.axisTop(this.x)).selectAll('text').attr('x', 0).attr('text-anchor', 'start');
       console.log([this.minDate.toDate(), this.maxDate.toDate()]);
-      this.groups = this.svg.selectAll('.group').data(this.tasks).enter().append('g').classed('group', true);
+      this.groups = this.graph.selectAll('.group').data(this.tasks).enter().append('g').classed('group', true);
       var offset = {
         x: 0,
         y: 0
@@ -305,6 +505,9 @@ var Timeline = (function (d3) {
         var group = d3.select(arr[idx]);
         task.render(_this.x, _this.y, group, offset);
       });
+      this.columns.render(this.svg);
+      this.graph.attr('transform', "translate(".concat(this.columns.dom.attr('width'), ", 30)"));
+      this.svg.attr('width', bounds.width + this.columns.getWidth());
     }
 
     _createClass(View, [{

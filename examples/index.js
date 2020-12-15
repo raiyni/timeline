@@ -20,10 +20,16 @@ var tasks = [
         }
       }]
     ],
-    name: 'Apply new styles',
+    name: { label: 'Apply new styles', backgroundStyle: {
+      fill: 'red'
+    } },
     id: 'Task 2',
-    pieces: 44,
-    area: '232k',
+    pieces: { label: 44,  labelStyle: { fill: 'white', textAnchor: 'end' }, backgroundStyle: {
+      fill: 'red'
+    } },
+    area: { label: '232k',  backgroundStyle: {
+      fill: 'red'
+    } },
     milestones: [
       {
         date: '2020-05-23T05:00:00.000Z',
@@ -33,14 +39,14 @@ var tasks = [
   },
   {
     plan: {
-      start: '2020-05-22T05:00:00.000Z',
-      end: '2020-05-25T05:00:00.000Z',
+      start: '2020-03-22T05:00:00.000Z',
+      end: '2020-03-25T05:00:00.000Z',
       progress: 100,
       progressStyle: {
         fill: '#f2c329'
       }
     },
-    name: 'Apply new styles',
+    name: { label: 'Donkey dog', labelStyle: { 'textAnchor': 'end'} },
     id: 'Task 2',
     pieces: 44,
     area: '232k',
@@ -53,16 +59,16 @@ var tasks = [
   },
   {
     plan: {
-      start: '2020-05-22T05:00:00.000Z',
-      end: '2020-05-25T05:00:00.000Z',
+      start: '2020-03-22T05:00:00.000Z',
+      end: '2020-03-25T05:00:00.000Z',
       progress: 87,
       progressStyle: {
         fill: '#f2c329'
       }
     },
-    name: 'Apply new styles',
+    name: 'Where',
     id: 'Task 2',
-    pieces: 44,
+    pieces: 4.44,
     area: '232k',
     milestones: [
       {
@@ -76,19 +82,21 @@ var tasks = [
 var gantt_chart = new Timeline('#abc123', tasks, {
   viewMode: 30,
   columns: [
-    { text: 'Name', field: 'name' },
-    { text: 'Sq/ft', field: 'area', defaults: { horizontalAlign: 'center' } },
+    { text: 'Name', field: 'name', defaults: { labelStyle: { 'textAnchor': 'middle' } } },
+    { text: 'Sq/ft', field: 'area' },
     {
       text: 'Pcs',
       field: 'pieces',
       defaults: {
         labelStyle: {
           fill: 'red',
-          fontWeight: 'bold',
-          fontFamily: 'Arial',
-          fontSize: '2em'
+          'font-weight': 'bold',
+          'font-family': 'Arial',
+          'font-size': '1.5em'
         },
-        horizontalAlign: 'right'
+        backgroundStyle: {
+          fill: 'green'
+        }
       }
     }
   ]
