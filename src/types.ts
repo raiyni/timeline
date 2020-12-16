@@ -38,6 +38,14 @@ export interface Sides {
 export interface TimelineOptions {
   columns: Array<ColumnOptions>
   planDefaults?: PlanOptions
+  viewMode ?: VIEW_MODE
+}
+
+export interface Rect {
+  width?: number
+  height?: number
+  x?: number
+  y?: number
 }
 
 export interface Offset {
@@ -49,4 +57,12 @@ export interface LabelOptions {
   label: string
   labelStyle?: any
   backgroundStyle?: any
+}
+
+export enum VIEW_MODE {
+  DAY = 'day',
+  WEEK = 'week',
+  MONTH = 'month',
+  YEAR = 'year',
+  FILL = 'fill'
 }

@@ -80,7 +80,7 @@ var tasks = [
 ]
 
 var gantt_chart = new Timeline('#abc123', tasks, {
-  viewMode: 30,
+  viewMode: 'fill',
   columns: [
     { text: 'Name', field: 'name', defaults: { labelStyle: { 'textAnchor': 'middle' } } },
     { text: 'Sq/ft', field: 'area' },

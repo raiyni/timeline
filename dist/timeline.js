@@ -444,6 +444,16 @@ var Timeline = (function (d3) {
     return Task;
   }();
 
+  var VIEW_MODE;
+
+  (function (VIEW_MODE) {
+    VIEW_MODE["DAY"] = "day";
+    VIEW_MODE["WEEK"] = "week";
+    VIEW_MODE["MONTH"] = "month";
+    VIEW_MODE["YEAR"] = "year";
+    VIEW_MODE["FILL"] = "fill";
+  })(VIEW_MODE || (VIEW_MODE = {}));
+
   var minMax = createCommonjsModule(function (module, exports) {
   !function(n,e){module.exports=e();}(commonjsGlobal,function(){return function(n,e,t){var i=function(n,e){if(!e||!e.length||!e[0]||1===e.length&&!e[0].length)return null;var t;1===e.length&&e[0].length>0&&(e=e[0]),t=e[0];for(var i=1;i<e.length;i+=1)e[i].isValid()&&!e[i][n](t)||(t=e[i]);return t};t.max=function(){var n=[].slice.call(arguments,0);return i("isAfter",n)},t.min=function(){var n=[].slice.call(arguments,0);return i("isBefore",n)};}});
   });
@@ -476,6 +486,8 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "columns", void 0);
 
+      _defineProperty(this, "id", void 0);
+
       dayjs_min.extend(minMax);
       this.options = options;
       this.tasks = taskOptions.map(function (t) {
@@ -483,39 +495,11 @@ var Timeline = (function (d3) {
       });
       this.columns = new Columns(this.tasks, this.options);
       this.parent = document.body.querySelector(selector);
-      var bounds = this.getBounds();
-      this.svg = d3.select(this.parent).append('svg').attr('width', bounds.width).attr('height', bounds.height);
-      this.graph = this.svg.append('g').attr('transform', "translate(30, 30)");
-      this.computeBoundingDates();
-      this.y = d3.scaleBand().range([bounds.height, 0]).domain(this.tasks.map(function (c, i) {
-        return i + '';
-      })).padding(0.1);
-      this.x = d3.scaleTime().range([0, bounds.width]).domain([this.minDate.add(-7, 'day').toDate(), this.maxDate.toDate()]).nice();
-      this.graph.append('g').call(d3.axisLeft(this.y).tickFormat(function () {
-        return '';
-      }).tickSize(0));
-      this.graph.append('g').attr("class", "x axis").call(d3.axisTop(this.x)).selectAll('text').attr('x', 0).attr('text-anchor', 'start');
-      console.log([this.minDate.toDate(), this.maxDate.toDate()]);
-      this.groups = this.graph.selectAll('.group').data(this.tasks).enter().append('g').classed('group', true);
-      var offset = {
-        x: 0,
-        y: 0
-      };
-      this.groups.each(function (task, idx, arr) {
-        var group = d3.select(arr[idx]);
-        task.render(_this.x, _this.y, group, offset);
-      });
-      this.columns.render(this.svg);
-      this.graph.attr('transform', "translate(".concat(this.columns.dom.attr('width'), ", 30)"));
-      this.svg.attr('width', bounds.width + this.columns.getWidth());
+      this.svg = d3.select(this.parent).append('svg');
+      this.render();
     }
 
     _createClass(View, [{
-      key: "getBounds",
-      value: function getBounds() {
-        return this.parent.getBoundingClientRect();
-      }
-    }, {
       key: "computeBoundingDates",
       value: function computeBoundingDates() {
         var dates = this.tasks.map(function (task) {
@@ -529,6 +513,138 @@ var Timeline = (function (d3) {
         });
         this.minDate = dayjs_min.min(startDates);
         this.maxDate = dayjs_min.max(endDates);
+
+        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+          case VIEW_MODE.DAY:
+            this.maxDate = this.maxDate.add(1, 'day');
+            break;
+
+          case VIEW_MODE.MONTH:
+            this.maxDate = this.maxDate.add(1, 'month');
+            break;
+
+          case VIEW_MODE.YEAR:
+            this.maxDate = this.maxDate.add(1, 'year');
+            break;
+
+          case VIEW_MODE.FILL:
+            this.maxDate = this.maxDate.add(1, 'day');
+            break;
+
+          case VIEW_MODE.WEEK:
+          default:
+            this.maxDate = this.maxDate.add(1, 'week');
+            break;
+        }
+      }
+    }, {
+      key: "getDateMultiplier",
+      value: function getDateMultiplier() {
+        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+          case VIEW_MODE.DAY:
+            return 30;
+
+          case VIEW_MODE.MONTH:
+            return 200;
+
+          case VIEW_MODE.YEAR:
+            return 400;
+
+          case VIEW_MODE.FILL:
+            return -1;
+
+          case VIEW_MODE.WEEK:
+          default:
+            return 210;
+        }
+      }
+    }, {
+      key: "getDateDiff",
+      value: function getDateDiff() {
+        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+          case VIEW_MODE.DAY:
+            return Math.ceil(this.maxDate.diff(this.minDate, 'day')) / 31;
+
+          case VIEW_MODE.MONTH:
+            return Math.ceil(this.maxDate.diff(this.minDate, 'month')) / 12;
+
+          case VIEW_MODE.YEAR:
+            return Math.ceil(this.maxDate.diff(this.minDate, 'year')) / 4;
+
+          case VIEW_MODE.FILL:
+            return 1;
+
+          case VIEW_MODE.WEEK:
+          default:
+            return Math.ceil(this.maxDate.diff(this.minDate, 'week')) / 8;
+        }
+      }
+    }, {
+      key: "computeSize",
+      value: function computeSize(viewport) {
+        var bounds = this.parent.getBoundingClientRect(); // this.maxDate.diff(this.minDate, )
+
+        var diff = this.getDateDiff();
+        console.log(this.maxDate.diff(this.minDate, 'year'));
+        var width = 1000 * diff;
+        var height = this.tasks.map(function (task) {
+          return [5].concat(task.heights);
+        }).flat(3).reduce(function (a, b) {
+          return a + b;
+        });
+        return {
+          width: width,
+          height: Math.max(height, bounds.height)
+        };
+      }
+    }, {
+      key: "render",
+      value: function render() {
+        var _this2 = this;
+
+        this.computeBoundingDates();
+        var bounds = this.parent.getBoundingClientRect();
+        this.svg.attr('width', bounds.width).attr('height', bounds.height);
+        this.graph = this.svg.append('g').attr('transform', "translate(30, 30)");
+        this.columns.render(this.svg);
+        var colWidth = Number(this.columns.dom.attr('width') || 0);
+        this.graph.attr('transform', "translate(".concat(colWidth, ", 30)"));
+        var viewport = bounds.width - colWidth;
+        var size = this.computeSize(viewport);
+        console.log(size);
+        this.y = d3.scaleBand().range([size.height, 0]).domain(this.tasks.map(function (c, i) {
+          return i + '';
+        })).padding(0.1);
+        var endDate = this.maxDate;
+
+        if (size.width < viewport) {
+          var multiplier = size.width / 1000;
+          var days = this.maxDate.diff(this.minDate, 'day');
+
+          if (multiplier > 1) {
+            days = days * multiplier;
+          } else {
+            days = days / multiplier;
+          }
+
+          endDate = this.maxDate.add(days, 'day');
+        }
+
+        this.x = d3.scaleTime().range([0, Math.max(viewport, size.width)]).domain([this.minDate.add(-1, 'day').toDate(), endDate.toDate()]).nice();
+        this.graph.append('g').call(d3.axisLeft(this.y).tickFormat(function () {
+          return '';
+        }).tickSize(0));
+        this.graph.append('g').attr("class", "x axis").call(d3.axisTop(this.x)).selectAll('text').attr('x', 0).attr('text-anchor', 'start');
+        console.log([this.minDate.toDate(), this.maxDate.toDate()]);
+        this.groups = this.graph.selectAll('.group').data(this.tasks).enter().append('g').classed('group', true);
+        var offset = {
+          x: 0,
+          y: 0
+        };
+        this.groups.each(function (task, idx, arr) {
+          var group = d3.select(arr[idx]);
+          task.render(_this2.x, _this2.y, group, offset);
+        }); // this.svg.attr('width', bounds.width + this.columns.getWidth())
       }
     }]);
 
