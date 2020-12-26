@@ -7,6 +7,7 @@ export default class Column {
   private tasks: Task[]
   private options: ColumnOptions
   dom: any
+  headerLayer: any
   parent: any
   constructor(tasks: Task[], options: ColumnOptions) {
     this.tasks = tasks
@@ -14,11 +15,13 @@ export default class Column {
     this.options.padding = this.options.padding || 5
   }
 
-  render(parent: any) {
+  render(header: any, parent: any) {
     this.parent = parent
     this.dom = parent.append('g').attr('class', 'column')
 
-    const title = this.dom.append('text')
+    this.headerLayer = header.append('g')
+
+    const title = this.headerLayer.append('text')
       .text(this.options.text)
 
     const offset: Offset = { x:this.options.padding, y:10 }
@@ -39,8 +42,10 @@ export default class Column {
       })
     })
 
-    const width = this.getBounds().width + this.options.padding
+    let width = Math.max(this.getBounds().width, this.headerLayer.node().getBBox().width)
+    width +=  this.options.padding
     this.dom.attr('width', width)
+    this.headerLayer.attr('width', width)
     title.attr('x', width / 2).attr('text-anchor', 'middle')
 
     this.dom.selectAll('[textAnchor=end]')

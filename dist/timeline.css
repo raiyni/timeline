@@ -13,3 +13,7 @@ rect {
 .axis {
   font-size: smaller;
 }
+
+* {
+  border: 1px solid red;
+}

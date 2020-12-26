@@ -1,4 +1,5 @@
 import './gant.scss'
+import 'core-js/stable'
 
 import { TaskOptions, TimelineOptions } from './types';
 

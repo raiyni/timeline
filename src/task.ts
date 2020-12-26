@@ -58,19 +58,19 @@ export default class Task {
 
   private drawBackground(x: any, y: any, group: any, plan: Plan, offset: Offset): void {
     const rect = group.append('rect')
-      .attr('x', x(plan.start.toDate()))
+      .attr('x', x(plan.start.toDate()) + offset.x)
       .attr('y', offset.y)
       .attr('height', plan.height)
-      .attr('width', x(plan.end.toDate()) - x(plan.start.toDate()))
+      .attr('width', x(plan.end) - x(plan.start))
     applyStyle(rect, plan.backgroundStyle)
   }
 
   private drawProgress(x: any, y: any, group: any, plan: Plan, offset: Offset): void {
     const rect = group.append('rect')
-      .attr('x', x(plan.start.toDate()))
+      .attr('x', x(plan.start.toDate()) + offset.x)
       .attr('y', offset.y)
       .attr('height', plan.height)
-      .attr('width', (x(plan.end.toDate()) - x(plan.start.toDate())) * clamp(plan.progress / 100, 0, 1))
+      .attr('width', (x(plan.end) - x(plan.start)) * clamp(plan.progress / 100, 0, 1))
     applyStyle(rect, plan.progressStyle)
   }
 

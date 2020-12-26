@@ -6,17 +6,15 @@ import Columns from './columns';
 import Task from "./task"
 import { VIEW_MODE as VM } from './types'
 import dayjs from 'dayjs';
-import deepmerge from './deepmerge';
 import minMax from 'dayjs/plugin/minMax'
+import utc from 'dayjs/plugin/utc'
 
 export default class View {
-  private svg: any
-  private graph: any
   private x: any
   private y: any
   private groups: any
 
-  private parent: HTMLElement
+  private parent: any
   private tasks: Task[]
 
   private minDate: dayjs.Dayjs
@@ -28,6 +26,18 @@ export default class View {
 
   private id: number
 
+  private left: any
+  private right: any
+
+  private bodyHeader: any
+  private headerSvg: any
+
+  private bodyHolder: any
+  private bodySvg: any
+
+  private columnsBody: any
+  private columnsHeader: any
+
   constructor(selector: string, taskOptions: TaskOptions[], options: TimelineOptions) {
     dayjs.extend(minMax)
     this.options = options
@@ -35,13 +45,67 @@ export default class View {
     this.tasks = taskOptions.map(t => new Task(t, this.options))
     this.columns = new Columns(this.tasks, this.options)
 
-    this.parent = document.body.querySelector(selector)
+    this.parent = d3.select(document.body.querySelector(selector))
+      .append('div')
+      .style('display', 'flex')
+      .style('flex-direction', 'row')
+      .style('align-items', 'stretch')
+      .style('width', '100%')
+      .style('height', '100%')
+      .style('overflow', 'hidden')
 
-    this.svg = d3
-      .select(this.parent)
+    this.left = this.parent
+      .append('div')
+      .style('display', 'flex')
+      .style('flex-direction', 'column')
+      .style('overflow', 'hidden')
+
+    this.columnsHeader = this.left.append('svg')
+      .attr('height', 30)
+
+    this.columnsBody = this.left.append('svg')
+      .style('flex', 1)
+
+    this.right = this.parent
+      .append('div')
+      .style('flex', 1)
+      .style('display', 'flex')
+      .style('flex-direction', 'column')
+      .style('align-items', 'stretch')
+      .style('overflow', 'hidden')
+
+    this.bodyHeader = this.right
+      .append('div')
+      .style('overflow', 'hidden')
+
+    this.headerSvg = this.bodyHeader
+      .append('svg')
+      .attr('height', 30)
+
+    this.bodyHolder = this.right
+      .append('div')
+      .style('flex', 1)
+      .style('overflow-y', 'auto')
+
+    this.bodyHolder.on('scroll', (event: any) => {
+      this.updateScroll(event.target.scrollTop);
+      this.bodyHeader.node().scrollLeft = event.target.scrollLeft;
+    })
+
+    this.bodySvg = this.bodyHolder
       .append('svg')
 
+    // this.svg = this.bodyDom
+    //   .append('svg')
+
     this.render()
+
+    this.left.node().scrollHeight = this.bodyHolder.property('scrollHeight')
+  }
+
+  private updateScroll(n: number): void {
+    this.columnsBody.attr('transform', `translate(0, -${n})`);
+    this.bodyHolder.property('scrollTop', n);
   }
 
   private computeBoundingDates(): void {
@@ -71,35 +135,33 @@ export default class View {
     }
   }
 
-  private getDateMultiplier(): number {
+  private getDateDiff(): number {
     switch(this.options.viewMode || VM.WEEK) {
-      case VM.DAY: return 30
-      case VM.MONTH: return 200
-      case VM.YEAR: return 400
-      case VM.FILL: return -1
+      case VM.DAY: return Math.ceil(this.maxDate.diff(this.minDate, 'day'))
+      case VM.MONTH: return Math.ceil(this.maxDate.diff(this.minDate, 'month'))
+      case VM.YEAR: return Math.ceil(this.maxDate.diff(this.minDate, 'year'))
+      case VM.FILL: return 1
       case VM.WEEK:
-      default: return 210
+      default: return Math.ceil(this.maxDate.diff(this.minDate, 'week'))
     }
   }
 
-  private getDateDiff(): number {
+  private getDateWidth(): number {
     switch(this.options.viewMode || VM.WEEK) {
-      case VM.DAY: return Math.ceil(this.maxDate.diff(this.minDate, 'day')) / 31
-      case VM.MONTH: return Math.ceil(this.maxDate.diff(this.minDate, 'month')) / 12
-      case VM.YEAR: return Math.ceil(this.maxDate.diff(this.minDate, 'year')) / 4
-      case VM.FILL: return 1
-      case VM.WEEK:
-      default: return Math.ceil(this.maxDate.diff(this.minDate, 'week')) / 8
+      case VM.DAY: return 30
+      case VM.MONTH:
+      case VM.WEEK: return 100
+      case VM.YEAR: return 365
+      default: return 1
     }
   }
 
   private computeSize(viewport: number): Rect {
-    const bounds = this.parent.getBoundingClientRect()
+    const bounds = this.parent.node().getBoundingClientRect()
 
     // this.maxDate.diff(this.minDate, )
     const diff = this.getDateDiff()
-    console.log(this.maxDate.diff(this.minDate, 'year') )
-    const width = 1000 * diff
+    const width = this.getDateWidth() * diff
 
     const height = this.tasks.map((task) => [5].concat(task.heights)).flat(3).reduce((a, b) => a + b)
     return {
@@ -108,25 +170,60 @@ export default class View {
     }
   }
 
+  private getDateType(): dayjs.OpUnitType {
+    switch(this.options.viewMode || VM.WEEK) {
+      case VM.DAY: return 'day'
+      case VM.MONTH: return 'month'
+      case VM.WEEK: return 'week'
+      case VM.YEAR: return 'year'
+    }
+
+    return 'year'
+  }
+
+  private getAxis(): any  {
+    const width = this.getDateWidth()
+    let day = dayjs()
+
+    switch(this.options.viewMode || VM.WEEK) {
+      case VM.DAY:
+        day = this.minDate.add(1, 'day')
+        break
+      case VM.MONTH:
+        day = this.minDate.add(1, 'month')
+        break
+      case VM.WEEK:
+        day = this.minDate.add(1, 'week')
+        break
+      case VM.YEAR:
+        day = this.minDate.add(1, 'year')
+        break
+      default: return 1
+    }
+
+    return d3.scaleTime().range([0, width]).domain([this.minDate, day])
+  }
+
   private render() {
     this.computeBoundingDates()
-    const bounds = this.parent.getBoundingClientRect()
+    const bounds = this.bodyHolder.node().getBoundingClientRect()
 
-    this.svg
+    const layer = this.bodySvg
       .attr('width', bounds.width)
       .attr('height', bounds.height)
-
-    this.graph = this.svg
       .append('g')
-      .attr('transform', `translate(30, 30)`)
 
-    this.columns.render(this.svg)
+    this.headerSvg
+      .attr('width', bounds.width)
 
-    const colWidth = Number(this.columns.dom.attr('width') || 0)
-    this.graph.attr('transform', `translate(${colWidth}, 30)`)
+    this.columns.render(this.columnsHeader, this.columnsBody)
 
-    const viewport = bounds.width - colWidth
+    // this.graph.attr('transform', `translate(${colWidth}, 30)`)
+
+    const viewport = bounds.width
     const size = this.computeSize(viewport)
+
+    this.bodySvg.attr('height', size.height)
 
     console.log(size)
     this.y = d3.scaleBand()
@@ -134,38 +231,83 @@ export default class View {
       .domain(this.tasks.map((c, i) => i + ''))
       .padding(0.1)
 
+    const referenceAxis = this.getAxis()
+
     let endDate = this.maxDate
     if (size.width < viewport) {
-      const multiplier = size.width / 1000
-      let days = this.maxDate.diff(this.minDate, 'day')
-      if (multiplier > 1) {
-        days = days * multiplier
-      } else {
-        days = days / multiplier
+      let date = this.maxDate
+      let w = size.width
+      const unit = this.getDateType()
+      while(w <= viewport) {
+        date = date.add(1, unit)
+        w += referenceAxis(date.toDate())
+        console.log(referenceAxis(date.toDate()))
       }
 
-      endDate = this.maxDate.add(days, 'day')
+      endDate = date
     }
 
+    let startDate = this.minDate
+    switch(this.options.viewMode || VM.WEEK) {
+      case VM.DAY:
+        startDate = startDate.add(-1, 'day')
+        break
+      case VM.MONTH:
+        startDate = startDate.add(-1, 'month')
+        break
+      case VM.YEAR:
+        startDate = startDate.add(-1, 'year')
+        break
+      case VM.FILL:
+        break
+      case VM.WEEK:
+      default:
+        startDate = startDate.add(-1, 'week')
+        break
+    }
+
+    const fullWidth = Math.max(size.width, viewport)
     this.x = d3.scaleTime()
-      .range([0, Math.max(viewport, size.width)])
-      .domain([this.minDate.add(-1, 'day').toDate(), endDate.toDate()])
+      .range([0, fullWidth])
+      .domain([startDate, endDate])
       .nice()
 
-    this.graph.append('g')
+    this.bodySvg.attr('width', fullWidth)
+    this.headerSvg.attr('width', fullWidth)
+
+    this.columnsBody.append('g')
       .call(d3.axisLeft(this.y).tickFormat(() => '').tickSize(0))
+      .attr('transform', `translate(${this.columns.getWidth() - 1}, 0)`)
 
-    this.graph
+    let xAxis = d3.axisTop(this.x)
+    switch(this.options.viewMode || VM.WEEK) {
+      case VM.DAY:
+        xAxis = xAxis.ticks(d3.timeDay.every(3))
+        break
+      case VM.MONTH:
+        xAxis = xAxis.ticks(d3.timeMonth.every(1))
+        break
+      case VM.YEAR:
+        xAxis = xAxis.ticks(d3.timeYear.every(1))
+        break
+      case VM.FILL:
+        break
+      case VM.WEEK:
+      default:
+        xAxis = xAxis.ticks(d3.timeWeek.every(1))
+        break
+    }
+
+    const xAxisSvg = this.headerSvg
       .append('g')
-      .attr("class", "x axis")
-      .call(d3.axisTop(this.x))
-      .selectAll('text')
-        .attr('x', 0)
-        .attr('text-anchor', 'start')
+      .attr('transform', 'translate(-1, 28)')
+      .attr('class', 'x axis')
+      .call(xAxis)
 
-    console.log([this.minDate.toDate(), this.maxDate.toDate()])
+    console.log(xAxisSvg)
 
-    this.groups = this.graph.selectAll('.group')
+
+    this.groups = layer.selectAll('.group')
       .data(this.tasks)
       .enter()
       .append('g')
@@ -177,7 +319,6 @@ export default class View {
       task.render(this.x, this.y, group, offset)
     });
 
-
-    // this.svg.attr('width', bounds.width + this.columns.getWidth())
+    xAxisSvg.select('.tick:first-of-type').remove()
   }
 }

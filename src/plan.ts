@@ -2,6 +2,7 @@ import { Offset, PlanOptions, Style } from "./types";
 
 import dayjs from "dayjs";
 import deepmerge from "./deepmerge";
+import utc from 'dayjs/plugin/utc'
 
 export default class Plan {
   start: dayjs.Dayjs;

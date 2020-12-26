@@ -14,7 +14,7 @@ export default class Columns {
     this.columns = options.columns.map(o => new Column(this.tasks, o))
   }
 
-  render(svg: any): void {
+  render(header:any, svg: any): void {
     this.dom = svg.append('g')
       .attr('class', 'columns')
       .attr('transform', 'translate(0, 0)')
@@ -25,12 +25,14 @@ export default class Columns {
       x: 0, y: 20
     }
     this.columns.forEach((c: Column, idx: number) => {
-      c.render(this.dom)
+      c.render(header, this.dom)
       c.dom.attr('transform', `translate(${offset.x}, ${offset.y})`)
+      c.dom.attr('transform', `translate(${offset.x}, 0)`)
       offset.x += Number(c.dom.attr('width'))
     })
 
-    this.dom.attr('width', offset.x)
+    header.attr('width', offset.x)
+    svg.attr('width', offset.x)
   }
 
   getWidth(): number {
