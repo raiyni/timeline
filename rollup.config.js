@@ -1,8 +1,10 @@
 import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
+import livereload from 'rollup-plugin-livereload'
 import pkg from './package.json'
 import resolve from '@rollup/plugin-node-resolve'
 import sass from 'rollup-plugin-sass'
+import serve from 'rollup-plugin-serve'
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx']
 
@@ -30,7 +32,12 @@ export default {
       extensions,
       include: ['src/**/*'],
       babelHelpers: 'bundled'
-    })
+    }),
+    serve({
+      contentBase: ['examples', 'dist'],
+
+    }),
+    livereload()
   ],
 
   output: [

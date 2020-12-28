@@ -7,8 +7,6 @@
     "start": "yarn run dev",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "jest",
-    "test:watch": "jest --watch",
     "prettier": "prettier --write \"{src/*,tests/*,rollup.config}.js\""
   },
   "repository": {
@@ -62,7 +60,9 @@
     "jsdoc": "~3.6.4",
     "prettier": "^2.0.5",
     "rollup": "^2.10.1",
+    "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-serve": "^1.1.0",
     "typescript": "^3.9.2"
   },
   "eslintIgnore": [
