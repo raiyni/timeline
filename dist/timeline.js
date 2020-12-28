@@ -1,3 +1,5 @@
+
+(function(l, r) { if (l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (window.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(window.document);
 var Timeline = (function (d3) {
 
   function _typeof(obj) {
@@ -9417,7 +9419,11 @@ var Timeline = (function (d3) {
   };
   var clamp = function clamp(num, min, max) {
     return Math.min(Math.max(num, 0), 1);
-  };
+  }; // @ts-ignore
+
+  var IS_IE = function () {
+    return document.documentMode || /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent);
+  }();
 
   var Column = /*#__PURE__*/function () {
     function Column(tasks, options) {
@@ -9457,10 +9463,17 @@ var Timeline = (function (d3) {
           labels.forEach(function (l, idx2) {
             var height = task.heights[idx2];
 
-            var label = _this.dom.append('text').text(l.label).attr('y', offset.y + height / 2).attr('alignment-baseline', 'central').attr('x', offset.x);
+            var label = _this.dom.append('text').text(l.label).attr('y', offset.y + height / 2) // .attr('alignment-baseline', 'central')
+            .attr('x', offset.x);
+
+            applyStyle(label, l.labelStyle || {}); // if (IS_IE) {
+
+            var bounds = label.node().getBBox();
+            var manualY = (height - bounds.height) / 2;
+            label.attr('data-height', height).attr('data-textHeight', bounds.height).attr('data-offsety', offset.y);
+            label.attr('y', offset.y + bounds.height); // }
 
             offset.y += height;
-            applyStyle(label, l.labelStyle || {});
           });
         });
         var width = Math.max(this.getBounds().width, this.headerLayer.node().getBBox().width);

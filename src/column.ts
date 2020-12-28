@@ -1,7 +1,8 @@
 import { ColumnOptions, Offset } from "./types";
+import { IS_IE, applyStyle } from "./util";
 
 import Task from "./task";
-import { applyStyle } from "./util";
+import { text } from "d3";
 
 export default class Column {
   private tasks: Task[]
@@ -34,11 +35,22 @@ export default class Column {
         const label = this.dom.append('text')
           .text(l.label)
           .attr('y', offset.y + height / 2)
-          .attr('alignment-baseline', 'central')
+          // .attr('alignment-baseline', 'central')
           .attr('x', offset.x)
-          offset.y += height
 
-        applyStyle(label, l.labelStyle || {})
+          applyStyle(label, l.labelStyle || {})
+
+          // if (IS_IE) {
+            const bounds = label.node().getBBox()
+
+            const manualY = (height - bounds.height) / 2
+
+            label.attr('data-height', height)
+                .attr('data-textHeight', bounds.height)
+                .attr('data-offsety', offset.y)
+            label.attr('y', offset.y + bounds.height)
+          // }
+          offset.y += height
       })
     })
 
