@@ -60,16 +60,17 @@ export default class View {
       .style('display', 'flex')
       .style('flex-direction', 'column')
       .style('overflow', 'hidden')
+      .style('padding-bottom', 18) // for the scrollbar
 
     this.columnsHeader = this.left.append('div')
       .style('min-height', 30)
       .style('display', 'flex')
 
-
     this.columnsBody = this.left.append('div')
       .style('flex', 1)
       .style('flex-direction', 'row')
       .style('display', 'flex')
+      .style('overflow', 'hidden')
 
     this.right = this.parent
       .append('div')
@@ -79,9 +80,11 @@ export default class View {
       .style('align-items', 'stretch')
       .style('overflow', 'hidden')
 
-    this.bodyHeader = this.right.append('div').style('overflow', 'hidden')
+    this.bodyHeader = this.right.append('div')
+      .style('overflow', 'hidden')
 
-    this.headerSvg = this.bodyHeader.append('svg').attr('height', 30)
+    this.headerSvg = this.bodyHeader.append('svg')
+      .attr('height', 30)
 
     this.bodyHolder = this.right.append('div')
       .style('flex', 1)
@@ -89,25 +92,14 @@ export default class View {
 
     this.renderDivs()
 
-    // this.bodyHolder.on('scroll', (event: any) => {
-    //   this.updateScroll(event.target.scrollTop);
-    //   this.bodyHeader.node().scrollLeft = event.target.scrollLeft;
-    // })
-
-    // this.bodySvg = this.bodyHolder
-    //   .append('svg')
-
-    // this.svg = this.bodyDom
-    //   .append('svg')
-
-    // this.render()
-
-    // this.left.node().scrollHeight = this.bodyHolder.property('scrollHeight')
+    this.bodyHolder.node().addEventListener('scroll', (event: any) => {
+      this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
+    })
   }
 
-  private updateScroll(n: number): void {
-    this.columnsBody.attr('transform', `translate(0, -${n})`)
-    this.bodyHolder.property('scrollTop', n)
+  private updateScroll(left: number, top: number): void {
+    this.columnsBody.node().scrollTop = top;
+    this.bodyHeader.node().scrollLeft = left;
   }
 
   private computeBoundingDates(): void {
@@ -317,5 +309,8 @@ export default class View {
     })
 
     this.columns.renderDivs(this.columnsHeader, this.columnsBody)
+
+    this.bodyHolder.node().scrollHeight += 30
+    this.columnsBody.node().scrollHeight = this.bodyHolder.node().scrollHeight
   }
 }

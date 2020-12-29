@@ -9820,30 +9820,25 @@ var Timeline = (function (d3) {
       });
       this.columns = new Columns(this.tasks, this.options);
       this.parent = d3.select(document.body.querySelector(selector)).append('div').style('display', 'flex').style('flex-direction', 'row').style('align-items', 'stretch').style('width', '100%').style('height', '100%').style('overflow', 'hidden');
-      this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
+      this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden').style('padding-bottom', 18); // for the scrollbar
+
       this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
-      this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex');
+      this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
       this.right = this.parent.append('div').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
       this.bodyHeader = this.right.append('div').style('overflow', 'hidden');
       this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
       this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto');
-      this.renderDivs(); // this.bodyHolder.on('scroll', (event: any) => {
-      //   this.updateScroll(event.target.scrollTop);
-      //   this.bodyHeader.node().scrollLeft = event.target.scrollLeft;
-      // })
-      // this.bodySvg = this.bodyHolder
-      //   .append('svg')
-      // this.svg = this.bodyDom
-      //   .append('svg')
-      // this.render()
-      // this.left.node().scrollHeight = this.bodyHolder.property('scrollHeight')
+      this.renderDivs();
+      this.bodyHolder.node().addEventListener('scroll', function (event) {
+        _this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
+      });
     }
 
     _createClass(View, [{
       key: "updateScroll",
-      value: function updateScroll(n) {
-        this.columnsBody.attr('transform', "translate(0, -".concat(n, ")"));
-        this.bodyHolder.property('scrollTop', n);
+      value: function updateScroll(left, top) {
+        this.columnsBody.node().scrollTop = top;
+        this.bodyHeader.node().scrollLeft = left;
       }
     }, {
       key: "computeBoundingDates",
@@ -10078,6 +10073,8 @@ var Timeline = (function (d3) {
           task.renderDivs(_this2.x, _this2.y, group, offset);
         });
         this.columns.renderDivs(this.columnsHeader, this.columnsBody);
+        this.bodyHolder.node().scrollHeight += 30;
+        this.columnsBody.node().scrollHeight = this.bodyHolder.node().scrollHeight;
       }
     }]);
 
