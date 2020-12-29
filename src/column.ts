@@ -16,95 +16,46 @@ export default class Column {
     this.options.padding = this.options.padding || 5
   }
 
-  render(header: any, parent: any) {
-    this.parent = parent
-    this.dom = parent.append('g').attr('class', 'column')
+  renderDivs(header: any, parent: any) {
+    const titleDiv = header.append('div')
+        .style('display', 'flex')
+        .style('align-items', 'flex-end')
+        .style('justify-content', 'center')
+        .text(this.options.text)
+        .style('box-shadow', 'inset 0 -1px 0 0 #000')
+        .style('margin-bottom', '1px')
 
-    this.headerLayer = header.append('g')
-
-    const title = this.headerLayer.append('text')
-      .text(this.options.text)
-
-    const offset: Offset = { x:this.options.padding, y:10 }
     this.tasks.forEach((task: Task, idx: number) => {
-      offset.y += 5
       const labels = task.labels[this.options.field]
       labels.forEach((l, idx2) => {
         const height = task.heights[idx2]
-
-        const label = this.dom.append('text')
-          .text(l.label)
-          .attr('y', offset.y + height / 2)
-          // .attr('alignment-baseline', 'central')
-          .attr('x', offset.x)
-
-          applyStyle(label, l.labelStyle || {})
-
-          // if (IS_IE) {
-            const bounds = label.node().getBBox()
-
-            const manualY = (height - bounds.height) / 2
-
-            label.attr('data-height', height)
-                .attr('data-textHeight', bounds.height)
-                .attr('data-offsety', offset.y)
-            label.attr('y', offset.y + bounds.height)
-          // }
-          offset.y += height
-      })
-    })
-
-    let width = Math.max(this.getBounds().width, this.headerLayer.node().getBBox().width)
-    width +=  this.options.padding
-    this.dom.attr('width', width)
-    this.headerLayer.attr('width', width)
-    title.attr('x', width / 2).attr('text-anchor', 'middle')
-
-    this.dom.selectAll('[textAnchor=end]')
-      .each((_, i, a) => {
-        const node = a[i]
-
-        node.setAttribute('text-anchor', 'end')
-        node.setAttribute('x', width - this.options.padding)
-      })
-
-    this.dom.selectAll('[textAnchor=middle]')
-      .each((_, i, a) => {
-        const node = a[i]
-
-        node.setAttribute('text-anchor', 'middle')
-        node.setAttribute('x', width / 2)
-      })
-
-    offset.y = 10
-    offset.x = 0
-    this.tasks.forEach((task: Task, idx: number) => {
-      offset.y += 5
-      const labels = task.labels[this.options.field]
-      labels.forEach((l, idx2) => {
-        const height = task.heights[idx2]
-
         const style = l.backgroundStyle || {}
 
+        const div = parent.append('div')
+          .style('height', height)
+          .style('padding', '0 4px 0 4px')
+          .style('display', 'flex')
+          .style('align-items', 'center')
+
+        if (l.label) {
+          const span = div.text(l.label)
+
+          applyStyle(span, l.labelStyle || {}, false)
+        }
+
         if (Object.keys(style).length == 0) {
-          offset.y += height
           return
         };
 
-        const rect = this.dom.insert('rect', ':first-child')
-          .attr('y', offset.y)
-          .attr('x', offset.x)
-          .attr('height', height)
-          .attr('width', width)
-
-
-          offset.y += height
-        applyStyle(rect, style)
+        applyStyle(div, style, false)
       })
     })
-  }
 
-  getBounds(): DOMRect {
-    return this.dom.node().getBBox()
+    const titleWidth = titleDiv.node().getBoundingClientRect().width
+    const parentWidth = parent.node().getBoundingClientRect().width
+
+    const maxWidth = Math.max(titleWidth, parentWidth)
+    parent.style('width', maxWidth)
+    titleDiv.style('width', maxWidth)
   }
 }

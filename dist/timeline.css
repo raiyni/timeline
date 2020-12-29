@@ -14,6 +14,10 @@ rect {
   font-size: smaller;
 }
 
-* {
-  border: 1px solid red;
+.column-row {
+  white-space: nowrap;
+}
+
+.column-row span {
+  display: inline-block;
 }

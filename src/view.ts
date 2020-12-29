@@ -1,11 +1,11 @@
-import * as d3 from 'd3';
+import * as d3 from 'd3'
 
-import { Offset, PlanOptions, Rect, Sides, TaskOptions, TimelineOptions, VIEW_MODE } from "./types"
+import { Offset, PlanOptions, Rect, Sides, TaskOptions, TimelineOptions, VIEW_MODE } from './types'
 
-import Columns from './columns';
-import Task from "./task"
+import Columns from './columns'
+import Task from './task'
 import { VIEW_MODE as VM } from './types'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
 import utc from 'dayjs/plugin/utc'
 
@@ -42,10 +42,11 @@ export default class View {
     dayjs.extend(minMax)
     this.options = options
 
-    this.tasks = taskOptions.map(t => new Task(t, this.options))
+    this.tasks = taskOptions.map((t) => new Task(t, this.options))
     this.columns = new Columns(this.tasks, this.options)
 
-    this.parent = d3.select(document.body.querySelector(selector))
+    this.parent = d3
+      .select(document.body.querySelector(selector))
       .append('div')
       .style('display', 'flex')
       .style('flex-direction', 'row')
@@ -60,11 +61,15 @@ export default class View {
       .style('flex-direction', 'column')
       .style('overflow', 'hidden')
 
-    this.columnsHeader = this.left.append('svg')
-      .attr('height', 30)
+    this.columnsHeader = this.left.append('div')
+      .style('min-height', 30)
+      .style('display', 'flex')
 
-    this.columnsBody = this.left.append('svg')
+
+    this.columnsBody = this.left.append('div')
       .style('flex', 1)
+      .style('flex-direction', 'row')
+      .style('display', 'flex')
 
     this.right = this.parent
       .append('div')
@@ -74,48 +79,45 @@ export default class View {
       .style('align-items', 'stretch')
       .style('overflow', 'hidden')
 
-    this.bodyHeader = this.right
-      .append('div')
-      .style('overflow', 'hidden')
+    this.bodyHeader = this.right.append('div').style('overflow', 'hidden')
 
-    this.headerSvg = this.bodyHeader
-      .append('svg')
-      .attr('height', 30)
+    this.headerSvg = this.bodyHeader.append('svg').attr('height', 30)
 
-    this.bodyHolder = this.right
-      .append('div')
+    this.bodyHolder = this.right.append('div')
       .style('flex', 1)
       .style('overflow-y', 'auto')
 
-    this.bodyHolder.on('scroll', (event: any) => {
-      this.updateScroll(event.target.scrollTop);
-      this.bodyHeader.node().scrollLeft = event.target.scrollLeft;
-    })
+    this.renderDivs()
 
-    this.bodySvg = this.bodyHolder
-      .append('svg')
+    // this.bodyHolder.on('scroll', (event: any) => {
+    //   this.updateScroll(event.target.scrollTop);
+    //   this.bodyHeader.node().scrollLeft = event.target.scrollLeft;
+    // })
+
+    // this.bodySvg = this.bodyHolder
+    //   .append('svg')
 
     // this.svg = this.bodyDom
     //   .append('svg')
 
-    this.render()
+    // this.render()
 
-    this.left.node().scrollHeight = this.bodyHolder.property('scrollHeight')
+    // this.left.node().scrollHeight = this.bodyHolder.property('scrollHeight')
   }
 
   private updateScroll(n: number): void {
-    this.columnsBody.attr('transform', `translate(0, -${n})`);
-    this.bodyHolder.property('scrollTop', n);
+    this.columnsBody.attr('transform', `translate(0, -${n})`)
+    this.bodyHolder.property('scrollTop', n)
   }
 
   private computeBoundingDates(): void {
-    const dates = this.tasks.map(task => task.rows).flat(3)
-    const startDates = dates.map(d => d.start)
-    const endDates = dates.map(d => d.end)
+    const dates = this.tasks.map((task) => task.rows).flat(3)
+    const startDates = dates.map((d) => d.start)
+    const endDates = dates.map((d) => d.end)
 
     this.minDate = dayjs.min(startDates)
     this.maxDate = dayjs.max(endDates)
-    switch(this.options.viewMode || VM.WEEK) {
+    switch (this.options.viewMode || VM.WEEK) {
       case VM.DAY:
         this.maxDate = this.maxDate.add(1, 'day')
         break
@@ -136,23 +138,32 @@ export default class View {
   }
 
   private getDateDiff(): number {
-    switch(this.options.viewMode || VM.WEEK) {
-      case VM.DAY: return Math.ceil(this.maxDate.diff(this.minDate, 'day'))
-      case VM.MONTH: return Math.ceil(this.maxDate.diff(this.minDate, 'month'))
-      case VM.YEAR: return Math.ceil(this.maxDate.diff(this.minDate, 'year'))
-      case VM.FILL: return 1
+    switch (this.options.viewMode || VM.WEEK) {
+      case VM.DAY:
+        return Math.ceil(this.maxDate.diff(this.minDate, 'day'))
+      case VM.MONTH:
+        return Math.ceil(this.maxDate.diff(this.minDate, 'month'))
+      case VM.YEAR:
+        return Math.ceil(this.maxDate.diff(this.minDate, 'year'))
+      case VM.FILL:
+        return 1
       case VM.WEEK:
-      default: return Math.ceil(this.maxDate.diff(this.minDate, 'week'))
+      default:
+        return Math.ceil(this.maxDate.diff(this.minDate, 'week'))
     }
   }
 
   private getDateWidth(): number {
-    switch(this.options.viewMode || VM.WEEK) {
-      case VM.DAY: return 30
+    switch (this.options.viewMode || VM.WEEK) {
+      case VM.DAY:
+        return 30
       case VM.MONTH:
-      case VM.WEEK: return 100
-      case VM.YEAR: return 365
-      default: return 1
+      case VM.WEEK:
+        return 100
+      case VM.YEAR:
+        return 365
+      default:
+        return 1
     }
   }
 
@@ -163,7 +174,10 @@ export default class View {
     const diff = this.getDateDiff()
     const width = this.getDateWidth() * diff
 
-    const height = this.tasks.map((task) => [5].concat(task.heights)).flat(3).reduce((a, b) => a + b)
+    const height = this.tasks
+      .map((task) => [5].concat(task.heights))
+      .flat(3)
+      .reduce((a, b) => a + b)
     return {
       width: width,
       height: Math.max(height, bounds.height)
@@ -171,21 +185,25 @@ export default class View {
   }
 
   private getDateType(): dayjs.OpUnitType {
-    switch(this.options.viewMode || VM.WEEK) {
-      case VM.DAY: return 'day'
-      case VM.MONTH: return 'month'
-      case VM.WEEK: return 'week'
-      case VM.YEAR: return 'year'
+    switch (this.options.viewMode || VM.WEEK) {
+      case VM.DAY:
+        return 'day'
+      case VM.MONTH:
+        return 'month'
+      case VM.WEEK:
+        return 'week'
+      case VM.YEAR:
+        return 'year'
     }
 
     return 'year'
   }
 
-  private getAxis(): any  {
+  private getAxis(): any {
     const width = this.getDateWidth()
     let day = dayjs()
 
-    switch(this.options.viewMode || VM.WEEK) {
+    switch (this.options.viewMode || VM.WEEK) {
       case VM.DAY:
         day = this.minDate.add(1, 'day')
         break
@@ -198,35 +216,22 @@ export default class View {
       case VM.YEAR:
         day = this.minDate.add(1, 'year')
         break
-      default: return 1
+      default:
+        return 1
     }
 
     return d3.scaleTime().range([0, width]).domain([this.minDate, day])
   }
 
-  private render() {
+  private renderDivs() {
     this.computeBoundingDates()
+
     const bounds = this.bodyHolder.node().getBoundingClientRect()
-
-    const layer = this.bodySvg
-      .attr('width', bounds.width)
-      .attr('height', bounds.height)
-      .append('g')
-
-    this.headerSvg
-      .attr('width', bounds.width)
-
-    this.columns.render(this.columnsHeader, this.columnsBody)
-
-    // this.graph.attr('transform', `translate(${colWidth}, 30)`)
-
     const viewport = bounds.width
     const size = this.computeSize(viewport)
 
-    this.bodySvg.attr('height', size.height)
-
-    console.log(size)
-    this.y = d3.scaleBand()
+    this.y = d3
+      .scaleBand()
       .range([size.height, 0])
       .domain(this.tasks.map((c, i) => i + ''))
       .padding(0.1)
@@ -238,17 +243,16 @@ export default class View {
       let date = this.maxDate
       let w = size.width
       const unit = this.getDateType()
-      while(w <= viewport) {
+      while (w <= viewport) {
         date = date.add(1, unit)
         w += referenceAxis(date.toDate())
-        console.log(referenceAxis(date.toDate()))
       }
 
       endDate = date
     }
 
     let startDate = this.minDate
-    switch(this.options.viewMode || VM.WEEK) {
+    switch (this.options.viewMode || VM.WEEK) {
       case VM.DAY:
         startDate = startDate.add(-1, 'day')
         break
@@ -267,20 +271,10 @@ export default class View {
     }
 
     const fullWidth = Math.max(size.width, viewport)
-    this.x = d3.scaleTime()
-      .range([0, fullWidth])
-      .domain([startDate, endDate])
-      .nice()
-
-    this.bodySvg.attr('width', fullWidth)
-    this.headerSvg.attr('width', fullWidth)
-
-    this.columnsBody.append('g')
-      .call(d3.axisLeft(this.y).tickFormat(() => '').tickSize(0))
-      .attr('transform', `translate(${this.columns.getWidth() - 1}, 0)`)
+    this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]).nice()
 
     let xAxis = d3.axisTop(this.x)
-    switch(this.options.viewMode || VM.WEEK) {
+    switch (this.options.viewMode || VM.WEEK) {
       case VM.DAY:
         xAxis = xAxis.ticks(d3.timeDay.every(3))
         break
@@ -304,21 +298,24 @@ export default class View {
       .attr('class', 'x axis')
       .call(xAxis)
 
-    console.log(xAxisSvg)
+    xAxisSvg.select('.tick:first-of-type').remove()
 
+    this.headerSvg.attr('width', fullWidth)
 
-    this.groups = layer.selectAll('.group')
+    this.groups = this.bodyHolder
+      .selectAll('.group')
       .data(this.tasks)
       .enter()
-      .append('g')
+      .append('div')
       .classed('group', true)
+      .style('width', fullWidth)
 
-    const offset: Offset = { x: 0, y: 0}
+    const offset: Offset = { x: fullWidth, y: 0 }
     this.groups.each((task: Task, idx: number, arr: SVGElement[]) => {
-      const group = d3.select(arr[idx]);
-      task.render(this.x, this.y, group, offset)
-    });
+      const group = d3.select(arr[idx])
+      task.renderDivs(this.x, this.y, group, offset)
+    })
 
-    xAxisSvg.select('.tick:first-of-type').remove()
+    this.columns.renderDivs(this.columnsHeader, this.columnsBody)
   }
 }

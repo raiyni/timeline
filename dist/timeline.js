@@ -9412,9 +9412,9 @@ var Timeline = (function (d3) {
   });
 
   var applyStyle = function applyStyle(el, style) {
+    var attr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     Object.keys(style).forEach(function (k) {
-      // el.style(k, style[k])
-      el.attr(k, style[k]);
+      if (!attr) el.style(k, style[k]);else el.attr(k, style[k]);
     });
   };
   var clamp = function clamp(num, min, max) {
@@ -9445,77 +9445,34 @@ var Timeline = (function (d3) {
     }
 
     _createClass(Column, [{
-      key: "render",
-      value: function render(header, parent) {
+      key: "renderDivs",
+      value: function renderDivs(header, parent) {
         var _this = this;
 
-        this.parent = parent;
-        this.dom = parent.append('g').attr('class', 'column');
-        this.headerLayer = header.append('g');
-        var title = this.headerLayer.append('text').text(this.options.text);
-        var offset = {
-          x: this.options.padding,
-          y: 10
-        };
+        var titleDiv = header.append('div').style('display', 'flex').style('align-items', 'flex-end').style('justify-content', 'center').text(this.options.text).style('box-shadow', 'inset 0 -1px 0 0 #000').style('margin-bottom', '1px');
         this.tasks.forEach(function (task, idx) {
-          offset.y += 5;
-          var labels = task.labels[_this.options.field];
-          labels.forEach(function (l, idx2) {
-            var height = task.heights[idx2];
-
-            var label = _this.dom.append('text').text(l.label).attr('y', offset.y + height / 2) // .attr('alignment-baseline', 'central')
-            .attr('x', offset.x);
-
-            applyStyle(label, l.labelStyle || {}); // if (IS_IE) {
-
-            var bounds = label.node().getBBox();
-            var manualY = (height - bounds.height) / 2;
-            label.attr('data-height', height).attr('data-textHeight', bounds.height).attr('data-offsety', offset.y);
-            label.attr('y', offset.y + bounds.height); // }
-
-            offset.y += height;
-          });
-        });
-        var width = Math.max(this.getBounds().width, this.headerLayer.node().getBBox().width);
-        width += this.options.padding;
-        this.dom.attr('width', width);
-        this.headerLayer.attr('width', width);
-        title.attr('x', width / 2).attr('text-anchor', 'middle');
-        this.dom.selectAll('[textAnchor=end]').each(function (_, i, a) {
-          var node = a[i];
-          node.setAttribute('text-anchor', 'end');
-          node.setAttribute('x', width - _this.options.padding);
-        });
-        this.dom.selectAll('[textAnchor=middle]').each(function (_, i, a) {
-          var node = a[i];
-          node.setAttribute('text-anchor', 'middle');
-          node.setAttribute('x', width / 2);
-        });
-        offset.y = 10;
-        offset.x = 0;
-        this.tasks.forEach(function (task, idx) {
-          offset.y += 5;
           var labels = task.labels[_this.options.field];
           labels.forEach(function (l, idx2) {
             var height = task.heights[idx2];
             var style = l.backgroundStyle || {};
+            var div = parent.append('div').style('height', height).style('padding', '0 4px 0 4px').style('display', 'flex').style('align-items', 'center');
 
-            if (Object.keys(style).length == 0) {
-              offset.y += height;
-              return;
+            if (l.label) {
+              var span = div.text(l.label);
+              applyStyle(span, l.labelStyle || {}, false);
             }
 
-            var rect = _this.dom.insert('rect', ':first-child').attr('y', offset.y).attr('x', offset.x).attr('height', height).attr('width', width);
-
-            offset.y += height;
-            applyStyle(rect, style);
+            if (Object.keys(style).length == 0) {
+              return;
+            }
+            applyStyle(div, style, false);
           });
         });
-      }
-    }, {
-      key: "getBounds",
-      value: function getBounds() {
-        return this.dom.node().getBBox();
+        var titleWidth = titleDiv.node().getBoundingClientRect().width;
+        var parentWidth = parent.node().getBoundingClientRect().width;
+        var maxWidth = Math.max(titleWidth, parentWidth);
+        parent.style('width', maxWidth);
+        titleDiv.style('width', maxWidth);
       }
     }]);
 
@@ -9544,24 +9501,12 @@ var Timeline = (function (d3) {
     }
 
     _createClass(Columns, [{
-      key: "render",
-      value: function render(header, svg) {
-        var _this2 = this;
-
-        this.dom = svg.append('g').attr('class', 'columns').attr('transform', 'translate(0, 0)');
-        if (this.columns.length == 0) return;
-        var offset = {
-          x: 0,
-          y: 20
-        };
-        this.columns.forEach(function (c, idx) {
-          c.render(header, _this2.dom);
-          c.dom.attr('transform', "translate(".concat(offset.x, ", ").concat(offset.y, ")"));
-          c.dom.attr('transform', "translate(".concat(offset.x, ", 0)"));
-          offset.x += Number(c.dom.attr('width'));
+      key: "renderDivs",
+      value: function renderDivs(header, holder) {
+        this.columns.forEach(function (column, idx) {
+          var layer = holder.append('div').style('flex', '0 1 auto');
+          column.renderDivs(header, layer);
         });
-        header.attr('width', offset.x);
-        svg.attr('width', offset.x);
       }
     }, {
       key: "getWidth",
@@ -9734,32 +9679,32 @@ var Timeline = (function (d3) {
         });
       }
     }, {
-      key: "render",
-      value: function render(x, y, group, offset) {
+      key: "renderDivs",
+      value: function renderDivs(x, y, group, offset) {
         var _this2 = this;
 
-        offset.y += 5;
         this.rows.forEach(function (row, idx) {
+          var div = group.append('div').style('height', _this2.heights[idx]).style('width', offset.x);
+          var svg = div.append('svg').attr('height', _this2.heights[idx]).attr('width', offset.x);
           row.forEach(function (plan, idx2) {
-            var layer = group.append('g').attr('class', 'plan');
+            var layer = svg.append('g').attr('class', 'plan');
 
-            _this2.drawBackground(x, y, layer, plan, offset);
+            _this2.drawBackground(x, y, layer, plan);
 
-            _this2.drawProgress(x, y, layer, plan, offset);
+            _this2.drawProgress(x, y, layer, plan);
           });
-          offset.y += _this2.heights[idx];
         });
       }
     }, {
       key: "drawBackground",
-      value: function drawBackground(x, y, group, plan, offset) {
-        var rect = group.append('rect').attr('x', x(plan.start.toDate()) + offset.x).attr('y', offset.y).attr('height', plan.height).attr('width', x(plan.end) - x(plan.start));
+      value: function drawBackground(x, y, group, plan) {
+        var rect = group.append('rect').attr('x', x(plan.start.toDate())).attr('y', 0).attr('height', plan.height).attr('width', x(plan.end) - x(plan.start));
         applyStyle(rect, plan.backgroundStyle);
       }
     }, {
       key: "drawProgress",
-      value: function drawProgress(x, y, group, plan, offset) {
-        var rect = group.append('rect').attr('x', x(plan.start.toDate()) + offset.x).attr('y', offset.y).attr('height', plan.height).attr('width', (x(plan.end) - x(plan.start)) * clamp(plan.progress / 100));
+      value: function drawProgress(x, y, group, plan) {
+        var rect = group.append('rect').attr('x', x(plan.start.toDate())).attr('y', 0).attr('height', plan.height).attr('width', (x(plan.end) - x(plan.start)) * clamp(plan.progress / 100));
         applyStyle(rect, plan.progressStyle);
       }
     }, {
@@ -9791,11 +9736,9 @@ var Timeline = (function (d3) {
 
           if (defaults) {
             v.labelStyle = deepmerge.all([{
-              fill: '#000000'
+              color: '#000000'
             }, defaults.labelStyle || {}, v.labelStyle || {}]);
-            console.log(v);
-            v.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, v.backgroundStyle || {}); // v.verticalAlign = v.verticalAlign || defaults.verticalAlign || VERTICAL_ALIGN.MIDDLE
-            // v.horizontalAlign = v.horizontalAlign || defaults.horizontalAlign || HORIZONTAL_ALIGN.LEFT
+            v.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, v.backgroundStyle || {});
           }
         });
 
@@ -9878,22 +9821,22 @@ var Timeline = (function (d3) {
       this.columns = new Columns(this.tasks, this.options);
       this.parent = d3.select(document.body.querySelector(selector)).append('div').style('display', 'flex').style('flex-direction', 'row').style('align-items', 'stretch').style('width', '100%').style('height', '100%').style('overflow', 'hidden');
       this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
-      this.columnsHeader = this.left.append('svg').attr('height', 30);
-      this.columnsBody = this.left.append('svg').style('flex', 1);
+      this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
+      this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex');
       this.right = this.parent.append('div').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
       this.bodyHeader = this.right.append('div').style('overflow', 'hidden');
       this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
       this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto');
-      this.bodyHolder.on('scroll', function (event) {
-        _this.updateScroll(event.target.scrollTop);
-
-        _this.bodyHeader.node().scrollLeft = event.target.scrollLeft;
-      });
-      this.bodySvg = this.bodyHolder.append('svg'); // this.svg = this.bodyDom
+      this.renderDivs(); // this.bodyHolder.on('scroll', (event: any) => {
+      //   this.updateScroll(event.target.scrollTop);
+      //   this.bodyHeader.node().scrollLeft = event.target.scrollLeft;
+      // })
+      // this.bodySvg = this.bodyHolder
       //   .append('svg')
-
-      this.render();
-      this.left.node().scrollHeight = this.bodyHolder.property('scrollHeight');
+      // this.svg = this.bodyDom
+      //   .append('svg')
+      // this.render()
+      // this.left.node().scrollHeight = this.bodyHolder.property('scrollHeight')
     }
 
     _createClass(View, [{
@@ -10045,20 +9988,14 @@ var Timeline = (function (d3) {
         return d3.scaleTime().range([0, width]).domain([this.minDate, day]);
       }
     }, {
-      key: "render",
-      value: function render() {
+      key: "renderDivs",
+      value: function renderDivs() {
         var _this2 = this;
 
         this.computeBoundingDates();
         var bounds = this.bodyHolder.node().getBoundingClientRect();
-        var layer = this.bodySvg.attr('width', bounds.width).attr('height', bounds.height).append('g');
-        this.headerSvg.attr('width', bounds.width);
-        this.columns.render(this.columnsHeader, this.columnsBody); // this.graph.attr('transform', `translate(${colWidth}, 30)`)
-
         var viewport = bounds.width;
         var size = this.computeSize(viewport);
-        this.bodySvg.attr('height', size.height);
-        console.log(size);
         this.y = d3.scaleBand().range([size.height, 0]).domain(this.tasks.map(function (c, i) {
           return i + '';
         })).padding(0.1);
@@ -10073,7 +10010,6 @@ var Timeline = (function (d3) {
           while (w <= viewport) {
             date = date.add(1, unit);
             w += referenceAxis(date.toDate());
-            console.log(referenceAxis(date.toDate()));
           }
 
           endDate = date;
@@ -10105,11 +10041,6 @@ var Timeline = (function (d3) {
 
         var fullWidth = Math.max(size.width, viewport);
         this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]).nice();
-        this.bodySvg.attr('width', fullWidth);
-        this.headerSvg.attr('width', fullWidth);
-        this.columnsBody.append('g').call(d3.axisLeft(this.y).tickFormat(function () {
-          return '';
-        }).tickSize(0)).attr('transform', "translate(".concat(this.columns.getWidth() - 1, ", 0)"));
         var xAxis = d3.axisTop(this.x);
 
         switch (this.options.viewMode || VIEW_MODE.WEEK) {
@@ -10135,17 +10066,18 @@ var Timeline = (function (d3) {
         }
 
         var xAxisSvg = this.headerSvg.append('g').attr('transform', 'translate(-1, 28)').attr('class', 'x axis').call(xAxis);
-        console.log(xAxisSvg);
-        this.groups = layer.selectAll('.group').data(this.tasks).enter().append('g').classed('group', true);
+        xAxisSvg.select('.tick:first-of-type').remove();
+        this.headerSvg.attr('width', fullWidth);
+        this.groups = this.bodyHolder.selectAll('.group').data(this.tasks).enter().append('div').classed('group', true).style('width', fullWidth);
         var offset = {
-          x: 0,
+          x: fullWidth,
           y: 0
         };
         this.groups.each(function (task, idx, arr) {
           var group = d3.select(arr[idx]);
-          task.render(_this2.x, _this2.y, group, offset);
+          task.renderDivs(_this2.x, _this2.y, group, offset);
         });
-        xAxisSvg.select('.tick:first-of-type').remove();
+        this.columns.renderDivs(this.columnsHeader, this.columnsBody);
       }
     }]);
 

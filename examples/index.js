@@ -20,16 +20,25 @@ var tasks = [
         }
       }]
     ],
-    name: { label: 'Apply new styles', backgroundStyle: {
-      fill: 'red'
-    } },
+    name: {
+      label: 'Apply new styles',
+      backgroundStyle: {
+        'background-color': 'red'
+      }
+    },
     id: 'Task 2',
-    pieces: { label: 44,  labelStyle: { fill: 'white', textAnchor: 'end' }, backgroundStyle: {
-      fill: 'red'
-    } },
-    area: { label: '232k',  backgroundStyle: {
-      fill: 'red'
-    } },
+    pieces: {
+      label: 44,
+      labelStyle: {
+        color: 'white'
+      }
+    },
+    area: {
+      label: '232k',
+      backgroundStyle: {
+        'background-color': 'red'
+      }
+    },
     milestones: [
       {
         date: '2020-05-23T05:00:00.000Z',
@@ -46,7 +55,12 @@ var tasks = [
         fill: '#f2c329'
       }
     },
-    name: { label: 'Donkey dog', labelStyle: { 'textAnchor': 'end'} },
+    name: {
+      label: 'Donkey dog',
+      backgroundStyle: {
+        'justify-content': 'flex-end'
+      }
+    },
     id: 'Task 2',
     pieces: 44,
     area: '232k',
@@ -449,13 +463,13 @@ var gantt_chart = new Timeline('#abc123', tasks, {
       field: 'pieces',
       defaults: {
         labelStyle: {
-          fill: 'red',
+          'color': 'red',
           'font-weight': 'bold',
           'font-family': 'Arial',
           'font-size': '1.5em'
         },
         backgroundStyle: {
-          fill: 'green'
+          'background-color': 'green'
         }
       }
     }

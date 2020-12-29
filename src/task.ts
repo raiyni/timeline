@@ -1,13 +1,13 @@
-import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj } from "./types";
-import { applyStyle, clamp } from "./util";
+import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj } from './types'
+import { applyStyle, clamp } from './util'
 
-import Plan from "./plan";
-import deepmerge from "./deepmerge";
+import Plan from './plan'
+import deepmerge from './deepmerge'
 
 export default class Task {
   rows: Plan[][]
   heights: number[]
-  labels: {[key: string]: LabelOptions[];}
+  labels: { [key: string]: LabelOptions[] }
   options: TaskOptions & obj
   constructor(options: TaskOptions & obj, timelineOptions: TimelineOptions) {
     if (options.plan) {
@@ -16,10 +16,10 @@ export default class Task {
       // @ts-ignore
       this.rows = options.plans.map((p) => {
         if (!Array.isArray(p)) {
-          return [new Plan (p)]
+          return [new Plan(p)]
         }
 
-        return p.map(pl => new Plan(pl))
+        return p.map((pl) => new Plan(pl))
       })
     } else {
       console.error('Plans object is not an array')
@@ -39,36 +39,44 @@ export default class Task {
 
   computeRowHeights(): void {
     this.heights = this.rows
-      .map(row => row.map(plan => plan.height))
-      .map(row => Math.max.apply(null, row))
+      .map((row) => row.map((plan) => plan.height))
+      .map((row) => Math.max.apply(null, row))
   }
 
-  render(x: any, y: any, group: any, offset: Offset) {
-    offset.y += 5
+  renderDivs(x: any, y: any, group: any, offset: Offset) {
     this.rows.forEach((row: Plan[], idx: number) => {
-      row.forEach((plan: Plan, idx2: number) => {
-        const layer = group.append('g').attr('class', 'plan')
-        this.drawBackground(x, y, layer, plan, offset)
-        this.drawProgress(x, y, layer, plan, offset)
-      })
+      const div = group
+          .append('div')
+          .style('height', this.heights[idx])
+          .style('width', offset.x)
 
-      offset.y += this.heights[idx]
+      const svg = div.append('svg')
+                        .attr('height', this.heights[idx])
+                        .attr('width', offset.x)
+      row.forEach((plan: Plan, idx2: number) => {
+        const layer = svg.append('g').attr('class', 'plan')
+
+        this.drawBackground(x, y, layer, plan)
+        this.drawProgress(x, y, layer, plan)
+      })
     })
   }
 
-  private drawBackground(x: any, y: any, group: any, plan: Plan, offset: Offset): void {
-    const rect = group.append('rect')
-      .attr('x', x(plan.start.toDate()) + offset.x)
-      .attr('y', offset.y)
+  private drawBackground(x: any, y: any, group: any, plan: Plan): void {
+    const rect = group
+      .append('rect')
+      .attr('x', x(plan.start.toDate()))
+      .attr('y', 0)
       .attr('height', plan.height)
       .attr('width', x(plan.end) - x(plan.start))
     applyStyle(rect, plan.backgroundStyle)
   }
 
-  private drawProgress(x: any, y: any, group: any, plan: Plan, offset: Offset): void {
-    const rect = group.append('rect')
-      .attr('x', x(plan.start.toDate()) + offset.x)
-      .attr('y', offset.y)
+  private drawProgress(x: any, y: any, group: any, plan: Plan): void {
+    const rect = group
+      .append('rect')
+      .attr('x', x(plan.start.toDate()))
+      .attr('y', 0)
       .attr('height', plan.height)
       .attr('width', (x(plan.end) - x(plan.start)) * clamp(plan.progress / 100, 0, 1))
     applyStyle(rect, plan.progressStyle)
@@ -95,17 +103,15 @@ export default class Task {
       options[idx] = v
       const defaults = columnOptions.defaults || {}
       if (defaults) {
-        v.labelStyle = deepmerge.all([{
-          fill: '#000000'
-        },  defaults.labelStyle || {}, v.labelStyle || {}])
+        v.labelStyle = deepmerge.all([
+          {
+            color: '#000000'
+          },
+          defaults.labelStyle || {},
+          v.labelStyle || {}
+        ])
 
-        console.log(v)
         v.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, v.backgroundStyle || {})
-        // v.verticalAlign = v.verticalAlign || defaults.verticalAlign || VERTICAL_ALIGN.MIDDLE
-        // v.horizontalAlign = v.horizontalAlign || defaults.horizontalAlign || HORIZONTAL_ALIGN.LEFT
-      } else {
-        // v.verticalAlign = v.verticalAlign || VERTICAL_ALIGN.MIDDLE
-        // v.horizontalAlign = v.horizontalAlign || HORIZONTAL_ALIGN.LEFT
       }
     })
 

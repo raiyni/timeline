@@ -1,9 +1,9 @@
 import { Style } from "./types"
 
-export const applyStyle = (el: any, style: Style): any => {
+export const applyStyle = (el: any, style: Style, attr: boolean = true): any => {
   Object.keys(style).forEach(k => {
-    // el.style(k, style[k])
-    el.attr(k, style[k])
+    if (!attr) el.style(k, style[k])
+    else el.attr(k, style[k])
   })
 }
 
