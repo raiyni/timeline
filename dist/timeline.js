@@ -9451,11 +9451,12 @@ var Timeline = (function (d3) {
 
         var titleDiv = header.append('div').style('display', 'flex').style('align-items', 'flex-end').style('justify-content', 'center').text(this.options.text).style('box-shadow', 'inset 0 -1px 0 0 #000').style('margin-bottom', '1px');
         this.tasks.forEach(function (task, idx) {
+          var layer = parent.append('div').style('margin-top', _this.options.taskMargin).attr('class', 'column-task');
           var labels = task.labels[_this.options.field];
           labels.forEach(function (l, idx2) {
             var height = task.heights[idx2];
             var style = l.backgroundStyle || {};
-            var div = parent.append('div').style('height', height).style('padding', '0 4px 0 4px').style('display', 'flex').style('align-items', 'center');
+            var div = layer.append('div').style('height', height).style('padding', '0 4px 0 4px').style('display', 'flex').style('align-items', 'center').attr('class', 'column-plan');
 
             if (l.label) {
               var span = div.text(l.label);
@@ -9478,49 +9479,6 @@ var Timeline = (function (d3) {
 
     return Column;
   }();
-
-  var Columns = /*#__PURE__*/function () {
-    function Columns(tasks, options) {
-      var _this = this;
-
-      _classCallCheck(this, Columns);
-
-      _defineProperty(this, "tasks", void 0);
-
-      _defineProperty(this, "options", void 0);
-
-      _defineProperty(this, "columns", void 0);
-
-      _defineProperty(this, "dom", void 0);
-
-      this.tasks = tasks;
-      this.options = options;
-      this.columns = options.columns.map(function (o) {
-        return new Column(_this.tasks, o);
-      });
-    }
-
-    _createClass(Columns, [{
-      key: "renderDivs",
-      value: function renderDivs(header, holder) {
-        this.columns.forEach(function (column, idx) {
-          var layer = holder.append('div').style('flex', '0 1 auto');
-          column.renderDivs(header, layer);
-        });
-      }
-    }, {
-      key: "getWidth",
-      value: function getWidth() {
-        return this.dom.node().getBBox().width;
-      }
-    }]);
-
-    return Columns;
-  }();
-
-  var dayjs_min = createCommonjsModule(function (module, exports) {
-  !function(t,e){module.exports=e();}(commonjsGlobal,function(){var t="millisecond",e="second",n="minute",r="hour",i="day",s="week",u="month",a="quarter",o="year",f="date",h=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d+)?$/,c=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,d={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},$=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},l={s:$,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+$(r,2,"0")+":"+$(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,u),s=n-i<0,a=e.clone().add(r+(s?-1:1),u);return +(-(r+(n-i)/(s?i-a:a-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(h){return {M:u,y:o,w:s,d:i,D:f,h:r,m:n,s:e,ms:t,Q:a}[h]||String(h||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},y="en",M={};M[y]=d;var m=function(t){return t instanceof S},D=function(t,e,n){var r;if(!t)return y;if("string"==typeof t)M[t]&&(r=t),e&&(M[t]=e,r=t);else {var i=t.name;M[i]=t,r=i;}return !n&&r&&(y=r),r||!n&&y},v=function(t,e){if(m(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new S(n)},g=l;g.l=D,g.i=m,g.w=function(t,e){return v(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var S=function(){function d(t){this.$L=D(t.locale,null,!0),this.parse(t);}var $=d.prototype;return $.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(g.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(h);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},$.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},$.$utils=function(){return g},$.isValid=function(){return !("Invalid Date"===this.$d.toString())},$.isSame=function(t,e){var n=v(t);return this.startOf(e)<=n&&n<=this.endOf(e)},$.isAfter=function(t,e){return v(t)<this.startOf(e)},$.isBefore=function(t,e){return this.endOf(e)<v(t)},$.$g=function(t,e,n){return g.u(t)?this[e]:this.set(n,t)},$.unix=function(){return Math.floor(this.valueOf()/1e3)},$.valueOf=function(){return this.$d.getTime()},$.startOf=function(t,a){var h=this,c=!!g.u(a)||a,d=g.p(t),$=function(t,e){var n=g.w(h.$u?Date.UTC(h.$y,e,t):new Date(h.$y,e,t),h);return c?n:n.endOf(i)},l=function(t,e){return g.w(h.toDate()[t].apply(h.toDate("s"),(c?[0,0,0,0]:[23,59,59,999]).slice(e)),h)},y=this.$W,M=this.$M,m=this.$D,D="set"+(this.$u?"UTC":"");switch(d){case o:return c?$(1,0):$(31,11);case u:return c?$(1,M):$(0,M+1);case s:var v=this.$locale().weekStart||0,S=(y<v?y+7:y)-v;return $(c?m-S:m+(6-S),M);case i:case f:return l(D+"Hours",0);case r:return l(D+"Minutes",1);case n:return l(D+"Seconds",2);case e:return l(D+"Milliseconds",3);default:return this.clone()}},$.endOf=function(t){return this.startOf(t,!1)},$.$set=function(s,a){var h,c=g.p(s),d="set"+(this.$u?"UTC":""),$=(h={},h[i]=d+"Date",h[f]=d+"Date",h[u]=d+"Month",h[o]=d+"FullYear",h[r]=d+"Hours",h[n]=d+"Minutes",h[e]=d+"Seconds",h[t]=d+"Milliseconds",h)[c],l=c===i?this.$D+(a-this.$W):a;if(c===u||c===o){var y=this.clone().set(f,1);y.$d[$](l),y.init(),this.$d=y.set(f,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},$.set=function(t,e){return this.clone().$set(t,e)},$.get=function(t){return this[g.p(t)]()},$.add=function(t,a){var f,h=this;t=Number(t);var c=g.p(a),d=function(e){var n=v(h);return g.w(n.date(n.date()+Math.round(e*t)),h)};if(c===u)return this.set(u,this.$M+t);if(c===o)return this.set(o,this.$y+t);if(c===i)return d(1);if(c===s)return d(7);var $=(f={},f[n]=6e4,f[r]=36e5,f[e]=1e3,f)[c]||1,l=this.$d.getTime()+t*$;return g.w(l,this)},$.subtract=function(t,e){return this.add(-1*t,e)},$.format=function(t){var e=this;if(!this.isValid())return "Invalid Date";var n=t||"YYYY-MM-DDTHH:mm:ssZ",r=g.z(this),i=this.$locale(),s=this.$H,u=this.$m,a=this.$M,o=i.weekdays,f=i.months,h=function(t,r,i,s){return t&&(t[r]||t(e,n))||i[r].substr(0,s)},d=function(t){return g.s(s%12||12,t,"0")},$=i.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:g.s(a+1,2,"0"),MMM:h(i.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:g.s(this.$D,2,"0"),d:String(this.$W),dd:h(i.weekdaysMin,this.$W,o,2),ddd:h(i.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:g.s(s,2,"0"),h:d(1),hh:d(2),a:$(s,u,!0),A:$(s,u,!1),m:String(u),mm:g.s(u,2,"0"),s:String(this.$s),ss:g.s(this.$s,2,"0"),SSS:g.s(this.$ms,3,"0"),Z:r};return n.replace(c,function(t,e){return e||l[t]||r.replace(":","")})},$.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},$.diff=function(t,f,h){var c,d=g.p(f),$=v(t),l=6e4*($.utcOffset()-this.utcOffset()),y=this-$,M=g.m(this,$);return M=(c={},c[o]=M/12,c[u]=M,c[a]=M/3,c[s]=(y-l)/6048e5,c[i]=(y-l)/864e5,c[r]=y/36e5,c[n]=y/6e4,c[e]=y/1e3,c)[d]||y,h?M:g.a(M)},$.daysInMonth=function(){return this.endOf(u).$D},$.$locale=function(){return M[this.$L]},$.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=D(t,e,!0);return r&&(n.$L=r),n},$.clone=function(){return g.w(this.$d,this)},$.toDate=function(){return new Date(this.valueOf())},$.toJSON=function(){return this.isValid()?this.toISOString():null},$.toISOString=function(){return this.$d.toISOString()},$.toString=function(){return this.$d.toUTCString()},d}(),p=S.prototype;return v.prototype=p,[["$ms",t],["$s",e],["$m",n],["$H",r],["$W",i],["$M",u],["$y",o],["$D",f]].forEach(function(t){p[t[1]]=function(e){return this.$g(e,t[0],t[1])};}),v.extend=function(t,e){return t.$i||(t(e,S,v),t.$i=!0),v},v.locale=D,v.isDayjs=m,v.unix=function(t){return v(1e3*t)},v.en=M[y],v.Ls=M,v.p={},v});
-  });
 
   function isMergeableObject(val) {
     var nonNullObject = val && _typeof(val) === 'object';
@@ -9593,6 +9551,52 @@ var Timeline = (function (d3) {
       return deepmerge(prev, next, optionsArgument);
     });
   };
+
+  var Columns = /*#__PURE__*/function () {
+    function Columns(tasks, options) {
+      var _this = this;
+
+      _classCallCheck(this, Columns);
+
+      _defineProperty(this, "tasks", void 0);
+
+      _defineProperty(this, "options", void 0);
+
+      _defineProperty(this, "columns", void 0);
+
+      _defineProperty(this, "dom", void 0);
+
+      this.tasks = tasks;
+      this.options = options;
+      this.columns = options.columns.map(function (o) {
+        var colOptions = deepmerge({
+          taskMargin: options.taskMargin
+        }, o);
+        return new Column(_this.tasks, colOptions);
+      });
+    }
+
+    _createClass(Columns, [{
+      key: "renderDivs",
+      value: function renderDivs(header, holder) {
+        this.columns.forEach(function (column, idx) {
+          var layer = holder.append('div').style('flex', '0 1 auto').attr('class', 'column');
+          column.renderDivs(header, layer);
+        });
+      }
+    }, {
+      key: "getWidth",
+      value: function getWidth() {
+        return this.dom.node().getBBox().width;
+      }
+    }]);
+
+    return Columns;
+  }();
+
+  var dayjs_min = createCommonjsModule(function (module, exports) {
+  !function(t,e){module.exports=e();}(commonjsGlobal,function(){var t="millisecond",e="second",n="minute",r="hour",i="day",s="week",u="month",a="quarter",o="year",f="date",h=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d+)?$/,c=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,d={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},$=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},l={s:$,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+$(r,2,"0")+":"+$(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,u),s=n-i<0,a=e.clone().add(r+(s?-1:1),u);return +(-(r+(n-i)/(s?i-a:a-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(h){return {M:u,y:o,w:s,d:i,D:f,h:r,m:n,s:e,ms:t,Q:a}[h]||String(h||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},y="en",M={};M[y]=d;var m=function(t){return t instanceof S},D=function(t,e,n){var r;if(!t)return y;if("string"==typeof t)M[t]&&(r=t),e&&(M[t]=e,r=t);else {var i=t.name;M[i]=t,r=i;}return !n&&r&&(y=r),r||!n&&y},v=function(t,e){if(m(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new S(n)},g=l;g.l=D,g.i=m,g.w=function(t,e){return v(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var S=function(){function d(t){this.$L=D(t.locale,null,!0),this.parse(t);}var $=d.prototype;return $.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(g.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(h);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},$.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},$.$utils=function(){return g},$.isValid=function(){return !("Invalid Date"===this.$d.toString())},$.isSame=function(t,e){var n=v(t);return this.startOf(e)<=n&&n<=this.endOf(e)},$.isAfter=function(t,e){return v(t)<this.startOf(e)},$.isBefore=function(t,e){return this.endOf(e)<v(t)},$.$g=function(t,e,n){return g.u(t)?this[e]:this.set(n,t)},$.unix=function(){return Math.floor(this.valueOf()/1e3)},$.valueOf=function(){return this.$d.getTime()},$.startOf=function(t,a){var h=this,c=!!g.u(a)||a,d=g.p(t),$=function(t,e){var n=g.w(h.$u?Date.UTC(h.$y,e,t):new Date(h.$y,e,t),h);return c?n:n.endOf(i)},l=function(t,e){return g.w(h.toDate()[t].apply(h.toDate("s"),(c?[0,0,0,0]:[23,59,59,999]).slice(e)),h)},y=this.$W,M=this.$M,m=this.$D,D="set"+(this.$u?"UTC":"");switch(d){case o:return c?$(1,0):$(31,11);case u:return c?$(1,M):$(0,M+1);case s:var v=this.$locale().weekStart||0,S=(y<v?y+7:y)-v;return $(c?m-S:m+(6-S),M);case i:case f:return l(D+"Hours",0);case r:return l(D+"Minutes",1);case n:return l(D+"Seconds",2);case e:return l(D+"Milliseconds",3);default:return this.clone()}},$.endOf=function(t){return this.startOf(t,!1)},$.$set=function(s,a){var h,c=g.p(s),d="set"+(this.$u?"UTC":""),$=(h={},h[i]=d+"Date",h[f]=d+"Date",h[u]=d+"Month",h[o]=d+"FullYear",h[r]=d+"Hours",h[n]=d+"Minutes",h[e]=d+"Seconds",h[t]=d+"Milliseconds",h)[c],l=c===i?this.$D+(a-this.$W):a;if(c===u||c===o){var y=this.clone().set(f,1);y.$d[$](l),y.init(),this.$d=y.set(f,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},$.set=function(t,e){return this.clone().$set(t,e)},$.get=function(t){return this[g.p(t)]()},$.add=function(t,a){var f,h=this;t=Number(t);var c=g.p(a),d=function(e){var n=v(h);return g.w(n.date(n.date()+Math.round(e*t)),h)};if(c===u)return this.set(u,this.$M+t);if(c===o)return this.set(o,this.$y+t);if(c===i)return d(1);if(c===s)return d(7);var $=(f={},f[n]=6e4,f[r]=36e5,f[e]=1e3,f)[c]||1,l=this.$d.getTime()+t*$;return g.w(l,this)},$.subtract=function(t,e){return this.add(-1*t,e)},$.format=function(t){var e=this;if(!this.isValid())return "Invalid Date";var n=t||"YYYY-MM-DDTHH:mm:ssZ",r=g.z(this),i=this.$locale(),s=this.$H,u=this.$m,a=this.$M,o=i.weekdays,f=i.months,h=function(t,r,i,s){return t&&(t[r]||t(e,n))||i[r].substr(0,s)},d=function(t){return g.s(s%12||12,t,"0")},$=i.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:g.s(a+1,2,"0"),MMM:h(i.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:g.s(this.$D,2,"0"),d:String(this.$W),dd:h(i.weekdaysMin,this.$W,o,2),ddd:h(i.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:g.s(s,2,"0"),h:d(1),hh:d(2),a:$(s,u,!0),A:$(s,u,!1),m:String(u),mm:g.s(u,2,"0"),s:String(this.$s),ss:g.s(this.$s,2,"0"),SSS:g.s(this.$ms,3,"0"),Z:r};return n.replace(c,function(t,e){return e||l[t]||r.replace(":","")})},$.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},$.diff=function(t,f,h){var c,d=g.p(f),$=v(t),l=6e4*($.utcOffset()-this.utcOffset()),y=this-$,M=g.m(this,$);return M=(c={},c[o]=M/12,c[u]=M,c[a]=M/3,c[s]=(y-l)/6048e5,c[i]=(y-l)/864e5,c[r]=y/36e5,c[n]=y/6e4,c[e]=y/1e3,c)[d]||y,h?M:g.a(M)},$.daysInMonth=function(){return this.endOf(u).$D},$.$locale=function(){return M[this.$L]},$.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=D(t,e,!0);return r&&(n.$L=r),n},$.clone=function(){return g.w(this.$d,this)},$.toDate=function(){return new Date(this.valueOf())},$.toJSON=function(){return this.isValid()?this.toISOString():null},$.toISOString=function(){return this.$d.toISOString()},$.toString=function(){return this.$d.toUTCString()},d}(),p=S.prototype;return v.prototype=p,[["$ms",t],["$s",e],["$m",n],["$H",r],["$W",i],["$M",u],["$y",o],["$D",f]].forEach(function(t){p[t[1]]=function(e){return this.$g(e,t[0],t[1])};}),v.extend=function(t,e){return t.$i||(t(e,S,v),t.$i=!0),v},v.locale=D,v.isDayjs=m,v.unix=function(t){return v(1e3*t)},v.en=M[y],v.Ls=M,v.p={},v});
+  });
 
   var Plan = function Plan(options) {
     _classCallCheck(this, Plan);
@@ -9795,8 +9799,6 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "columns", void 0);
 
-      _defineProperty(this, "id", void 0);
-
       _defineProperty(this, "left", void 0);
 
       _defineProperty(this, "right", void 0);
@@ -9806,8 +9808,6 @@ var Timeline = (function (d3) {
       _defineProperty(this, "headerSvg", void 0);
 
       _defineProperty(this, "bodyHolder", void 0);
-
-      _defineProperty(this, "bodySvg", void 0);
 
       _defineProperty(this, "columnsBody", void 0);
 
@@ -9819,9 +9819,9 @@ var Timeline = (function (d3) {
         return new Task(t, _this.options);
       });
       this.columns = new Columns(this.tasks, this.options);
-      this.parent = d3.select(document.body.querySelector(selector)).append('div').style('display', 'flex').style('flex-direction', 'row').style('align-items', 'stretch').style('width', '100%').style('height', '100%').style('overflow', 'hidden');
-      this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden').style('padding-bottom', 18); // for the scrollbar
-
+      var owner = d3.select(document.body.querySelector(selector));
+      this.parent = owner.append('div').style('display', 'flex').style('flex-direction', 'row').style('align-items', 'stretch').style('width', '100%').style('height', '100%').style('overflow', 'hidden');
+      this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
       this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
       this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
       this.right = this.parent.append('div').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
@@ -9906,8 +9906,10 @@ var Timeline = (function (d3) {
           case VIEW_MODE.DAY:
             return 30;
 
-          case VIEW_MODE.MONTH:
           case VIEW_MODE.WEEK:
+            return 80;
+
+          case VIEW_MODE.MONTH:
             return 100;
 
           case VIEW_MODE.YEAR:
@@ -9930,7 +9932,7 @@ var Timeline = (function (d3) {
           return a + b;
         });
         return {
-          width: width,
+          width: this.options.viewMode == VIEW_MODE.FILL ? 1 : width,
           height: Math.max(height, bounds.height)
         };
       }
@@ -9987,17 +9989,19 @@ var Timeline = (function (d3) {
       value: function renderDivs() {
         var _this2 = this;
 
+        this.columns.renderDivs(this.columnsHeader, this.columnsBody);
         this.computeBoundingDates();
         var bounds = this.bodyHolder.node().getBoundingClientRect();
         var viewport = bounds.width;
         var size = this.computeSize(viewport);
+        console.log(this.minDate);
         this.y = d3.scaleBand().range([size.height, 0]).domain(this.tasks.map(function (c, i) {
           return i + '';
         })).padding(0.1);
         var referenceAxis = this.getAxis();
         var endDate = this.maxDate;
 
-        if (size.width < viewport) {
+        if (size.width < viewport && this.options.viewMode != VIEW_MODE.FILL) {
           var date = this.maxDate;
           var w = size.width;
           var unit = this.getDateType();
@@ -10034,8 +10038,14 @@ var Timeline = (function (d3) {
             break;
         }
 
+        console.log(size.width, viewport);
         var fullWidth = Math.max(size.width, viewport);
-        this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]).nice();
+        this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]);
+
+        if (this.options.viewMode == VIEW_MODE.FILL) {
+          this.x = this.x.nice();
+        }
+
         var xAxis = d3.axisTop(this.x);
 
         switch (this.options.viewMode || VIEW_MODE.WEEK) {
@@ -10063,7 +10073,7 @@ var Timeline = (function (d3) {
         var xAxisSvg = this.headerSvg.append('g').attr('transform', 'translate(-1, 28)').attr('class', 'x axis').call(xAxis);
         xAxisSvg.select('.tick:first-of-type').remove();
         this.headerSvg.attr('width', fullWidth);
-        this.groups = this.bodyHolder.selectAll('.group').data(this.tasks).enter().append('div').classed('group', true).style('width', fullWidth);
+        this.groups = this.bodyHolder.selectAll('.group').data(this.tasks).enter().append('div').classed('group', true).style('width', fullWidth).style('margin-top', this.options.taskMargin);
         var offset = {
           x: fullWidth,
           y: 0
@@ -10072,8 +10082,8 @@ var Timeline = (function (d3) {
           var group = d3.select(arr[idx]);
           task.renderDivs(_this2.x, _this2.y, group, offset);
         });
-        this.columns.renderDivs(this.columnsHeader, this.columnsBody);
-        this.bodyHolder.node().scrollHeight += 30;
+        this.bodyHolder.append('div').attr('class', 'group').style('height', '20px').text(' ');
+        this.columnsBody.selectAll('.column').append('div').style('height', '40px').text(' ');
         this.columnsBody.node().scrollHeight = this.bodyHolder.node().scrollHeight;
       }
     }]);
@@ -10090,7 +10100,8 @@ var Timeline = (function (d3) {
 
     this.options = deepmerge({
       columns: [],
-      padding: {}
+      padding: {},
+      taskMargin: 5
     }, options);
     this.view = new View(selector, taskOptions, this.options); // .call(d3.zoom().on("zoom", function(e) {
     // console.log(e)

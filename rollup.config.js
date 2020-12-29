@@ -1,5 +1,6 @@
 import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
+import css from "rollup-plugin-import-css";
 import livereload from 'rollup-plugin-livereload'
 import pkg from './package.json'
 import resolve from '@rollup/plugin-node-resolve'
@@ -18,6 +19,8 @@ export default {
   external: ['d3'],
 
   plugins: [
+    css(),
+
     sass({
       output: pkg.css
     }),

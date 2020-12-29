@@ -26,6 +26,7 @@ export interface ColumnOptions {
   field: string
   padding?: number
   defaults?: obj
+  taskMargin?: number
 }
 
 export interface Sides {
@@ -38,7 +39,8 @@ export interface Sides {
 export interface TimelineOptions {
   columns: Array<ColumnOptions>
   planDefaults?: PlanOptions
-  viewMode ?: VIEW_MODE
+  viewMode ?: VIEW_MODE,
+  taskMargin ?: number
 }
 
 export interface Rect {

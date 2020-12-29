@@ -26,16 +26,21 @@ export default class Column {
         .style('margin-bottom', '1px')
 
     this.tasks.forEach((task: Task, idx: number) => {
+      const layer = parent.append('div')
+        .style('margin-top', this.options.taskMargin)
+        .attr('class', 'column-task')
+
       const labels = task.labels[this.options.field]
       labels.forEach((l, idx2) => {
         const height = task.heights[idx2]
         const style = l.backgroundStyle || {}
 
-        const div = parent.append('div')
+        const div = layer.append('div')
           .style('height', height)
           .style('padding', '0 4px 0 4px')
           .style('display', 'flex')
           .style('align-items', 'center')
+          .attr('class', 'column-plan')
 
         if (l.label) {
           const span = div.text(l.label)

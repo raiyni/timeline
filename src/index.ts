@@ -14,7 +14,8 @@ export default class Timeline {
   constructor(selector: string, taskOptions: TaskOptions[], options: TimelineOptions ) {
     this.options = deepmerge({
       columns: [],
-      padding: {}
+      padding: {},
+      taskMargin: 5
     }, options)
 
     this.view = new View(selector, taskOptions, this.options)

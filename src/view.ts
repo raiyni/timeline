@@ -7,7 +7,6 @@ import Task from './task'
 import { VIEW_MODE as VM } from './types'
 import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
-import utc from 'dayjs/plugin/utc'
 
 export default class View {
   private x: any
@@ -24,8 +23,6 @@ export default class View {
 
   private columns: Columns
 
-  private id: number
-
   private left: any
   private right: any
 
@@ -33,7 +30,6 @@ export default class View {
   private headerSvg: any
 
   private bodyHolder: any
-  private bodySvg: any
 
   private columnsBody: any
   private columnsHeader: any
@@ -45,8 +41,9 @@ export default class View {
     this.tasks = taskOptions.map((t) => new Task(t, this.options))
     this.columns = new Columns(this.tasks, this.options)
 
-    this.parent = d3
-      .select(document.body.querySelector(selector))
+    const owner = d3.select(document.body.querySelector(selector))
+
+    this.parent = owner
       .append('div')
       .style('display', 'flex')
       .style('flex-direction', 'row')
@@ -60,7 +57,6 @@ export default class View {
       .style('display', 'flex')
       .style('flex-direction', 'column')
       .style('overflow', 'hidden')
-      .style('padding-bottom', 18) // for the scrollbar
 
     this.columnsHeader = this.left.append('div')
       .style('min-height', 30)
@@ -71,6 +67,7 @@ export default class View {
       .style('flex-direction', 'row')
       .style('display', 'flex')
       .style('overflow', 'hidden')
+
 
     this.right = this.parent
       .append('div')
@@ -149,9 +146,10 @@ export default class View {
     switch (this.options.viewMode || VM.WEEK) {
       case VM.DAY:
         return 30
+        case VM.WEEK:
+          return 80
       case VM.MONTH:
-      case VM.WEEK:
-        return 100
+          return 100
       case VM.YEAR:
         return 365
       default:
@@ -170,8 +168,9 @@ export default class View {
       .map((task) => [5].concat(task.heights))
       .flat(3)
       .reduce((a, b) => a + b)
+
     return {
-      width: width,
+      width: (this.options.viewMode == VM.FILL ? 1 : width),
       height: Math.max(height, bounds.height)
     }
   }
@@ -216,11 +215,15 @@ export default class View {
   }
 
   private renderDivs() {
+    this.columns.renderDivs(this.columnsHeader, this.columnsBody)
+
     this.computeBoundingDates()
 
     const bounds = this.bodyHolder.node().getBoundingClientRect()
     const viewport = bounds.width
     const size = this.computeSize(viewport)
+
+    console.log(this.minDate)
 
     this.y = d3
       .scaleBand()
@@ -231,7 +234,7 @@ export default class View {
     const referenceAxis = this.getAxis()
 
     let endDate = this.maxDate
-    if (size.width < viewport) {
+    if (size.width < viewport && this.options.viewMode != VM.FILL) {
       let date = this.maxDate
       let w = size.width
       const unit = this.getDateType()
@@ -262,8 +265,14 @@ export default class View {
         break
     }
 
+    console.log(size.width, viewport)
+
     const fullWidth = Math.max(size.width, viewport)
-    this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]).nice()
+    this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate])
+
+    if (this.options.viewMode == VM.FILL) {
+      this.x = this.x.nice()
+    }
 
     let xAxis = d3.axisTop(this.x)
     switch (this.options.viewMode || VM.WEEK) {
@@ -301,6 +310,7 @@ export default class View {
       .append('div')
       .classed('group', true)
       .style('width', fullWidth)
+      .style('margin-top', this.options.taskMargin)
 
     const offset: Offset = { x: fullWidth, y: 0 }
     this.groups.each((task: Task, idx: number, arr: SVGElement[]) => {
@@ -308,9 +318,17 @@ export default class View {
       task.renderDivs(this.x, this.y, group, offset)
     })
 
-    this.columns.renderDivs(this.columnsHeader, this.columnsBody)
+    this.bodyHolder.append('div')
+      .attr('class', 'group')
+      .style('height', '20px')
+      .text(' ')
 
-    this.bodyHolder.node().scrollHeight += 30
+    this.columnsBody.selectAll('.column')
+      .append('div')
+      .style('height', '40px')
+      .text(' ')
+
+
     this.columnsBody.node().scrollHeight = this.bodyHolder.node().scrollHeight
   }
 }
