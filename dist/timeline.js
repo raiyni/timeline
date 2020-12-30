@@ -9631,6 +9631,26 @@ var Timeline = (function (d3) {
     this.labelStyle = deepmerge({}, options.labelStyle || {});
   };
 
+  var Milestone = function Milestone(options) {
+    _classCallCheck(this, Milestone);
+
+    _defineProperty(this, "date", void 0);
+
+    _defineProperty(this, "href", void 0);
+
+    _defineProperty(this, "height", void 0);
+
+    _defineProperty(this, "width", void 0);
+
+    _defineProperty(this, "y", void 0);
+
+    this.date = dayjs_min(options.date);
+    this.href = options.href;
+    this.height = options.height || 15;
+    this.width = options.width || 15;
+    this.y = options.y;
+  };
+
   var Task = /*#__PURE__*/function () {
     function Task(options, timelineOptions) {
       var _this = this;
@@ -9639,11 +9659,15 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "rows", void 0);
 
+      _defineProperty(this, "milestones", void 0);
+
       _defineProperty(this, "heights", void 0);
 
       _defineProperty(this, "labels", void 0);
 
       _defineProperty(this, "options", void 0);
+
+      this.rows = [];
 
       if (options.plan) {
         this.rows = [[new Plan(options.plan)]];
@@ -9658,8 +9682,40 @@ var Timeline = (function (d3) {
             return new Plan(pl);
           });
         });
-      } else {
+      } else if (options.plans) {
         console.error('Plans object is not an array');
+      }
+
+      this.milestones = [];
+
+      if (options.milestones && Array.isArray(options.milestones)) {
+        // @ts-ignore
+        this.milestones = options.milestones.map(function (m) {
+          if (!Array.isArray(m)) {
+            return [new Milestone(m)];
+          }
+
+          return m.map(function (ml) {
+            return new Milestone(ml);
+          });
+        });
+      }
+
+      if (this.milestones.length > this.rows.length) {
+        var fill = Array.from({
+          length: this.milestones.length - this.rows.length
+        }, function () {
+          return [];
+        });
+        this.rows = this.rows.concat(fill);
+      } else if (this.rows.length > this.milestones.length) {
+        var _fill = Array.from({
+          length: this.rows.length - this.milestones.length
+        }, function () {
+          return [];
+        });
+
+        this.milestones = this.milestones.concat(_fill);
       }
 
       this.options = options;
@@ -9697,6 +9753,10 @@ var Timeline = (function (d3) {
 
             _this2.drawProgress(x, y, layer, plan);
           });
+          var mRow = _this2.milestones[idx];
+          mRow.forEach(function (milestone, idx2) {
+            _this2.drawMilestone(x, svg, milestone, idx);
+          });
         });
       }
     }, {
@@ -9710,6 +9770,16 @@ var Timeline = (function (d3) {
       value: function drawProgress(x, y, group, plan) {
         var rect = group.append('rect').attr('x', x(plan.start.toDate())).attr('y', 0).attr('height', plan.height).attr('width', (x(plan.end) - x(plan.start)) * clamp(plan.progress / 100));
         applyStyle(rect, plan.progressStyle);
+      }
+    }, {
+      key: "drawMilestone",
+      value: function drawMilestone(x, layer, milestone, idx) {
+        var height = this.heights[idx];
+        var y = milestone.y || (height - milestone.height) / 2;
+
+        if (milestone.href) {
+          layer.append('image').attr('href', milestone.href).attr('height', milestone.height).attr('width', milestone.width).attr('x', x(milestone.date)).attr('y', y);
+        }
       }
     }, {
       key: "prepareOptions",

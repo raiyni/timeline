@@ -3,13 +3,16 @@ import { applyStyle, clamp } from './util'
 
 import Plan from './plan'
 import deepmerge from './deepmerge'
+import Milestone from './milestone'
 
 export default class Task {
   rows: Plan[][]
+  milestones: Milestone[][]
   heights: number[]
   labels: { [key: string]: LabelOptions[] }
   options: TaskOptions & obj
   constructor(options: TaskOptions & obj, timelineOptions: TimelineOptions) {
+    this.rows = []
     if (options.plan) {
       this.rows = [[new Plan(options.plan)]]
     } else if (options.plans && Array.isArray(options.plans)) {
@@ -21,8 +24,28 @@ export default class Task {
 
         return p.map((pl) => new Plan(pl))
       })
-    } else {
+    } else if (options.plans) {
       console.error('Plans object is not an array')
+    }
+
+    this.milestones = []
+    if (options.milestones && Array.isArray(options.milestones)) {
+      // @ts-ignore
+      this.milestones = options.milestones.map(m => {
+        if (!Array.isArray(m)) {
+          return [new Milestone(m)]
+        }
+
+          return m.map(ml => new Milestone(ml))
+      })
+    }
+
+    if (this.milestones.length > this.rows.length) {
+      const fill = Array.from({length: this.milestones.length - this.rows.length}, () => [])
+      this.rows = this.rows.concat(fill)
+    } else if (this.rows.length > this.milestones.length) {
+      const fill = Array.from({length: this.rows.length - this.milestones.length}, () => [])
+      this.milestones = this.milestones.concat(fill)
     }
 
     this.options = options
@@ -59,6 +82,11 @@ export default class Task {
         this.drawBackground(x, y, layer, plan)
         this.drawProgress(x, y, layer, plan)
       })
+
+      const mRow = this.milestones[idx]
+      mRow.forEach((milestone: Milestone, idx2: number) => {
+        this.drawMilestone(x, svg, milestone, idx)
+      })
     })
   }
 
@@ -80,6 +108,19 @@ export default class Task {
       .attr('height', plan.height)
       .attr('width', (x(plan.end) - x(plan.start)) * clamp(plan.progress / 100, 0, 1))
     applyStyle(rect, plan.progressStyle)
+  }
+
+  private drawMilestone(x: any, layer: any, milestone: Milestone, idx: number) {
+    const height = this.heights[idx]
+    const y = milestone.y || (height - milestone.height) / 2
+    if (milestone.href) {
+      layer.append('image')
+        .attr('href', milestone.href)
+        .attr('height', milestone.height)
+        .attr('width', milestone.width)
+        .attr('x', x(milestone.date))
+        .attr('y', y)
+    }
   }
 
   private prepareOptions(columnOptions: ColumnOptions): LabelOptions[] {

@@ -328,7 +328,6 @@ export default class View {
       .style('height', '40px')
       .text(' ')
 
-
     this.columnsBody.node().scrollHeight = this.bodyHolder.node().scrollHeight
   }
 }

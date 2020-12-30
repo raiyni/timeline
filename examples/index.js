@@ -41,7 +41,7 @@ var tasks = [
     },
     milestones: [
       {
-        date: '2020-05-23T05:00:00.000Z',
+        date: '2022-05-23T05:00:00.000Z',
         href: 'https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png'
       }
     ]

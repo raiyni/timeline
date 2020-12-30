@@ -14,11 +14,19 @@ export interface PlanOptions {
   labelStyle?: Style
 }
 
+export interface MilestoneOptions {
+  date: string | dayjs.Dayjs
+  href?: string
+  width: number
+  height: number
+  y?: number
+  style?: Style
+}
+
 export interface TaskOptions {
   plan ?: PlanOptions
   plans : PlanOptions[] | PlanOptions[][]
-  marginTop?: number
-  marginBottom?: number
+  milestones ?: MilestoneOptions[] | MilestoneOptions[][]
 }
 
 export interface ColumnOptions {
