@@ -3,6 +3,7 @@ import 'core-js/stable'
 
 import { TaskOptions, TimelineOptions } from './types';
 
+import EventBus from './EventBus';
 import View from './view';
 import deepmerge from './deepmerge';
 
@@ -18,6 +19,7 @@ export default class Timeline {
       taskMargin: 5
     }, options)
 
+    this.options.eventbus = new EventBus()
     this.view = new View(selector, taskOptions, this.options)
       // .call(d3.zoom().on("zoom", function(e) {
         // console.log(e)

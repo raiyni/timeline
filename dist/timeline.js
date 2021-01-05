@@ -9411,6 +9411,61 @@ var Timeline = (function (d3) {
     }
   });
 
+  var Events;
+
+  (function (Events) {
+    Events["COLLAPSE"] = "collapse";
+    Events["TOGGLE"] = "toggle";
+  })(Events || (Events = {}));
+
+  var EventBus = /*#__PURE__*/function () {
+    function EventBus() {
+      _classCallCheck(this, EventBus);
+
+      _defineProperty(this, "listeners", void 0);
+
+      this.listeners = {};
+    }
+
+    _createClass(EventBus, [{
+      key: "on",
+      value: function on(event, callback) {
+        if (!this.listeners[event]) {
+          this.listeners[event] = [];
+        }
+
+        this.listeners[event].push(callback);
+      }
+    }, {
+      key: "un",
+      value: function un(event, callback) {
+        if (!this.listeners[event]) return;
+        this.listeners[event] = this.listeners[event].filter(function (item) {
+          return item !== callback;
+        });
+      }
+    }, {
+      key: "publish",
+      value: function publish(event, arg) {
+        if (!this.listeners[event]) return;
+        this.listeners[event].forEach(function (callback) {
+          return callback(arg);
+        });
+      }
+    }, {
+      key: "clear",
+      value: function clear() {
+        var _this = this;
+
+        Object.keys(this.listeners).forEach(function (k) {
+          return delete _this.listeners[k];
+        });
+      }
+    }]);
+
+    return EventBus;
+  }();
+
   var applyStyle = function applyStyle(el, style) {
     var attr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     Object.keys(style).forEach(function (k) {
@@ -9424,6 +9479,11 @@ var Timeline = (function (d3) {
   var IS_IE = function () {
     return document.documentMode || /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent);
   }();
+  var uid$1 = function uid() {
+    var data = new Uint32Array(1);
+    crypto.getRandomValues(data);
+    return data[0] + '';
+  };
 
   var Column = /*#__PURE__*/function () {
     function Column(tasks, options) {
@@ -9433,12 +9493,6 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "options", void 0);
 
-      _defineProperty(this, "dom", void 0);
-
-      _defineProperty(this, "headerLayer", void 0);
-
-      _defineProperty(this, "parent", void 0);
-
       this.tasks = tasks;
       this.options = options;
       this.options.padding = this.options.padding || 5;
@@ -9446,12 +9500,12 @@ var Timeline = (function (d3) {
 
     _createClass(Column, [{
       key: "renderDivs",
-      value: function renderDivs(header, parent) {
+      value: function renderDivs(header, parent, columnIdx) {
         var _this = this;
 
         var titleDiv = header.append('div').style('display', 'flex').style('align-items', 'flex-end').style('justify-content', 'center').text(this.options.text).style('box-shadow', 'inset 0 -1px 0 0 #000').style('margin-bottom', '1px');
         this.tasks.forEach(function (task, idx) {
-          var layer = parent.append('div').style('margin-top', _this.options.taskMargin).attr('class', 'column-task');
+          var layer = parent.append('div').style('margin-top', _this.options.taskMargin).attr('class', 'column-task').attr('data-id', task.id);
           var labels = task.labels[_this.options.field];
           labels.forEach(function (l, idx2) {
             var height = task.heights[idx2];
@@ -9459,7 +9513,7 @@ var Timeline = (function (d3) {
             var div = layer.append('div').style('height', height).style('padding', '0 4px 0 4px').style('display', 'flex').style('align-items', 'center').attr('class', 'column-plan');
 
             if (l.label) {
-              var span = div.text(l.label);
+              var span = div.append('span').text(l.label);
               applyStyle(span, l.labelStyle || {}, false);
             }
 
@@ -9468,12 +9522,27 @@ var Timeline = (function (d3) {
             }
             applyStyle(div, style, false);
           });
+
+          if (task.options.collapsible && columnIdx == 0) {
+            var button = layer.selectAll("div:first-child").insert('a', ':first-child').attr('class', _this.buttonCls(task.options.collapsed));
+            button.node().addEventListener('click', function (e) {
+              var cls = task.toggle();
+              button.attr('class', _this.buttonCls(cls));
+            });
+            layer.selectAll('div:first-child span').style('margin-left', 5);
+            console.log(button);
+          }
         });
         var titleWidth = titleDiv.node().getBoundingClientRect().width;
         var parentWidth = parent.node().getBoundingClientRect().width;
         var maxWidth = Math.max(titleWidth, parentWidth);
         parent.style('width', maxWidth);
         titleDiv.style('width', maxWidth);
+      }
+    }, {
+      key: "buttonCls",
+      value: function buttonCls(collapsed) {
+        return collapsed ? 'task-expand' : 'task-collapse';
       }
     }]);
 
@@ -9581,7 +9650,7 @@ var Timeline = (function (d3) {
       value: function renderDivs(header, holder) {
         this.columns.forEach(function (column, idx) {
           var layer = holder.append('div').style('flex', '0 1 auto').attr('class', 'column');
-          column.renderDivs(header, layer);
+          column.renderDivs(header, layer, idx);
         });
       }
     }, {
@@ -9667,7 +9736,13 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "options", void 0);
 
+      _defineProperty(this, "timelineOptions", void 0);
+
+      _defineProperty(this, "id", void 0);
+
+      this.id = uid$1();
       this.rows = [];
+      this.timelineOptions = timelineOptions;
 
       if (options.plan) {
         this.rows = [[new Plan(options.plan)]];
@@ -9730,6 +9805,8 @@ var Timeline = (function (d3) {
     _createClass(Task, [{
       key: "computeRowHeights",
       value: function computeRowHeights() {
+        if (this.options.collapsed) ;
+
         this.heights = this.rows.map(function (row) {
           return row.map(function (plan) {
             return plan.height;
@@ -9743,8 +9820,9 @@ var Timeline = (function (d3) {
       value: function renderDivs(x, y, group, offset) {
         var _this2 = this;
 
+        group.attr('data-id', this.id);
         this.rows.forEach(function (row, idx) {
-          var div = group.append('div').style('height', _this2.heights[idx]).style('width', offset.x);
+          var div = group.append('div').style('height', _this2.heights[idx]).style('width', offset.x).attr('class', 'task-row');
           var svg = div.append('svg').attr('height', _this2.heights[idx]).attr('width', offset.x);
           row.forEach(function (plan, idx2) {
             var layer = svg.append('g').attr('class', 'plan');
@@ -9826,6 +9904,41 @@ var Timeline = (function (d3) {
 
         return options;
       }
+    }, {
+      key: "getTaskSubColumns",
+      value: function getTaskSubColumns() {
+        return this.timelineOptions.wrapper.selectAll("div[data-id=\"".concat(this.id, "\"]")).selectAll('.column-plan:not(:first-child)');
+      }
+    }, {
+      key: "getTaskSubRows",
+      value: function getTaskSubRows() {
+        return this.timelineOptions.wrapper.selectAll("div[data-id=\"".concat(this.id, "\"]")).selectAll('.task-row:not(:first-child)');
+      }
+    }, {
+      key: "collapse",
+      value: function collapse() {
+        this.getTaskSubColumns().style('display', 'none');
+        this.getTaskSubRows().style('display', 'none');
+      }
+    }, {
+      key: "expand",
+      value: function expand() {
+        this.getTaskSubColumns().style('display', 'flex');
+        this.getTaskSubRows().style('display', 'flex');
+      }
+    }, {
+      key: "toggle",
+      value: function toggle() {
+        if (this.options.collapsed) {
+          this.expand();
+          this.options.collapsed = false;
+        } else {
+          this.collapse();
+          this.options.collapsed = true;
+        }
+
+        return !!this.options.collapsed;
+      }
     }]);
 
     return Task;
@@ -9891,6 +10004,7 @@ var Timeline = (function (d3) {
       this.columns = new Columns(this.tasks, this.options);
       var owner = d3.select(document.body.querySelector(selector));
       this.parent = owner.append('div').style('display', 'flex').style('flex-direction', 'row').style('align-items', 'stretch').style('width', '100%').style('height', '100%').style('overflow', 'hidden');
+      options.wrapper = this.parent;
       this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
       this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
       this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
@@ -10069,20 +10183,16 @@ var Timeline = (function (d3) {
           return i + '';
         })).padding(0.1);
         var referenceAxis = this.getAxis();
-        var endDate = this.maxDate;
-
-        if (size.width < viewport && this.options.viewMode != VIEW_MODE.FILL) {
-          var date = this.maxDate;
-          var w = size.width;
-          var unit = this.getDateType();
-
-          while (w <= viewport) {
-            date = date.add(1, unit);
-            w += referenceAxis(date.toDate());
-          }
-
-          endDate = date;
-        }
+        var endDate = this.maxDate; // if (size.width < viewport && this.options.viewMode != VM.FILL) {
+        //   let date = this.maxDate
+        //   let w = size.width
+        //   const unit = this.getDateType()
+        //   while (w <= viewport) {
+        //     date = date.add(1, unit)
+        //     w += referenceAxis(date.toDate())
+        //   }
+        //   endDate = date
+        // }
 
         var startDate = this.minDate;
 
@@ -10173,6 +10283,7 @@ var Timeline = (function (d3) {
       padding: {},
       taskMargin: 5
     }, options);
+    this.options.eventbus = new EventBus();
     this.view = new View(selector, taskOptions, this.options); // .call(d3.zoom().on("zoom", function(e) {
     // console.log(e)
     // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')

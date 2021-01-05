@@ -26,7 +26,7 @@ export default class Columns {
         .style('flex', '0 1 auto')
         .attr('class', 'column')
 
-      column.renderDivs(header, layer)
+      column.renderDivs(header, layer, idx)
     })
   }
 

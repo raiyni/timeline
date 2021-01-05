@@ -1,9 +1,10 @@
 import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj } from './types'
-import { applyStyle, clamp } from './util'
+import { applyStyle, clamp, uid } from './util'
 
 import Plan from './plan'
 import deepmerge from './deepmerge'
 import Milestone from './milestone'
+import { Events } from './EventBus'
 
 export default class Task {
   rows: Plan[][]
@@ -11,8 +12,12 @@ export default class Task {
   heights: number[]
   labels: { [key: string]: LabelOptions[] }
   options: TaskOptions & obj
+  timelineOptions: TimelineOptions
+  id: string
   constructor(options: TaskOptions & obj, timelineOptions: TimelineOptions) {
+    this.id = uid()
     this.rows = []
+    this.timelineOptions = timelineOptions
     if (options.plan) {
       this.rows = [[new Plan(options.plan)]]
     } else if (options.plans && Array.isArray(options.plans)) {
@@ -61,17 +66,24 @@ export default class Task {
   }
 
   computeRowHeights(): void {
+    if (this.options.collapsed) {
+
+    } else {
+
+    }
     this.heights = this.rows
       .map((row) => row.map((plan) => plan.height))
       .map((row) => Math.max.apply(null, row))
   }
 
   renderDivs(x: any, y: any, group: any, offset: Offset) {
+    group.attr('data-id', this.id)
     this.rows.forEach((row: Plan[], idx: number) => {
       const div = group
           .append('div')
           .style('height', this.heights[idx])
           .style('width', offset.x)
+          .attr('class', 'task-row')
 
       const svg = div.append('svg')
                         .attr('height', this.heights[idx])
@@ -164,5 +176,45 @@ export default class Task {
       options = options.slice(0, this.rows.length)
     }
     return options
+  }
+
+  getTaskSubColumns(): any {
+    return this.timelineOptions.wrapper
+      .selectAll(`div[data-id="${this.id}"]`)
+      .selectAll('.column-plan:not(:first-child)')
+  }
+
+  getTaskSubRows(): any {
+    return this.timelineOptions.wrapper
+      .selectAll(`div[data-id="${this.id}"]`)
+      .selectAll('.task-row:not(:first-child)')
+  }
+
+  collapse() {
+    this.getTaskSubColumns()
+      .style('display', 'none')
+
+    this.getTaskSubRows()
+      .style('display', 'none')
+  }
+
+  expand() {
+    this.getTaskSubColumns()
+      .style('display', 'flex')
+
+    this.getTaskSubRows()
+      .style('display', 'flex')
+  }
+
+  toggle(): boolean {
+    if (this.options.collapsed) {
+      this.expand()
+      this.options.collapsed = false
+    } else {
+      this.collapse()
+      this.options.collapsed = true
+    }
+
+    return !!this.options.collapsed
   }
 }

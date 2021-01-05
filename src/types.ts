@@ -1,3 +1,4 @@
+import EventBus from './EventBus'
 import dayjs from 'dayjs'
 
 export type Style = {[key: string]: any;}
@@ -24,6 +25,8 @@ export interface MilestoneOptions {
 }
 
 export interface TaskOptions {
+  collapsible?: boolean
+  collapsed?: boolean
   plan ?: PlanOptions
   plans : PlanOptions[] | PlanOptions[][]
   milestones ?: MilestoneOptions[] | MilestoneOptions[][]
@@ -49,6 +52,8 @@ export interface TimelineOptions {
   planDefaults?: PlanOptions
   viewMode ?: VIEW_MODE,
   taskMargin ?: number
+  eventbus ?: EventBus
+  wrapper?: any
 }
 
 export interface Rect {

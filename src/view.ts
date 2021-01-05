@@ -52,6 +52,8 @@ export default class View {
       .style('height', '100%')
       .style('overflow', 'hidden')
 
+    options.wrapper = this.parent
+
     this.left = this.parent
       .append('div')
       .style('display', 'flex')
@@ -234,17 +236,17 @@ export default class View {
     const referenceAxis = this.getAxis()
 
     let endDate = this.maxDate
-    if (size.width < viewport && this.options.viewMode != VM.FILL) {
-      let date = this.maxDate
-      let w = size.width
-      const unit = this.getDateType()
-      while (w <= viewport) {
-        date = date.add(1, unit)
-        w += referenceAxis(date.toDate())
-      }
+    // if (size.width < viewport && this.options.viewMode != VM.FILL) {
+    //   let date = this.maxDate
+    //   let w = size.width
+    //   const unit = this.getDateType()
+    //   while (w <= viewport) {
+    //     date = date.add(1, unit)
+    //     w += referenceAxis(date.toDate())
+    //   }
 
-      endDate = date
-    }
+    //   endDate = date
+    // }
 
     let startDate = this.minDate
     switch (this.options.viewMode || VM.WEEK) {

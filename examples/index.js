@@ -1,5 +1,6 @@
 var tasks = [
   {
+    collapsible: true,
     plans: [
       [{
         start: '2020-04-03T05:00:00.000Z',
@@ -11,7 +12,7 @@ var tasks = [
       }],
       [{
         start: '2020-03-22T05:00:00.000Z',
-        end: '2023-06-23T05:00:00.000Z',
+        end: '2020-06-23T05:00:00.000Z',
         progress: 22,
         progressStyle: {
           fill: '#8fdaff',

@@ -13,3 +13,10 @@ export const clamp = (num: number, min: number, max: number) => {
 
 // @ts-ignore
 export const IS_IE = (() => document.documentMode || /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent))()
+
+export const uid = () => {
+  const data = new Uint32Array(1)
+  crypto.getRandomValues(data)
+
+  return data[0] + '';
+}

@@ -1,22 +1,17 @@
-import { ColumnOptions, Offset } from "./types";
-import { IS_IE, applyStyle } from "./util";
-
+import { ColumnOptions } from "./types";
 import Task from "./task";
-import { text } from "d3";
+import { applyStyle } from "./util";
 
 export default class Column {
   private tasks: Task[]
   private options: ColumnOptions
-  dom: any
-  headerLayer: any
-  parent: any
   constructor(tasks: Task[], options: ColumnOptions) {
     this.tasks = tasks
     this.options = options
     this.options.padding = this.options.padding || 5
   }
 
-  renderDivs(header: any, parent: any) {
+  renderDivs(header: any, parent: any, columnIdx: number) {
     const titleDiv = header.append('div')
         .style('display', 'flex')
         .style('align-items', 'flex-end')
@@ -29,6 +24,7 @@ export default class Column {
       const layer = parent.append('div')
         .style('margin-top', this.options.taskMargin)
         .attr('class', 'column-task')
+        .attr('data-id', task.id)
 
       const labels = task.labels[this.options.field]
       labels.forEach((l, idx2) => {
@@ -43,7 +39,7 @@ export default class Column {
           .attr('class', 'column-plan')
 
         if (l.label) {
-          const span = div.text(l.label)
+          const span = div.append('span').text(l.label)
 
           applyStyle(span, l.labelStyle || {}, false)
         }
@@ -54,6 +50,23 @@ export default class Column {
 
         applyStyle(div, style, false)
       })
+
+      if (task.options.collapsible && columnIdx == 0) {
+        const button = layer
+          .selectAll("div:first-child")
+          .insert('a', ':first-child')
+          .attr('class', this.buttonCls(task.options.collapsed))
+
+        button.node().addEventListener('click', (e: MouseEvent) => {
+          const cls = task.toggle()
+          button.attr('class', this.buttonCls(cls))
+        })
+
+        layer.selectAll('div:first-child span')
+          .style('margin-left', 5)
+
+        console.log(button)
+      }
     })
 
     const titleWidth = titleDiv.node().getBoundingClientRect().width
@@ -62,5 +75,9 @@ export default class Column {
     const maxWidth = Math.max(titleWidth, parentWidth)
     parent.style('width', maxWidth)
     titleDiv.style('width', maxWidth)
+  }
+
+  buttonCls(collapsed: boolean) : string {
+    return collapsed ? 'task-expand' : 'task-collapse'
   }
 }
