@@ -9986,6 +9986,8 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "right", void 0);
 
+      _defineProperty(this, "rightParent", void 0);
+
       _defineProperty(this, "bodyHeader", void 0);
 
       _defineProperty(this, "headerSvg", void 0);
@@ -9995,6 +9997,8 @@ var Timeline = (function (d3) {
       _defineProperty(this, "columnsBody", void 0);
 
       _defineProperty(this, "columnsHeader", void 0);
+
+      _defineProperty(this, "highlights", void 0);
 
       dayjs_min.extend(minMax);
       this.options = options;
@@ -10008,10 +10012,12 @@ var Timeline = (function (d3) {
       this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
       this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
       this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
-      this.right = this.parent.append('div').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
+      this.rightParent = this.parent.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow-x', 'auto').style('z-index', 3);
+      this.right = this.rightParent.append('div').style('flex', 1).style('position', 'relative').style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow-y', 'auto').style('overflow-x', 'hidden');
       this.bodyHeader = this.right.append('div').style('overflow', 'hidden');
       this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
-      this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto');
+      this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto').style('position', 'relative');
+      this.highlights = this.bodyHolder.append('svg').style('position', 'absolute').style('left', 0).style('top', 0).style('width', '100%').style('height', 'calc(100% - 18px)').style('pointer-events', 'none');
       this.renderDivs();
       this.bodyHolder.node().addEventListener('scroll', function (event) {
         _this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
@@ -10023,6 +10029,7 @@ var Timeline = (function (d3) {
       value: function updateScroll(left, top) {
         this.columnsBody.node().scrollTop = top;
         this.bodyHeader.node().scrollLeft = left;
+        this.highlights.style('left', -left);
       }
     }, {
       key: "computeBoundingDates",
@@ -10174,11 +10181,11 @@ var Timeline = (function (d3) {
         var _this2 = this;
 
         this.columns.renderDivs(this.columnsHeader, this.columnsBody);
+        this.left.style('min-width', this.left.node().getBoundingClientRect().width);
         this.computeBoundingDates();
         var bounds = this.bodyHolder.node().getBoundingClientRect();
         var viewport = bounds.width;
         var size = this.computeSize(viewport);
-        console.log(this.minDate);
         this.y = d3.scaleBand().range([size.height, 0]).domain(this.tasks.map(function (c, i) {
           return i + '';
         })).padding(0.1);
@@ -10206,7 +10213,7 @@ var Timeline = (function (d3) {
             break;
 
           case VIEW_MODE.YEAR:
-            startDate = startDate.add(-1, 'year');
+            startDate = startDate.add(-1, 'month');
             break;
 
           case VIEW_MODE.FILL:
@@ -10264,7 +10271,21 @@ var Timeline = (function (d3) {
         });
         this.bodyHolder.append('div').attr('class', 'group').style('height', '20px').text(' ');
         this.columnsBody.selectAll('.column').append('div').style('height', '40px').text(' ');
-        this.columnsBody.node().scrollHeight = this.bodyHolder.node().scrollHeight;
+
+        if (this.options.highlights) {
+          this.options.highlights.forEach(function (h) {
+            h.start = dayjs_min(h.start);
+            h.end = dayjs_min(h.end);
+          });
+          this.highlights.selectAll('.highlight').data(this.options.highlights).enter().append('rect').classed('highlight', true).attr('x', function (obj) {
+            return _this2.x(obj.start.toDate());
+          }).attr('y', 0).attr('height', '100%').attr('width', function (obj) {
+            return _this2.x(obj.end.toDate()) - _this2.x(obj.start.toDate());
+          }).style('fill', function (obj) {
+            return obj.fill;
+          });
+        } // console.log(this.node().scrollWidth)
+
       }
     }]);
 

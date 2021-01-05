@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 
-import { Offset, PlanOptions, Rect, Sides, TaskOptions, TimelineOptions, VIEW_MODE } from './types'
+import { Highlight, Offset, PlanOptions, Rect, Sides, TaskOptions, TimelineOptions, VIEW_MODE } from './types'
 
 import Columns from './columns'
 import Task from './task'
@@ -25,6 +25,7 @@ export default class View {
 
   private left: any
   private right: any
+  private rightParent: any
 
   private bodyHeader: any
   private headerSvg: any
@@ -33,6 +34,8 @@ export default class View {
 
   private columnsBody: any
   private columnsHeader: any
+
+  private highlights: any
 
   constructor(selector: string, taskOptions: TaskOptions[], options: TimelineOptions) {
     dayjs.extend(minMax)
@@ -70,14 +73,25 @@ export default class View {
       .style('display', 'flex')
       .style('overflow', 'hidden')
 
-
-    this.right = this.parent
+    this.rightParent = this.parent
       .append('div')
+      .style('position', 'relative')
       .style('flex', 1)
       .style('display', 'flex')
       .style('flex-direction', 'column')
       .style('align-items', 'stretch')
-      .style('overflow', 'hidden')
+      .style('overflow-x', 'auto')
+      .style('z-index', 3)
+
+    this.right = this.rightParent
+      .append('div')
+      .style('flex', 1)
+      .style('position', 'relative')
+      .style('display', 'flex')
+      .style('flex-direction', 'column')
+      .style('align-items', 'stretch')
+      .style('overflow-y', 'auto')
+      .style('overflow-x', 'hidden')
 
     this.bodyHeader = this.right.append('div')
       .style('overflow', 'hidden')
@@ -88,6 +102,16 @@ export default class View {
     this.bodyHolder = this.right.append('div')
       .style('flex', 1)
       .style('overflow-y', 'auto')
+      .style('position', 'relative')
+
+    this.highlights = this.bodyHolder
+      .append('svg')
+      .style('position', 'absolute')
+      .style('left', 0)
+      .style('top', 0)
+      .style('width', '100%')
+      .style('height', 'calc(100% - 18px)')
+      .style('pointer-events', 'none')
 
     this.renderDivs()
 
@@ -99,6 +123,7 @@ export default class View {
   private updateScroll(left: number, top: number): void {
     this.columnsBody.node().scrollTop = top;
     this.bodyHeader.node().scrollLeft = left;
+    this.highlights.style('left', -left)
   }
 
   private computeBoundingDates(): void {
@@ -218,14 +243,13 @@ export default class View {
 
   private renderDivs() {
     this.columns.renderDivs(this.columnsHeader, this.columnsBody)
+    this.left.style('min-width', this.left.node().getBoundingClientRect().width)
 
     this.computeBoundingDates()
 
     const bounds = this.bodyHolder.node().getBoundingClientRect()
     const viewport = bounds.width
     const size = this.computeSize(viewport)
-
-    console.log(this.minDate)
 
     this.y = d3
       .scaleBand()
@@ -257,7 +281,7 @@ export default class View {
         startDate = startDate.add(-1, 'month')
         break
       case VM.YEAR:
-        startDate = startDate.add(-1, 'year')
+        startDate = startDate.add(-1, 'month')
         break
       case VM.FILL:
         break
@@ -330,6 +354,25 @@ export default class View {
       .style('height', '40px')
       .text(' ')
 
-    this.columnsBody.node().scrollHeight = this.bodyHolder.node().scrollHeight
+    if (this.options.highlights) {
+      this.options.highlights.forEach(h => {
+        h.start = dayjs(h.start)
+        h.end = dayjs(h.end)
+      })
+
+      this.highlights
+        .selectAll('.highlight')
+        .data(this.options.highlights)
+        .enter()
+        .append('rect')
+        .classed('highlight', true)
+        .attr('x', (obj: Highlight) => this.x((obj.start as dayjs.Dayjs).toDate()))
+        .attr('y', 0)
+        .attr('height', '100%')
+        .attr('width', (obj: Highlight) => this.x((obj.end as dayjs.Dayjs).toDate()) - this.x((obj.start as dayjs.Dayjs).toDate()))
+        .style('fill', (obj: Highlight) => obj.fill)
+    }
+
+    // console.log(this.node().scrollWidth)
   }
 }

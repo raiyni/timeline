@@ -47,13 +47,19 @@ export interface Sides {
   bottom: number
 }
 
+export interface Highlight {
+  start: dayjs.Dayjs | string
+  end: dayjs.Dayjs | string
+  fill: string
+}
+
 export interface TimelineOptions {
   columns: Array<ColumnOptions>
   planDefaults?: PlanOptions
   viewMode ?: VIEW_MODE,
   taskMargin ?: number
-  eventbus ?: EventBus
   wrapper?: any
+  highlights?: Highlight[]
 }
 
 export interface Rect {
