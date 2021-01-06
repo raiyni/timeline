@@ -15,7 +15,7 @@ export default class Column {
     this.options.padding = this.options.padding || 5
   }
 
-  renderDivs(header: any, parent: any, columnIdx: number) {
+  render(header: any, parent: any, columnIdx: number) {
     const titleDiv = header.append('div')
         .style('display', 'flex')
         .style('align-items', 'flex-end')

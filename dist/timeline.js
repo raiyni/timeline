@@ -9525,8 +9525,8 @@ var Timeline = (function (d3) {
     }
 
     _createClass(Column, [{
-      key: "renderDivs",
-      value: function renderDivs(header, parent, columnIdx) {
+      key: "render",
+      value: function render(header, parent, columnIdx) {
         var _this = this;
 
         var titleDiv = header.append('div').style('display', 'flex').style('align-items', 'flex-end').style('justify-content', 'center').text(this.options.text).style('box-shadow', 'inset 0 -1px 0 0 #000').style('margin-bottom', '1px');
@@ -9670,11 +9670,11 @@ var Timeline = (function (d3) {
     }
 
     _createClass(Columns, [{
-      key: "renderDivs",
-      value: function renderDivs(header, holder) {
+      key: "render",
+      value: function render(header, holder) {
         this.columns.forEach(function (column, idx) {
           var layer = holder.append('div').style('flex', '0 1 auto').attr('class', 'column');
-          column.renderDivs(header, layer, idx);
+          column.render(header, layer, idx);
         });
       }
     }]);
@@ -10081,7 +10081,6 @@ var Timeline = (function (d3) {
       this.bodyHolder.node().addEventListener('scroll', function (event) {
         _this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
       });
-      this.renderDivs();
     }
 
     _createClass(View, [{
@@ -10234,21 +10233,20 @@ var Timeline = (function (d3) {
         return d3.scaleTime().range([0, width]).domain([this.minDate, day]);
       }
     }, {
-      key: "renderDivs",
-      value: function renderDivs() {
+      key: "render",
+      value: function render() {
         var _this2 = this;
 
-        this.columns.renderDivs(this.columnsHeader, this.columnsBody);
+        this.columns.render(this.columnsHeader, this.columnsBody);
         this.computeBoundingDates();
         var bounds = this.bodyHolder.node().getBoundingClientRect();
         var viewport = bounds.width;
         var size = this.computeSize(viewport);
-        console.log(this.minDate);
         this.y = d3.scaleBand().range([size.height, 0]).domain(this.tasks.map(function (c, i) {
           return i + '';
         })).padding(0.1);
-        var referenceAxis = this.getAxis();
-        var endDate = this.maxDate; // if (size.width < viewport && this.config.viewMode != VM.FILL) {
+        var endDate = this.maxDate; // const referenceAxis = this.getAxis()
+        // if (size.width < viewport && this.config.viewMode != VM.FILL) {
         //   let date = this.maxDate
         //   let w = size.width
         //   const unit = this.getDateType()
@@ -10283,7 +10281,6 @@ var Timeline = (function (d3) {
             break;
         }
 
-        console.log(size.width, viewport);
         var fullWidth = Math.max(size.width, viewport);
         this.highlights.attr('width', fullWidth);
         this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]);
@@ -10379,11 +10376,7 @@ var Timeline = (function (d3) {
       return true;
     });
     this.view = new View(selector, taskOptions, this.config);
-    console.log(this.config); // .call(d3.zoom().on("zoom", function(e) {
-    // console.log(e)
-    // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')
-    // })
-
+    this.view.render();
     console.log(this);
   };
 

@@ -19,13 +19,13 @@ export default class Columns {
     })
   }
 
-  renderDivs(header: any, holder: any): void {
+  render(header: any, holder: any): void {
     this.columns.forEach((column: Column, idx: number) => {
       const layer = holder.append('div')
         .style('flex', '0 1 auto')
         .attr('class', 'column')
 
-      column.renderDivs(header, layer, idx)
+      column.render(header, layer, idx)
     })
   }
 }

@@ -121,8 +121,6 @@ export default class View {
     this.bodyHolder.node().addEventListener('scroll', (event: any) => {
       this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
     })
-
-    this.renderDivs()
   }
 
   private updateScroll(left: number, top: number): void {
@@ -244,8 +242,8 @@ export default class View {
     return d3.scaleTime().range([0, width]).domain([this.minDate, day])
   }
 
-  private renderDivs() {
-    this.columns.renderDivs(this.columnsHeader, this.columnsBody)
+  render() {
+    this.columns.render(this.columnsHeader, this.columnsBody)
 
     this.computeBoundingDates()
 
@@ -253,17 +251,14 @@ export default class View {
     const viewport = bounds.width
     const size = this.computeSize(viewport)
 
-    console.log(this.minDate)
-
     this.y = d3
       .scaleBand()
       .range([size.height, 0])
       .domain(this.tasks.map((c, i) => i + ''))
       .padding(0.1)
 
-    const referenceAxis = this.getAxis()
-
     let endDate = this.maxDate
+    // const referenceAxis = this.getAxis()
     // if (size.width < viewport && this.config.viewMode != VM.FILL) {
     //   let date = this.maxDate
     //   let w = size.width
@@ -294,8 +289,6 @@ export default class View {
         startDate = startDate.add(-1, 'week')
         break
     }
-
-    console.log(size.width, viewport)
 
     const fullWidth = Math.max(size.width, viewport)
     this.highlights.attr('width', fullWidth)

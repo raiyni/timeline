@@ -23,12 +23,7 @@ export default class Timeline {
 
     this.config.eventbus.on(Events.COLLAPSE, () => true)
     this.view = new View(selector, taskOptions, this.config)
-
-    console.log(this.config)
-      // .call(d3.zoom().on("zoom", function(e) {
-        // console.log(e)
-        // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')
-      // })
+    this.view.render()
 
     console.log(this)
   }
