@@ -28,6 +28,8 @@ export default (args) => {
     // Allow bundling cjs modules. Rollup doesn't understand cjs
     commonjs(),
 
+    sizes(),
+
     // Compile TypeScript/JavaScript files
     babel({
       extensions,
@@ -71,7 +73,6 @@ export default (args) => {
         d3: 'd3'
       },
       plugins: [
-        sizes(),
         terser()
       ]
     })

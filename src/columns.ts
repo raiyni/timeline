@@ -16,7 +16,7 @@ export default class Columns {
       const colOptions = deepmerge({
         taskMargin: options.taskMargin
       }, o)
-      return new Column(this.tasks, colOptions)
+      return new Column(this.tasks, colOptions, options)
     })
   }
 

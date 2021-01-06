@@ -1,3 +1,4 @@
+import EventBus from './EventBus';
 import dayjs from 'dayjs'
 
 export type Style = {[key: string]: any;}
@@ -59,6 +60,7 @@ export interface TimelineOptions {
   taskMargin ?: number
   wrapper?: any
   highlights?: Highlight[]
+  eventbus: EventBus
 }
 
 export interface Rect {

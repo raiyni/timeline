@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 
+import { Events, Priority } from './EventBus'
 import { Highlight, Offset, PlanOptions, Rect, Sides, TaskOptions, TimelineOptions, VIEW_MODE } from './types'
 
 import Columns from './columns'
@@ -38,12 +39,19 @@ export default class View {
 
   constructor(selector: string, taskOptions: TaskOptions[], options: TimelineOptions) {
     dayjs.extend(minMax)
+    if (!Array.isArray(taskOptions) || taskOptions.length == 0) {
+      console.warn('Tasks required to be an array of data')
+      return
+    }
+
     this.options = options
 
     this.tasks = taskOptions.map((t) => new Task(t, this.options))
     this.columns = new Columns(this.tasks, this.options)
 
     const owner = d3.select(document.body.querySelector(selector))
+
+    owner.html("")
 
     this.parent = owner
       .append('div')
@@ -83,6 +91,7 @@ export default class View {
 
     this.bodyHeader = this.right.append('div')
       .style('overflow', 'hidden')
+      .style('padding-right', '18px')
 
     this.headerSvg = this.bodyHeader.append('svg')
       .attr('height', 30)
@@ -92,25 +101,28 @@ export default class View {
       .style('overflow-y', 'auto')
       .style('position', 'relative')
 
-    this.highlights = this.right
+    this.highlights = this.bodyHolder
       .append('svg')
       .style('position', 'absolute')
       .style('left', 0)
-      .style('top', 0)
-      .style('height', 'calc(100% - 18px)')
+      .style('top', -20)
       .style('pointer-events', 'none')
 
-    this.renderDivs()
+    const updateHeight = () => this.highlights.attr('height', this.bodyHolder.node().scrollHeight)
+    this.options.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
+    this.options.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW)
+    this.options.eventbus.on(Events.COLLAPSE, () => console.log(true), Priority.LOW)
 
     this.bodyHolder.node().addEventListener('scroll', (event: any) => {
       this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
     })
+
+    this.renderDivs()
   }
 
   private updateScroll(left: number, top: number): void {
     this.columnsBody.node().scrollTop = top;
     this.bodyHeader.node().scrollLeft = left;
-    this.highlights.style('left', -left)
   }
 
   private computeBoundingDates(): void {
@@ -174,7 +186,6 @@ export default class View {
   private computeSize(viewport: number): Rect {
     const bounds = this.parent.node().getBoundingClientRect()
 
-    // this.maxDate.diff(this.minDate, )
     const diff = this.getDateDiff()
     const width = this.getDateWidth() * diff
 
@@ -282,7 +293,7 @@ export default class View {
     console.log(size.width, viewport)
 
     const fullWidth = Math.max(size.width, viewport)
-    this.highlights.style('width', fullWidth)
+    this.highlights.attr('width', fullWidth)
     this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate])
 
     if (this.options.viewMode == VM.FILL) {
@@ -360,6 +371,21 @@ export default class View {
         .attr('height', '100%')
         .attr('width', (obj: Highlight) => this.x((obj.end as dayjs.Dayjs).toDate()) - this.x((obj.start as dayjs.Dayjs).toDate()))
         .style('fill', (obj: Highlight) => obj.fill)
-      }
+
+      this.headerSvg
+        .selectAll('.highlight')
+        .data(this.options.highlights)
+        .enter()
+        .append('rect')
+        .classed('highlight', true)
+        .attr('x', (obj: Highlight) => this.x((obj.start as dayjs.Dayjs).toDate()))
+        .attr('y', 0)
+        .attr('height', '100%')
+        .attr('width', (obj: Highlight) => this.x((obj.end as dayjs.Dayjs).toDate()) - this.x((obj.start as dayjs.Dayjs).toDate()))
+        .style('fill', (obj: Highlight) => obj.fill)
+    }
+
+    this.bodyHeader.node().scrollWidth = this.bodyHolder.node().scrollWidth
+    this.options.eventbus.emit(Events.COLLAPSE)
   }
 }

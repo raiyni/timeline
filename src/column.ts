@@ -1,13 +1,17 @@
-import { ColumnOptions } from "./types";
+import { ColumnOptions, TimelineOptions } from "./types";
+
+import { Events } from "./EventBus";
 import Task from "./task";
 import { applyStyle } from "./util";
 
 export default class Column {
   private tasks: Task[]
   private options: ColumnOptions
-  constructor(tasks: Task[], options: ColumnOptions) {
+  private timelineOptions: TimelineOptions
+  constructor(tasks: Task[], options: ColumnOptions, timelineOptions: TimelineOptions) {
     this.tasks = tasks
     this.options = options
+    this.timelineOptions = timelineOptions
     this.options.padding = this.options.padding || 5
   }
 
@@ -40,7 +44,6 @@ export default class Column {
 
         if (l.label) {
           const span = div.append('span').text(l.label)
-
           applyStyle(span, l.labelStyle || {}, false)
         }
 
@@ -56,16 +59,14 @@ export default class Column {
           .selectAll("div:first-child")
           .insert('a', ':first-child')
           .attr('class', this.buttonCls(task.options.collapsed))
+          .attr('data-id', task.id)
 
         button.node().addEventListener('click', (e: MouseEvent) => {
-          const cls = task.toggle()
-          button.attr('class', this.buttonCls(cls))
+          this.timelineOptions.eventbus.emit(Events.TOGGLE, button.attribute('data-id'))
         })
 
         layer.selectAll('div:first-child span')
           .style('margin-left', 5)
-
-        console.log(button)
       }
     })
 

@@ -4,7 +4,7 @@ import { applyStyle, clamp, uid } from './util'
 import Plan from './plan'
 import deepmerge from './deepmerge'
 import Milestone from './milestone'
-import { Events } from './EventBus'
+import { Events, Priority } from './EventBus'
 
 export default class Task {
   rows: Plan[][]
@@ -62,6 +62,18 @@ export default class Task {
     timelineOptions.columns.forEach((c: ColumnOptions, idx: number) => {
       this.labels[c.field] = this.prepareOptions(c)
     })
+
+    this.timelineOptions.eventbus.on(Events.TOGGLE, (id) => {
+      if (id == this.id) {
+        this.toggle()
+      }
+    }, Priority.HIGH)
+
+    this.timelineOptions.eventbus.on(Events.COLLAPSE, () => {
+      if (this.options.collapsed) {
+        this.collapse()
+      }
+    }, Priority.HIGH)
   }
 
   computeRowHeights(): void {
@@ -191,6 +203,10 @@ export default class Task {
 
     this.getTaskSubRows()
       .style('display', 'none')
+
+    this.timelineOptions.wrapper
+      .select(`a[data-id="${this.id}]`)
+      .attr('class', 'task-expand')
   }
 
   expand() {
@@ -199,6 +215,10 @@ export default class Task {
 
     this.getTaskSubRows()
       .style('display', 'flex')
+
+    this.timelineOptions.wrapper
+      .select(`a[data-id="${this.id}]`)
+      .attr('class', 'task-collapse')
   }
 
   toggle(): boolean {

@@ -9488,7 +9488,6 @@ var Timeline = (function (d3) {
 
     return EventBus;
   }();
-  var eventbus = new EventBus();
 
   var applyStyle = function applyStyle(el, style) {
     var attr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
@@ -9510,15 +9509,18 @@ var Timeline = (function (d3) {
   };
 
   var Column = /*#__PURE__*/function () {
-    function Column(tasks, options) {
+    function Column(tasks, options, timelineOptions) {
       _classCallCheck(this, Column);
 
       _defineProperty(this, "tasks", void 0);
 
       _defineProperty(this, "options", void 0);
 
+      _defineProperty(this, "timelineOptions", void 0);
+
       this.tasks = tasks;
       this.options = options;
+      this.timelineOptions = timelineOptions;
       this.options.padding = this.options.padding || 5;
     }
 
@@ -9548,13 +9550,11 @@ var Timeline = (function (d3) {
           });
 
           if (task.options.collapsible && columnIdx == 0) {
-            var button = layer.selectAll("div:first-child").insert('a', ':first-child').attr('class', _this.buttonCls(task.options.collapsed));
+            var button = layer.selectAll("div:first-child").insert('a', ':first-child').attr('class', _this.buttonCls(task.options.collapsed)).attr('data-id', task.id);
             button.node().addEventListener('click', function (e) {
-              var cls = task.toggle();
-              button.attr('class', _this.buttonCls(cls));
+              _this.timelineOptions.eventbus.emit(Events.TOGGLE, button.attribute('data-id'));
             });
             layer.selectAll('div:first-child span').style('margin-left', 5);
-            console.log(button);
           }
         });
         var titleWidth = titleDiv.node().getBoundingClientRect().width;
@@ -9665,7 +9665,7 @@ var Timeline = (function (d3) {
         var colOptions = deepmerge({
           taskMargin: options.taskMargin
         }, o);
-        return new Column(_this.tasks, colOptions);
+        return new Column(_this.tasks, colOptions, options);
       });
     }
 
@@ -9824,6 +9824,16 @@ var Timeline = (function (d3) {
       timelineOptions.columns.forEach(function (c, idx) {
         _this.labels[c.field] = _this.prepareOptions(c);
       });
+      this.timelineOptions.eventbus.on(Events.TOGGLE, function (id) {
+        if (id == _this.id) {
+          _this.toggle();
+        }
+      }, Priority.HIGH);
+      this.timelineOptions.eventbus.on(Events.COLLAPSE, function () {
+        if (_this.options.collapsed) {
+          _this.collapse();
+        }
+      }, Priority.HIGH);
     }
 
     _createClass(Task, [{
@@ -9941,12 +9951,14 @@ var Timeline = (function (d3) {
       value: function collapse() {
         this.getTaskSubColumns().style('display', 'none');
         this.getTaskSubRows().style('display', 'none');
+        this.timelineOptions.wrapper.select("a[data-id=\"".concat(this.id, "]")).attr('class', 'task-expand');
       }
     }, {
       key: "expand",
       value: function expand() {
         this.getTaskSubColumns().style('display', 'flex');
         this.getTaskSubRows().style('display', 'flex');
+        this.timelineOptions.wrapper.select("a[data-id=\"".concat(this.id, "]")).attr('class', 'task-collapse');
       }
     }, {
       key: "toggle",
@@ -10021,26 +10033,43 @@ var Timeline = (function (d3) {
       _defineProperty(this, "highlights", void 0);
 
       dayjs_min.extend(minMax);
+
+      if (!Array.isArray(taskOptions) || taskOptions.length == 0) {
+        console.warn('Tasks required to be an array of data');
+        return;
+      }
+
       this.options = options;
       this.tasks = taskOptions.map(function (t) {
         return new Task(t, _this.options);
       });
       this.columns = new Columns(this.tasks, this.options);
       var owner = d3.select(document.body.querySelector(selector));
+      owner.html("");
       this.parent = owner.append('div').style('display', 'flex').style('flex-direction', 'row').style('align-items', 'stretch').style('width', '100%').style('height', '100%').style('overflow', 'hidden');
       options.wrapper = this.parent;
       this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
       this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
       this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
       this.right = this.parent.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
-      this.bodyHeader = this.right.append('div').style('overflow', 'hidden');
+      this.bodyHeader = this.right.append('div').style('overflow', 'hidden').style('padding-right', '18px');
       this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
       this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto').style('position', 'relative');
-      this.highlights = this.right.append('svg').style('position', 'absolute').style('left', 0).style('top', 0).style('height', 'calc(100% - 18px)').style('pointer-events', 'none');
-      this.renderDivs();
+      this.highlights = this.bodyHolder.append('svg').style('position', 'absolute').style('left', 0).style('top', -20).style('pointer-events', 'none');
+
+      var updateHeight = function updateHeight() {
+        return _this.highlights.attr('height', _this.bodyHolder.node().scrollHeight);
+      };
+
+      this.options.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW);
+      this.options.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW);
+      this.options.eventbus.on(Events.COLLAPSE, function () {
+        return console.log(true);
+      }, Priority.LOW);
       this.bodyHolder.node().addEventListener('scroll', function (event) {
         _this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
       });
+      this.renderDivs();
     }
 
     _createClass(View, [{
@@ -10048,7 +10077,6 @@ var Timeline = (function (d3) {
       value: function updateScroll(left, top) {
         this.columnsBody.node().scrollTop = top;
         this.bodyHeader.node().scrollLeft = left;
-        this.highlights.style('left', -left);
       }
     }, {
       key: "computeBoundingDates",
@@ -10132,8 +10160,7 @@ var Timeline = (function (d3) {
     }, {
       key: "computeSize",
       value: function computeSize(viewport) {
-        var bounds = this.parent.node().getBoundingClientRect(); // this.maxDate.diff(this.minDate, )
-
+        var bounds = this.parent.node().getBoundingClientRect();
         var diff = this.getDateDiff();
         var width = this.getDateWidth() * diff;
         var height = this.tasks.map(function (task) {
@@ -10246,7 +10273,7 @@ var Timeline = (function (d3) {
 
         console.log(size.width, viewport);
         var fullWidth = Math.max(size.width, viewport);
-        this.highlights.style('width', fullWidth);
+        this.highlights.attr('width', fullWidth);
         this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]);
 
         if (this.options.viewMode == VIEW_MODE.FILL) {
@@ -10304,7 +10331,17 @@ var Timeline = (function (d3) {
           }).style('fill', function (obj) {
             return obj.fill;
           });
+          this.headerSvg.selectAll('.highlight').data(this.options.highlights).enter().append('rect').classed('highlight', true).attr('x', function (obj) {
+            return _this2.x(obj.start.toDate());
+          }).attr('y', 0).attr('height', '100%').attr('width', function (obj) {
+            return _this2.x(obj.end.toDate()) - _this2.x(obj.start.toDate());
+          }).style('fill', function (obj) {
+            return obj.fill;
+          });
         }
+
+        this.bodyHeader.node().scrollWidth = this.bodyHolder.node().scrollWidth;
+        this.options.eventbus.emit(Events.COLLAPSE);
       }
     }]);
 
@@ -10324,7 +10361,11 @@ var Timeline = (function (d3) {
       taskMargin: 5
     }, options);
     this.options.eventbus = new EventBus();
-    this.view = new View(selector, taskOptions, this.options); // .call(d3.zoom().on("zoom", function(e) {
+    this.options.eventbus.on(Events.COLLAPSE, function () {
+      return true;
+    });
+    this.view = new View(selector, taskOptions, this.options);
+    console.log(this.options); // .call(d3.zoom().on("zoom", function(e) {
     // console.log(e)
     // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')
     // })

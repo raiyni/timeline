@@ -52,7 +52,7 @@ export default class EventBus {
     }
   }
 
-  emit(event: Events, arg: any) {
+  emit(event: Events, arg?: any) {
     if (!this.listeners[event]) return;
 
     this.listeners[event].forEach((holder: CallbackHolder) => holder.callback(arg))
@@ -62,5 +62,3 @@ export default class EventBus {
     Object.keys(this.listeners).forEach((k: string) => delete this.listeners[k as Events])
   }
 }
-
-export const eventbus = new EventBus()
