@@ -25,7 +25,6 @@ export default class View {
 
   private left: any
   private right: any
-  private rightParent: any
 
   private bodyHeader: any
   private headerSvg: any
@@ -73,25 +72,14 @@ export default class View {
       .style('display', 'flex')
       .style('overflow', 'hidden')
 
-    this.rightParent = this.parent
+    this.right = this.parent
       .append('div')
       .style('position', 'relative')
       .style('flex', 1)
       .style('display', 'flex')
       .style('flex-direction', 'column')
       .style('align-items', 'stretch')
-      .style('overflow-x', 'auto')
-      .style('z-index', 3)
-
-    this.right = this.rightParent
-      .append('div')
-      .style('flex', 1)
-      .style('position', 'relative')
-      .style('display', 'flex')
-      .style('flex-direction', 'column')
-      .style('align-items', 'stretch')
-      .style('overflow-y', 'auto')
-      .style('overflow-x', 'hidden')
+      .style('overflow', 'hidden')
 
     this.bodyHeader = this.right.append('div')
       .style('overflow', 'hidden')
@@ -104,12 +92,11 @@ export default class View {
       .style('overflow-y', 'auto')
       .style('position', 'relative')
 
-    this.highlights = this.bodyHolder
+    this.highlights = this.right
       .append('svg')
       .style('position', 'absolute')
       .style('left', 0)
       .style('top', 0)
-      .style('width', '100%')
       .style('height', 'calc(100% - 18px)')
       .style('pointer-events', 'none')
 
@@ -243,13 +230,14 @@ export default class View {
 
   private renderDivs() {
     this.columns.renderDivs(this.columnsHeader, this.columnsBody)
-    this.left.style('min-width', this.left.node().getBoundingClientRect().width)
 
     this.computeBoundingDates()
 
     const bounds = this.bodyHolder.node().getBoundingClientRect()
     const viewport = bounds.width
     const size = this.computeSize(viewport)
+
+    console.log(this.minDate)
 
     this.y = d3
       .scaleBand()
@@ -281,7 +269,7 @@ export default class View {
         startDate = startDate.add(-1, 'month')
         break
       case VM.YEAR:
-        startDate = startDate.add(-1, 'month')
+        startDate = startDate.add(-1, 'year')
         break
       case VM.FILL:
         break
@@ -294,6 +282,7 @@ export default class View {
     console.log(size.width, viewport)
 
     const fullWidth = Math.max(size.width, viewport)
+    this.highlights.style('width', fullWidth)
     this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate])
 
     if (this.options.viewMode == VM.FILL) {
@@ -371,8 +360,6 @@ export default class View {
         .attr('height', '100%')
         .attr('width', (obj: Highlight) => this.x((obj.end as dayjs.Dayjs).toDate()) - this.x((obj.start as dayjs.Dayjs).toDate()))
         .style('fill', (obj: Highlight) => obj.fill)
-    }
-
-    // console.log(this.node().scrollWidth)
+      }
   }
 }

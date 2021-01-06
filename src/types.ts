@@ -1,4 +1,3 @@
-import EventBus from './EventBus'
 import dayjs from 'dayjs'
 
 export type Style = {[key: string]: any;}

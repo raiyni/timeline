@@ -57,8 +57,9 @@ var Timeline = (function (d3) {
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  function createCommonjsModule(fn) {
+    var module = { exports: {} };
+  	return fn(module, module.exports), module.exports;
   }
 
   var check = function (it) {
@@ -66,7 +67,7 @@ var Timeline = (function (d3) {
   };
 
   // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-  var global_1 =
+  var global$1 =
     // eslint-disable-next-line no-undef
     check(typeof globalThis == 'object' && globalThis) ||
     check(typeof window == 'object' && window) ||
@@ -169,7 +170,7 @@ var Timeline = (function (d3) {
     return hasOwnProperty.call(it, key);
   };
 
-  var document$1 = global_1.document;
+  var document$1 = global$1.document;
   // typeof document.createElement is 'object' in old IE
   var EXISTS = isObject(document$1) && isObject(document$1.createElement);
 
@@ -236,14 +237,14 @@ var Timeline = (function (d3) {
 
   var setGlobal = function (key, value) {
     try {
-      createNonEnumerableProperty(global_1, key, value);
+      createNonEnumerableProperty(global$1, key, value);
     } catch (error) {
-      global_1[key] = value;
+      global$1[key] = value;
     } return value;
   };
 
   var SHARED = '__core-js_shared__';
-  var store = global_1[SHARED] || setGlobal(SHARED, {});
+  var store = global$1[SHARED] || setGlobal(SHARED, {});
 
   var sharedStore = store;
 
@@ -258,7 +259,7 @@ var Timeline = (function (d3) {
 
   var inspectSource = sharedStore.inspectSource;
 
-  var WeakMap = global_1.WeakMap;
+  var WeakMap = global$1.WeakMap;
 
   var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));
 
@@ -289,7 +290,7 @@ var Timeline = (function (d3) {
 
   var hiddenKeys = {};
 
-  var WeakMap$1 = global_1.WeakMap;
+  var WeakMap$1 = global$1.WeakMap;
   var set, get, has$1;
 
   var enforce = function (it) {
@@ -364,7 +365,7 @@ var Timeline = (function (d3) {
         state.source = TEMPLATE.join(typeof key == 'string' ? key : '');
       }
     }
-    if (O === global_1) {
+    if (O === global$1) {
       if (simple) O[key] = value;
       else setGlobal(key, value);
       return;
@@ -381,15 +382,15 @@ var Timeline = (function (d3) {
   });
   });
 
-  var path = global_1;
+  var path = global$1;
 
   var aFunction = function (variable) {
     return typeof variable == 'function' ? variable : undefined;
   };
 
   var getBuiltIn = function (namespace, method) {
-    return arguments.length < 2 ? aFunction(path[namespace]) || aFunction(global_1[namespace])
-      : path[namespace] && path[namespace][method] || global_1[namespace] && global_1[namespace][method];
+    return arguments.length < 2 ? aFunction(path[namespace]) || aFunction(global$1[namespace])
+      : path[namespace] && path[namespace][method] || global$1[namespace] && global$1[namespace][method];
   };
 
   var ceil = Math.ceil;
@@ -558,11 +559,11 @@ var Timeline = (function (d3) {
     var STATIC = options.stat;
     var FORCED, target, key, targetProperty, sourceProperty, descriptor;
     if (GLOBAL) {
-      target = global_1;
+      target = global$1;
     } else if (STATIC) {
-      target = global_1[TARGET] || setGlobal(TARGET, {});
+      target = global$1[TARGET] || setGlobal(TARGET, {});
     } else {
-      target = (global_1[TARGET] || {}).prototype;
+      target = (global$1[TARGET] || {}).prototype;
     }
     if (target) for (key in source) {
       sourceProperty = source[key];
@@ -727,7 +728,7 @@ var Timeline = (function (d3) {
   };
 
   var WellKnownSymbolsStore = shared('wks');
-  var Symbol$1 = global_1.Symbol;
+  var Symbol$1 = global$1.Symbol;
   var createWellKnownSymbol = useSymbolAsUid ? Symbol$1 : Symbol$1 && Symbol$1.withoutSetter || uid;
 
   var wellKnownSymbol = function (name) {
@@ -886,7 +887,7 @@ var Timeline = (function (d3) {
   var setInternalState = internalState.set;
   var getInternalState = internalState.getterFor(SYMBOL);
   var ObjectPrototype = Object[PROTOTYPE$1];
-  var $Symbol = global_1.Symbol;
+  var $Symbol = global$1.Symbol;
   var $stringify = getBuiltIn('JSON', 'stringify');
   var nativeGetOwnPropertyDescriptor$1 = objectGetOwnPropertyDescriptor.f;
   var nativeDefineProperty$1 = objectDefineProperty.f;
@@ -897,7 +898,7 @@ var Timeline = (function (d3) {
   var StringToSymbolRegistry = shared('string-to-symbol-registry');
   var SymbolToStringRegistry = shared('symbol-to-string-registry');
   var WellKnownSymbolsStore$1 = shared('wks');
-  var QObject = global_1.QObject;
+  var QObject = global$1.QObject;
   // Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
   var USE_SETTER = !QObject || !QObject[PROTOTYPE$1] || !QObject[PROTOTYPE$1].findChild;
 
@@ -1160,7 +1161,7 @@ var Timeline = (function (d3) {
   var defineProperty$2 = objectDefineProperty.f;
 
 
-  var NativeSymbol = global_1.Symbol;
+  var NativeSymbol = global$1.Symbol;
 
   if (descriptors && typeof NativeSymbol == 'function' && (!('description' in NativeSymbol.prototype) ||
     // Safari 12 bug
@@ -1548,7 +1549,7 @@ var Timeline = (function (d3) {
 
   var engineUserAgent = getBuiltIn('navigator', 'userAgent') || '';
 
-  var process = global_1.process;
+  var process = global$1.process;
   var versions = process && process.versions;
   var v8 = versions && versions.v8;
   var match, version;
@@ -2019,7 +2020,7 @@ var Timeline = (function (d3) {
     right: createMethod$2(true)
   };
 
-  var engineIsNode = classofRaw(global_1.process) == 'process';
+  var engineIsNode = classofRaw(global$1.process) == 'process';
 
   var $reduce = arrayReduce.left;
 
@@ -2487,7 +2488,7 @@ var Timeline = (function (d3) {
   // `globalThis` object
   // https://github.com/tc39/proposal-global
   _export({ global: true }, {
-    globalThis: global_1
+    globalThis: global$1
   });
 
   var nativeAssign = Object.assign;
@@ -2662,10 +2663,6 @@ var Timeline = (function (d3) {
 
   hiddenKeys[METADATA] = true;
   });
-  var internalMetadata_1 = internalMetadata.REQUIRED;
-  var internalMetadata_2 = internalMetadata.fastKey;
-  var internalMetadata_3 = internalMetadata.getWeakData;
-  var internalMetadata_4 = internalMetadata.onFreeze;
 
   var onFreeze = internalMetadata.onFreeze;
 
@@ -2864,7 +2861,7 @@ var Timeline = (function (d3) {
     // In FF throws only define methods
     // eslint-disable-next-line no-undef, no-useless-call
     __defineSetter__.call(null, key, function () { /* empty */ });
-    delete global_1[key];
+    delete global$1[key];
   });
 
   // `Object.prototype.__defineGetter__` method
@@ -4175,7 +4172,7 @@ var Timeline = (function (d3) {
 
 
   var MATCH$2 = wellKnownSymbol('match');
-  var NativeRegExp = global_1.RegExp;
+  var NativeRegExp = global$1.RegExp;
   var RegExpPrototype$2 = NativeRegExp.prototype;
   var re1 = /a/g;
   var re2 = /a/g;
@@ -4238,7 +4235,7 @@ var Timeline = (function (d3) {
     while (keys$1.length > index) proxy(keys$1[index++]);
     RegExpPrototype$2.constructor = RegExpWrapper;
     RegExpWrapper.prototype = RegExpPrototype$2;
-    redefine(global_1, 'RegExp', RegExpWrapper);
+    redefine(global$1, 'RegExp', RegExpWrapper);
   }
 
   // https://tc39.github.io/ecma262/#sec-get-regexp-@@species
@@ -4329,7 +4326,7 @@ var Timeline = (function (d3) {
   var trim = stringTrim.trim;
 
 
-  var $parseInt = global_1.parseInt;
+  var $parseInt = global$1.parseInt;
   var hex = /^[+-]?0[Xx]/;
   var FORCED$7 = $parseInt(whitespaces + '08') !== 8 || $parseInt(whitespaces + '0x16') !== 22;
 
@@ -4349,7 +4346,7 @@ var Timeline = (function (d3) {
   var trim$1 = stringTrim.trim;
 
 
-  var $parseFloat = global_1.parseFloat;
+  var $parseFloat = global$1.parseFloat;
   var FORCED$8 = 1 / $parseFloat(whitespaces + '-0') !== -Infinity;
 
   // `parseFloat` method
@@ -4372,7 +4369,7 @@ var Timeline = (function (d3) {
   var trim$2 = stringTrim.trim;
 
   var NUMBER = 'Number';
-  var NativeNumber = global_1[NUMBER];
+  var NativeNumber = global$1[NUMBER];
   var NumberPrototype = NativeNumber.prototype;
 
   // Opera ~12 has broken Object#toString
@@ -4433,7 +4430,7 @@ var Timeline = (function (d3) {
     }
     NumberWrapper.prototype = NumberPrototype;
     NumberPrototype.constructor = NumberWrapper;
-    redefine(global_1, NUMBER, NumberWrapper);
+    redefine(global$1, NUMBER, NumberWrapper);
   }
 
   // `Number.EPSILON` constant
@@ -4442,7 +4439,7 @@ var Timeline = (function (d3) {
     EPSILON: Math.pow(2, -52)
   });
 
-  var globalIsFinite = global_1.isFinite;
+  var globalIsFinite = global$1.isFinite;
 
   // `Number.isFinite` method
   // https://tc39.github.io/ecma262/#sec-number.isfinite
@@ -5057,9 +5054,9 @@ var Timeline = (function (d3) {
 
   // JSON[@@toStringTag] property
   // https://tc39.github.io/ecma262/#sec-json-@@tostringtag
-  setToStringTag(global_1.JSON, 'JSON', true);
+  setToStringTag(global$1.JSON, 'JSON', true);
 
-  var nativePromiseConstructor = global_1.Promise;
+  var nativePromiseConstructor = global$1.Promise;
 
   var redefineAll = function (target, src, options) {
     for (var key in src) redefine(target, key, src[key], options);
@@ -5074,12 +5071,12 @@ var Timeline = (function (d3) {
 
   var engineIsIos = /(iphone|ipod|ipad).*applewebkit/i.test(engineUserAgent);
 
-  var location = global_1.location;
-  var set$1 = global_1.setImmediate;
-  var clear = global_1.clearImmediate;
-  var process$1 = global_1.process;
-  var MessageChannel = global_1.MessageChannel;
-  var Dispatch = global_1.Dispatch;
+  var location = global$1.location;
+  var set$1 = global$1.setImmediate;
+  var clear = global$1.clearImmediate;
+  var process$1 = global$1.process;
+  var MessageChannel = global$1.MessageChannel;
+  var Dispatch = global$1.Dispatch;
   var counter = 0;
   var queue = {};
   var ONREADYSTATECHANGE = 'onreadystatechange';
@@ -5106,7 +5103,7 @@ var Timeline = (function (d3) {
 
   var post = function (id) {
     // old engines have not location.origin
-    global_1.postMessage(id + '', location.protocol + '//' + location.host);
+    global$1.postMessage(id + '', location.protocol + '//' + location.host);
   };
 
   // Node.js 0.9+ & IE10+ has setImmediate, otherwise:
@@ -5145,14 +5142,14 @@ var Timeline = (function (d3) {
     // Browsers with postMessage, skip WebWorkers
     // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
     } else if (
-      global_1.addEventListener &&
+      global$1.addEventListener &&
       typeof postMessage == 'function' &&
-      !global_1.importScripts &&
+      !global$1.importScripts &&
       location && location.protocol !== 'file:' &&
       !fails(post)
     ) {
       defer = post;
-      global_1.addEventListener('message', listener, false);
+      global$1.addEventListener('message', listener, false);
     // IE8-
     } else if (ONREADYSTATECHANGE in documentCreateElement('script')) {
       defer = function (id) {
@@ -5179,12 +5176,12 @@ var Timeline = (function (d3) {
 
 
 
-  var MutationObserver = global_1.MutationObserver || global_1.WebKitMutationObserver;
-  var document$2 = global_1.document;
-  var process$2 = global_1.process;
-  var Promise = global_1.Promise;
+  var MutationObserver = global$1.MutationObserver || global$1.WebKitMutationObserver;
+  var document$2 = global$1.document;
+  var process$2 = global$1.process;
+  var Promise = global$1.Promise;
   // Node.js 11 shows ExperimentalWarning on getting `queueMicrotask`
-  var queueMicrotaskDescriptor = getOwnPropertyDescriptor$7(global_1, 'queueMicrotask');
+  var queueMicrotaskDescriptor = getOwnPropertyDescriptor$7(global$1, 'queueMicrotask');
   var queueMicrotask = queueMicrotaskDescriptor && queueMicrotaskDescriptor.value;
 
   var flush, head, last, notify, toggle, node, promise, then;
@@ -5238,7 +5235,7 @@ var Timeline = (function (d3) {
     } else {
       notify = function () {
         // strange IE + webpack dev server bug - use .call(global)
-        macrotask.call(global_1, flush);
+        macrotask.call(global$1, flush);
       };
     }
   }
@@ -5282,7 +5279,7 @@ var Timeline = (function (d3) {
   };
 
   var hostReportErrors = function (a, b) {
-    var console = global_1.console;
+    var console = global$1.console;
     if (console && console.error) {
       arguments.length === 1 ? console.error(a) : console.error(a, b);
     }
@@ -5314,13 +5311,13 @@ var Timeline = (function (d3) {
   var setInternalState$5 = internalState.set;
   var getInternalPromiseState = internalState.getterFor(PROMISE);
   var PromiseConstructor = nativePromiseConstructor;
-  var TypeError$1 = global_1.TypeError;
-  var document$3 = global_1.document;
-  var process$3 = global_1.process;
+  var TypeError$1 = global$1.TypeError;
+  var document$3 = global$1.document;
+  var process$3 = global$1.process;
   var $fetch = getBuiltIn('fetch');
   var newPromiseCapability$1 = newPromiseCapability.f;
   var newGenericPromiseCapability = newPromiseCapability$1;
-  var DISPATCH_EVENT = !!(document$3 && document$3.createEvent && global_1.dispatchEvent);
+  var DISPATCH_EVENT = !!(document$3 && document$3.createEvent && global$1.dispatchEvent);
   var NATIVE_REJECTION_EVENT = typeof PromiseRejectionEvent == 'function';
   var UNHANDLED_REJECTION = 'unhandledrejection';
   var REJECTION_HANDLED = 'rejectionhandled';
@@ -5420,14 +5417,14 @@ var Timeline = (function (d3) {
       event.promise = promise;
       event.reason = reason;
       event.initEvent(name, false, true);
-      global_1.dispatchEvent(event);
+      global$1.dispatchEvent(event);
     } else event = { promise: promise, reason: reason };
-    if (!NATIVE_REJECTION_EVENT && (handler = global_1['on' + name])) handler(event);
+    if (!NATIVE_REJECTION_EVENT && (handler = global$1['on' + name])) handler(event);
     else if (name === UNHANDLED_REJECTION) hostReportErrors('Unhandled promise rejection', reason);
   };
 
   var onUnhandled = function (state) {
-    task$1.call(global_1, function () {
+    task$1.call(global$1, function () {
       var promise = state.facade;
       var value = state.value;
       var IS_UNHANDLED = isUnhandled(state);
@@ -5450,7 +5447,7 @@ var Timeline = (function (d3) {
   };
 
   var onHandleUnhandled = function (state) {
-    task$1.call(global_1, function () {
+    task$1.call(global$1, function () {
       var promise = state.facade;
       if (engineIsNode) {
         process$3.emit('rejectionHandled', promise);
@@ -5578,7 +5575,7 @@ var Timeline = (function (d3) {
       if (typeof $fetch == 'function') _export({ global: true, enumerable: true, forced: true }, {
         // eslint-disable-next-line no-unused-vars
         fetch: function fetch(input /* , init */) {
-          return promiseResolve(PromiseConstructor, $fetch.apply(global_1, arguments));
+          return promiseResolve(PromiseConstructor, $fetch.apply(global$1, arguments));
         }
       });
     }
@@ -5766,7 +5763,7 @@ var Timeline = (function (d3) {
     var IS_MAP = CONSTRUCTOR_NAME.indexOf('Map') !== -1;
     var IS_WEAK = CONSTRUCTOR_NAME.indexOf('Weak') !== -1;
     var ADDER = IS_MAP ? 'set' : 'add';
-    var NativeConstructor = global_1[CONSTRUCTOR_NAME];
+    var NativeConstructor = global$1[CONSTRUCTOR_NAME];
     var NativePrototype = NativeConstructor && NativeConstructor.prototype;
     var Constructor = NativeConstructor;
     var exported = {};
@@ -6176,7 +6173,7 @@ var Timeline = (function (d3) {
   var enforceIternalState = internalState.enforce;
 
 
-  var IS_IE11 = !global_1.ActiveXObject && 'ActiveXObject' in global_1;
+  var IS_IE11 = !global$1.ActiveXObject && 'ActiveXObject' in global$1;
   var isExtensible = Object.isExtensible;
   var InternalWeakMap;
 
@@ -6355,12 +6352,12 @@ var Timeline = (function (d3) {
   var PROTOTYPE$2 = 'prototype';
   var WRONG_LENGTH = 'Wrong length';
   var WRONG_INDEX = 'Wrong index';
-  var NativeArrayBuffer = global_1[ARRAY_BUFFER];
+  var NativeArrayBuffer = global$1[ARRAY_BUFFER];
   var $ArrayBuffer = NativeArrayBuffer;
-  var $DataView = global_1[DATA_VIEW];
+  var $DataView = global$1[DATA_VIEW];
   var $DataViewPrototype = $DataView && $DataView[PROTOTYPE$2];
   var ObjectPrototype$2 = Object.prototype;
-  var RangeError$1 = global_1.RangeError;
+  var RangeError$1 = global$1.RangeError;
 
   var packIEEE754 = ieee754.pack;
   var unpackIEEE754 = ieee754.unpack;
@@ -6557,7 +6554,7 @@ var Timeline = (function (d3) {
 
   var ARRAY_BUFFER$1 = 'ArrayBuffer';
   var ArrayBuffer$1 = arrayBuffer[ARRAY_BUFFER$1];
-  var NativeArrayBuffer$1 = global_1[ARRAY_BUFFER$1];
+  var NativeArrayBuffer$1 = global$1[ARRAY_BUFFER$1];
 
   // `ArrayBuffer` constructor
   // https://tc39.github.io/ecma262/#sec-arraybuffer-constructor
@@ -6573,9 +6570,9 @@ var Timeline = (function (d3) {
 
 
 
-  var Int8Array$1 = global_1.Int8Array;
+  var Int8Array$1 = global$1.Int8Array;
   var Int8ArrayPrototype = Int8Array$1 && Int8Array$1.prototype;
-  var Uint8ClampedArray = global_1.Uint8ClampedArray;
+  var Uint8ClampedArray = global$1.Uint8ClampedArray;
   var Uint8ClampedArrayPrototype = Uint8ClampedArray && Uint8ClampedArray.prototype;
   var TypedArray = Int8Array$1 && objectGetPrototypeOf(Int8Array$1);
   var TypedArrayPrototype = Int8ArrayPrototype && objectGetPrototypeOf(Int8ArrayPrototype);
@@ -6585,7 +6582,7 @@ var Timeline = (function (d3) {
   var TO_STRING_TAG$3 = wellKnownSymbol('toStringTag');
   var TYPED_ARRAY_TAG = uid('TYPED_ARRAY_TAG');
   // Fixing native typed arrays in Opera Presto crashes the browser, see #595
-  var NATIVE_ARRAY_BUFFER_VIEWS = arrayBufferNative && !!objectSetPrototypeOf && classof(global_1.opera) !== 'Opera';
+  var NATIVE_ARRAY_BUFFER_VIEWS = arrayBufferNative && !!objectSetPrototypeOf && classof(global$1.opera) !== 'Opera';
   var TYPED_ARRAY_TAG_REQIRED = false;
   var NAME$1;
 
@@ -6630,7 +6627,7 @@ var Timeline = (function (d3) {
     if (objectSetPrototypeOf) {
       if (isPrototypeOf.call(TypedArray, C)) return C;
     } else for (var ARRAY in TypedArrayConstructorsList) if (has(TypedArrayConstructorsList, NAME$1)) {
-      var TypedArrayConstructor = global_1[ARRAY];
+      var TypedArrayConstructor = global$1[ARRAY];
       if (TypedArrayConstructor && (C === TypedArrayConstructor || isPrototypeOf.call(TypedArrayConstructor, C))) {
         return C;
       }
@@ -6640,7 +6637,7 @@ var Timeline = (function (d3) {
   var exportTypedArrayMethod = function (KEY, property, forced) {
     if (!descriptors) return;
     if (forced) for (var ARRAY in TypedArrayConstructorsList) {
-      var TypedArrayConstructor = global_1[ARRAY];
+      var TypedArrayConstructor = global$1[ARRAY];
       if (TypedArrayConstructor && has(TypedArrayConstructor.prototype, KEY)) {
         delete TypedArrayConstructor.prototype[KEY];
       }
@@ -6656,7 +6653,7 @@ var Timeline = (function (d3) {
     if (!descriptors) return;
     if (objectSetPrototypeOf) {
       if (forced) for (ARRAY in TypedArrayConstructorsList) {
-        TypedArrayConstructor = global_1[ARRAY];
+        TypedArrayConstructor = global$1[ARRAY];
         if (TypedArrayConstructor && has(TypedArrayConstructor, KEY)) {
           delete TypedArrayConstructor[KEY];
         }
@@ -6669,7 +6666,7 @@ var Timeline = (function (d3) {
       } else return;
     }
     for (ARRAY in TypedArrayConstructorsList) {
-      TypedArrayConstructor = global_1[ARRAY];
+      TypedArrayConstructor = global$1[ARRAY];
       if (TypedArrayConstructor && (!TypedArrayConstructor[KEY] || forced)) {
         redefine(TypedArrayConstructor, KEY, property);
       }
@@ -6677,7 +6674,7 @@ var Timeline = (function (d3) {
   };
 
   for (NAME$1 in TypedArrayConstructorsList) {
-    if (!global_1[NAME$1]) NATIVE_ARRAY_BUFFER_VIEWS = false;
+    if (!global$1[NAME$1]) NATIVE_ARRAY_BUFFER_VIEWS = false;
   }
 
   // WebKit bug - typed arrays constructors prototype is Object.prototype
@@ -6687,14 +6684,14 @@ var Timeline = (function (d3) {
       throw TypeError('Incorrect invocation');
     };
     if (NATIVE_ARRAY_BUFFER_VIEWS) for (NAME$1 in TypedArrayConstructorsList) {
-      if (global_1[NAME$1]) objectSetPrototypeOf(global_1[NAME$1], TypedArray);
+      if (global$1[NAME$1]) objectSetPrototypeOf(global$1[NAME$1], TypedArray);
     }
   }
 
   if (!NATIVE_ARRAY_BUFFER_VIEWS || !TypedArrayPrototype || TypedArrayPrototype === ObjectPrototype$3) {
     TypedArrayPrototype = TypedArray.prototype;
     if (NATIVE_ARRAY_BUFFER_VIEWS) for (NAME$1 in TypedArrayConstructorsList) {
-      if (global_1[NAME$1]) objectSetPrototypeOf(global_1[NAME$1].prototype, TypedArrayPrototype);
+      if (global$1[NAME$1]) objectSetPrototypeOf(global$1[NAME$1].prototype, TypedArrayPrototype);
     }
   }
 
@@ -6708,8 +6705,8 @@ var Timeline = (function (d3) {
     defineProperty$b(TypedArrayPrototype, TO_STRING_TAG$3, { get: function () {
       return isObject(this) ? this[TYPED_ARRAY_TAG] : undefined;
     } });
-    for (NAME$1 in TypedArrayConstructorsList) if (global_1[NAME$1]) {
-      createNonEnumerableProperty(global_1[NAME$1], TYPED_ARRAY_TAG, NAME$1);
+    for (NAME$1 in TypedArrayConstructorsList) if (global$1[NAME$1]) {
+      createNonEnumerableProperty(global$1[NAME$1], TYPED_ARRAY_TAG, NAME$1);
     }
   }
 
@@ -6770,12 +6767,10 @@ var Timeline = (function (d3) {
 
   /* eslint-disable no-new */
 
-
-
   var NATIVE_ARRAY_BUFFER_VIEWS$2 = arrayBufferViewCore.NATIVE_ARRAY_BUFFER_VIEWS;
 
-  var ArrayBuffer$3 = global_1.ArrayBuffer;
-  var Int8Array$2 = global_1.Int8Array;
+  var ArrayBuffer$3 = global$1.ArrayBuffer;
+  var Int8Array$2 = global$1.Int8Array;
 
   var typedArrayConstructorsRequireWrappers = !NATIVE_ARRAY_BUFFER_VIEWS$2 || !fails(function () {
     Int8Array$2(1);
@@ -6864,7 +6859,7 @@ var Timeline = (function (d3) {
   var nativeDefineProperty = objectDefineProperty.f;
   var nativeGetOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
   var round = Math.round;
-  var RangeError = global_1.RangeError;
+  var RangeError = global$1.RangeError;
   var ArrayBuffer = arrayBuffer.ArrayBuffer;
   var DataView = arrayBuffer.DataView;
   var NATIVE_ARRAY_BUFFER_VIEWS = arrayBufferViewCore.NATIVE_ARRAY_BUFFER_VIEWS;
@@ -6944,7 +6939,7 @@ var Timeline = (function (d3) {
       var CONSTRUCTOR_NAME = TYPE + (CLAMPED ? 'Clamped' : '') + 'Array';
       var GETTER = 'get' + TYPE;
       var SETTER = 'set' + TYPE;
-      var NativeTypedArrayConstructor = global_1[CONSTRUCTOR_NAME];
+      var NativeTypedArrayConstructor = global$1[CONSTRUCTOR_NAME];
       var TypedArrayConstructor = NativeTypedArrayConstructor;
       var TypedArrayConstructorPrototype = TypedArrayConstructor && TypedArrayConstructor.prototype;
       var exported = {};
@@ -7260,7 +7255,7 @@ var Timeline = (function (d3) {
   });
 
   var ITERATOR$5 = wellKnownSymbol('iterator');
-  var Uint8Array = global_1.Uint8Array;
+  var Uint8Array = global$1.Uint8Array;
   var arrayValues = es_array_iterator.values;
   var arrayKeys = es_array_iterator.keys;
   var arrayEntries = es_array_iterator.entries;
@@ -7449,7 +7444,7 @@ var Timeline = (function (d3) {
     );
   });
 
-  var Int8Array$3 = global_1.Int8Array;
+  var Int8Array$3 = global$1.Int8Array;
   var aTypedArray$m = arrayBufferViewCore.aTypedArray;
   var exportTypedArrayMethod$m = arrayBufferViewCore.exportTypedArrayMethod;
   var $toLocaleString = [].toLocaleString;
@@ -7476,7 +7471,7 @@ var Timeline = (function (d3) {
 
 
 
-  var Uint8Array$1 = global_1.Uint8Array;
+  var Uint8Array$1 = global$1.Uint8Array;
   var Uint8ArrayPrototype = Uint8Array$1 && Uint8Array$1.prototype || {};
   var arrayToString = [].toString;
   var arrayJoin = [].join;
@@ -7719,7 +7714,7 @@ var Timeline = (function (d3) {
 
   // Reflect[@@toStringTag] property
   // https://tc39.es/ecma262/#sec-reflect-@@tostringtag
-  setToStringTag(global_1.Reflect, 'Reflect', true);
+  setToStringTag(global$1.Reflect, 'Reflect', true);
 
   // iterable DOM collections
   // flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
@@ -7758,7 +7753,7 @@ var Timeline = (function (d3) {
   };
 
   for (var COLLECTION_NAME in domIterables) {
-    var Collection = global_1[COLLECTION_NAME];
+    var Collection = global$1[COLLECTION_NAME];
     var CollectionPrototype = Collection && Collection.prototype;
     // some Chrome versions have non-configurable methods on DOMTokenList
     if (CollectionPrototype && CollectionPrototype.forEach !== arrayForEach) try {
@@ -7773,7 +7768,7 @@ var Timeline = (function (d3) {
   var ArrayValues = es_array_iterator.values;
 
   for (var COLLECTION_NAME$1 in domIterables) {
-    var Collection$1 = global_1[COLLECTION_NAME$1];
+    var Collection$1 = global$1[COLLECTION_NAME$1];
     var CollectionPrototype$1 = Collection$1 && Collection$1.prototype;
     if (CollectionPrototype$1) {
       // some Chrome versions have non-configurable methods on DOMTokenList
@@ -7796,7 +7791,7 @@ var Timeline = (function (d3) {
     }
   }
 
-  var FORCED$l = !global_1.setImmediate || !global_1.clearImmediate;
+  var FORCED$l = !global$1.setImmediate || !global$1.clearImmediate;
 
   // http://w3c.github.io/setImmediate/
   _export({ global: true, bind: true, enumerable: true, forced: FORCED$l }, {
@@ -7808,7 +7803,7 @@ var Timeline = (function (d3) {
     clearImmediate: task.clear
   });
 
-  var process$4 = global_1.process;
+  var process$4 = global$1.process;
 
   // `queueMicrotask` method
   // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-queuemicrotask
@@ -7838,10 +7833,10 @@ var Timeline = (function (d3) {
   _export({ global: true, bind: true, forced: MSIE }, {
     // `setTimeout` method
     // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-settimeout
-    setTimeout: wrap$1(global_1.setTimeout),
+    setTimeout: wrap$1(global$1.setTimeout),
     // `setInterval` method
     // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-setinterval
-    setInterval: wrap$1(global_1.setInterval)
+    setInterval: wrap$1(global$1.setInterval)
   });
 
   var ITERATOR$7 = wellKnownSymbol('iterator');
@@ -8414,7 +8409,7 @@ var Timeline = (function (d3) {
 
 
 
-  var NativeURL = global_1.URL;
+  var NativeURL = global$1.URL;
   var URLSearchParams$1 = web_urlSearchParams.URLSearchParams;
   var getInternalSearchParamsState = web_urlSearchParams.getState;
   var setInternalState$a = internalState.set;
@@ -9418,6 +9413,16 @@ var Timeline = (function (d3) {
     Events["TOGGLE"] = "toggle";
   })(Events || (Events = {}));
 
+  var Priority;
+
+  (function (Priority) {
+    Priority[Priority["LOW"] = 100] = "LOW";
+    Priority[Priority["NORMAL"] = 0] = "NORMAL";
+    Priority[Priority["HIGH"] = -100] = "HIGH";
+  })(Priority || (Priority = {}));
+
+  var nextId = 0;
+
   var EventBus = /*#__PURE__*/function () {
     function EventBus() {
       _classCallCheck(this, EventBus);
@@ -9430,26 +9435,44 @@ var Timeline = (function (d3) {
     _createClass(EventBus, [{
       key: "on",
       value: function on(event, callback) {
+        var priority = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Priority.NORMAL;
+
         if (!this.listeners[event]) {
           this.listeners[event] = [];
         }
 
-        this.listeners[event].push(callback);
+        var holder = {
+          callback: callback,
+          priority: priority,
+          id: ++nextId
+        };
+        this.listeners[event].push(holder);
+        this.listeners[event].sort(function (a, b) {
+          return a.priority - b.priority;
+        });
+        return holder.id;
       }
     }, {
       key: "un",
-      value: function un(event, callback) {
+      value: function un(event, callback, id) {
         if (!this.listeners[event]) return;
-        this.listeners[event] = this.listeners[event].filter(function (item) {
-          return item !== callback;
-        });
+
+        if (!!id) {
+          this.listeners[event] = this.listeners[event].filter(function (item) {
+            return item.id !== id;
+          });
+        } else {
+          this.listeners[event] = this.listeners[event].filter(function (item) {
+            return item.callback !== callback;
+          });
+        }
       }
     }, {
-      key: "publish",
-      value: function publish(event, arg) {
+      key: "emit",
+      value: function emit(event, arg) {
         if (!this.listeners[event]) return;
-        this.listeners[event].forEach(function (callback) {
-          return callback(arg);
+        this.listeners[event].forEach(function (holder) {
+          return holder.callback(arg);
         });
       }
     }, {
@@ -9465,6 +9488,7 @@ var Timeline = (function (d3) {
 
     return EventBus;
   }();
+  var eventbus = new EventBus();
 
   var applyStyle = function applyStyle(el, style) {
     var attr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
@@ -9805,8 +9829,6 @@ var Timeline = (function (d3) {
     _createClass(Task, [{
       key: "computeRowHeights",
       value: function computeRowHeights() {
-        if (this.options.collapsed) ;
-
         this.heights = this.rows.map(function (row) {
           return row.map(function (plan) {
             return plan.height;
@@ -9986,8 +10008,6 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "right", void 0);
 
-      _defineProperty(this, "rightParent", void 0);
-
       _defineProperty(this, "bodyHeader", void 0);
 
       _defineProperty(this, "headerSvg", void 0);
@@ -10012,12 +10032,11 @@ var Timeline = (function (d3) {
       this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
       this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
       this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
-      this.rightParent = this.parent.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow-x', 'auto').style('z-index', 3);
-      this.right = this.rightParent.append('div').style('flex', 1).style('position', 'relative').style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow-y', 'auto').style('overflow-x', 'hidden');
+      this.right = this.parent.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
       this.bodyHeader = this.right.append('div').style('overflow', 'hidden');
       this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
       this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto').style('position', 'relative');
-      this.highlights = this.bodyHolder.append('svg').style('position', 'absolute').style('left', 0).style('top', 0).style('width', '100%').style('height', 'calc(100% - 18px)').style('pointer-events', 'none');
+      this.highlights = this.right.append('svg').style('position', 'absolute').style('left', 0).style('top', 0).style('height', 'calc(100% - 18px)').style('pointer-events', 'none');
       this.renderDivs();
       this.bodyHolder.node().addEventListener('scroll', function (event) {
         _this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
@@ -10181,11 +10200,11 @@ var Timeline = (function (d3) {
         var _this2 = this;
 
         this.columns.renderDivs(this.columnsHeader, this.columnsBody);
-        this.left.style('min-width', this.left.node().getBoundingClientRect().width);
         this.computeBoundingDates();
         var bounds = this.bodyHolder.node().getBoundingClientRect();
         var viewport = bounds.width;
         var size = this.computeSize(viewport);
+        console.log(this.minDate);
         this.y = d3.scaleBand().range([size.height, 0]).domain(this.tasks.map(function (c, i) {
           return i + '';
         })).padding(0.1);
@@ -10213,7 +10232,7 @@ var Timeline = (function (d3) {
             break;
 
           case VIEW_MODE.YEAR:
-            startDate = startDate.add(-1, 'month');
+            startDate = startDate.add(-1, 'year');
             break;
 
           case VIEW_MODE.FILL:
@@ -10227,6 +10246,7 @@ var Timeline = (function (d3) {
 
         console.log(size.width, viewport);
         var fullWidth = Math.max(size.width, viewport);
+        this.highlights.style('width', fullWidth);
         this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]);
 
         if (this.options.viewMode == VIEW_MODE.FILL) {
@@ -10284,8 +10304,7 @@ var Timeline = (function (d3) {
           }).style('fill', function (obj) {
             return obj.fill;
           });
-        } // console.log(this.node().scrollWidth)
-
+        }
       }
     }]);
 

@@ -54,7 +54,6 @@ export default class Task {
     }
 
     this.options = options
-
     this.computeRowHeights()
     this.labels = {}
 
@@ -66,11 +65,7 @@ export default class Task {
   }
 
   computeRowHeights(): void {
-    if (this.options.collapsed) {
 
-    } else {
-
-    }
     this.heights = this.rows
       .map((row) => row.map((plan) => plan.height))
       .map((row) => Math.max.apply(null, row))
