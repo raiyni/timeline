@@ -50,7 +50,6 @@ export default class View {
     this.columns = new Columns(this.tasks, this.options)
 
     const owner = d3.select(document.body.querySelector(selector))
-
     owner.html("")
 
     this.parent = owner
@@ -105,13 +104,17 @@ export default class View {
       .append('svg')
       .style('position', 'absolute')
       .style('left', 0)
-      .style('top', -20)
+      .style('top', 0)
       .style('pointer-events', 'none')
 
-    const updateHeight = () => this.highlights.attr('height', this.bodyHolder.node().scrollHeight)
+    const updateHeight = () => {
+      const heights = this.tasks.map(t => t.getHeight())
+      const a = heights.reduce((a, b) => a + b)
+      const b = this.tasks.length * this.options.taskMargin
+      this.highlights.attr('height', a + b)
+    }
     this.options.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
     this.options.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW)
-    this.options.eventbus.on(Events.COLLAPSE, () => console.log(true), Priority.LOW)
 
     this.bodyHolder.node().addEventListener('scroll', (event: any) => {
       this.updateScroll(event.target.scrollLeft, event.target.scrollTop);

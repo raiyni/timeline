@@ -62,7 +62,7 @@ export default class Column {
           .attr('data-id', task.id)
 
         button.node().addEventListener('click', (e: MouseEvent) => {
-          this.timelineOptions.eventbus.emit(Events.TOGGLE, button.attribute('data-id'))
+          this.timelineOptions.eventbus.emit(Events.TOGGLE, button.node().getAttribute('data-id'))
         })
 
         layer.selectAll('div:first-child span')

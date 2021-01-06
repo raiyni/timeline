@@ -29,5 +29,7 @@ export default class Timeline {
         // console.log(e)
         // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')
       // })
+
+    console.log(this)
   }
 }

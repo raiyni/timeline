@@ -77,10 +77,17 @@ export default class Task {
   }
 
   computeRowHeights(): void {
-
     this.heights = this.rows
       .map((row) => row.map((plan) => plan.height))
       .map((row) => Math.max.apply(null, row))
+  }
+
+  getHeight(): number {
+    if (this.options.collapsed) {
+      return this.heights[0];
+    }
+
+    return this.heights.reduce((a, b) => a + b)
   }
 
   renderDivs(x: any, y: any, group: any, offset: Offset) {

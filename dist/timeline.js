@@ -9552,7 +9552,7 @@ var Timeline = (function (d3) {
           if (task.options.collapsible && columnIdx == 0) {
             var button = layer.selectAll("div:first-child").insert('a', ':first-child').attr('class', _this.buttonCls(task.options.collapsed)).attr('data-id', task.id);
             button.node().addEventListener('click', function (e) {
-              _this.timelineOptions.eventbus.emit(Events.TOGGLE, button.attribute('data-id'));
+              _this.timelineOptions.eventbus.emit(Events.TOGGLE, button.node().getAttribute('data-id'));
             });
             layer.selectAll('div:first-child span').style('margin-left', 5);
           }
@@ -9848,6 +9848,17 @@ var Timeline = (function (d3) {
         });
       }
     }, {
+      key: "getHeight",
+      value: function getHeight() {
+        if (this.options.collapsed) {
+          return this.heights[0];
+        }
+
+        return this.heights.reduce(function (a, b) {
+          return a + b;
+        });
+      }
+    }, {
       key: "renderDivs",
       value: function renderDivs(x, y, group, offset) {
         var _this2 = this;
@@ -10055,17 +10066,23 @@ var Timeline = (function (d3) {
       this.bodyHeader = this.right.append('div').style('overflow', 'hidden').style('padding-right', '18px');
       this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
       this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto').style('position', 'relative');
-      this.highlights = this.bodyHolder.append('svg').style('position', 'absolute').style('left', 0).style('top', -20).style('pointer-events', 'none');
+      this.highlights = this.bodyHolder.append('svg').style('position', 'absolute').style('left', 0).style('top', 0).style('pointer-events', 'none');
 
       var updateHeight = function updateHeight() {
-        return _this.highlights.attr('height', _this.bodyHolder.node().scrollHeight);
+        var heights = _this.tasks.map(function (t) {
+          return t.getHeight();
+        });
+
+        var a = heights.reduce(function (a, b) {
+          return a + b;
+        });
+        var b = _this.tasks.length * _this.options.taskMargin;
+
+        _this.highlights.attr('height', a + b);
       };
 
       this.options.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW);
       this.options.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW);
-      this.options.eventbus.on(Events.COLLAPSE, function () {
-        return console.log(true);
-      }, Priority.LOW);
       this.bodyHolder.node().addEventListener('scroll', function (event) {
         _this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
       });
@@ -10369,6 +10386,8 @@ var Timeline = (function (d3) {
     // console.log(e)
     // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')
     // })
+
+    console.log(this);
   };
 
   return Timeline;
