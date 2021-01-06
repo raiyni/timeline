@@ -7,11 +7,11 @@ import { applyStyle } from "./util";
 export default class Column {
   private tasks: Task[]
   private options: ColumnOptions
-  private timelineOptions: TimelineOptions
-  constructor(tasks: Task[], options: ColumnOptions, timelineOptions: TimelineOptions) {
+  private config: TimelineOptions
+  constructor(tasks: Task[], options: ColumnOptions, config: TimelineOptions) {
     this.tasks = tasks
     this.options = options
-    this.timelineOptions = timelineOptions
+    this.config = config
     this.options.padding = this.options.padding || 5
   }
 
@@ -62,7 +62,7 @@ export default class Column {
           .attr('data-id', task.id)
 
         button.node().addEventListener('click', (e: MouseEvent) => {
-          this.timelineOptions.eventbus.emit(Events.TOGGLE, button.node().getAttribute('data-id'))
+          this.config.eventbus.emit(Events.TOGGLE, button.node().getAttribute('data-id'))
         })
 
         layer.selectAll('div:first-child span')

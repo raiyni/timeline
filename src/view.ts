@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 
 import { Events, Priority } from './EventBus'
-import { Highlight, Offset, PlanOptions, Rect, Sides, TaskOptions, TimelineOptions, VIEW_MODE } from './types'
+import { Highlight, Offset, Rect, TaskOptions, TimelineOptions } from './types'
 
 import Columns from './columns'
 import Task from './task'
@@ -20,7 +20,7 @@ export default class View {
   private minDate: dayjs.Dayjs
   private maxDate: dayjs.Dayjs
 
-  private options: TimelineOptions
+  private config: TimelineOptions
 
   private columns: Columns
 
@@ -37,17 +37,17 @@ export default class View {
 
   private highlights: any
 
-  constructor(selector: string, taskOptions: TaskOptions[], options: TimelineOptions) {
+  constructor(selector: string, taskOptions: TaskOptions[], config: TimelineOptions) {
     dayjs.extend(minMax)
     if (!Array.isArray(taskOptions) || taskOptions.length == 0) {
       console.warn('Tasks required to be an array of data')
       return
     }
 
-    this.options = options
+    this.config = config
 
-    this.tasks = taskOptions.map((t) => new Task(t, this.options))
-    this.columns = new Columns(this.tasks, this.options)
+    this.tasks = taskOptions.map((t) => new Task(t, this.config))
+    this.columns = new Columns(this.tasks, this.config)
 
     const owner = d3.select(document.body.querySelector(selector))
     owner.html("")
@@ -61,7 +61,7 @@ export default class View {
       .style('height', '100%')
       .style('overflow', 'hidden')
 
-    options.wrapper = this.parent
+    config.wrapper = this.parent
 
     this.left = this.parent
       .append('div')
@@ -72,12 +72,14 @@ export default class View {
     this.columnsHeader = this.left.append('div')
       .style('min-height', 30)
       .style('display', 'flex')
+      .style('border-right', '1px solid #000')
 
     this.columnsBody = this.left.append('div')
       .style('flex', 1)
       .style('flex-direction', 'row')
       .style('display', 'flex')
       .style('overflow', 'hidden')
+      .style('border-right', '1px solid #000')
 
     this.right = this.parent
       .append('div')
@@ -110,11 +112,11 @@ export default class View {
     const updateHeight = () => {
       const heights = this.tasks.map(t => t.getHeight())
       const a = heights.reduce((a, b) => a + b)
-      const b = this.tasks.length * this.options.taskMargin
+      const b = this.tasks.length * this.config.taskMargin
       this.highlights.attr('height', a + b)
     }
-    this.options.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
-    this.options.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW)
+    this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
+    this.config.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW)
 
     this.bodyHolder.node().addEventListener('scroll', (event: any) => {
       this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
@@ -135,7 +137,7 @@ export default class View {
 
     this.minDate = dayjs.min(startDates)
     this.maxDate = dayjs.max(endDates)
-    switch (this.options.viewMode || VM.WEEK) {
+    switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
         this.maxDate = this.maxDate.add(1, 'day')
         break
@@ -156,7 +158,7 @@ export default class View {
   }
 
   private getDateDiff(): number {
-    switch (this.options.viewMode || VM.WEEK) {
+    switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
         return Math.ceil(this.maxDate.diff(this.minDate, 'day'))
       case VM.MONTH:
@@ -172,7 +174,7 @@ export default class View {
   }
 
   private getDateWidth(): number {
-    switch (this.options.viewMode || VM.WEEK) {
+    switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
         return 30
         case VM.WEEK:
@@ -198,13 +200,13 @@ export default class View {
       .reduce((a, b) => a + b)
 
     return {
-      width: (this.options.viewMode == VM.FILL ? 1 : width),
+      width: (this.config.viewMode == VM.FILL ? 1 : width),
       height: Math.max(height, bounds.height)
     }
   }
 
   private getDateType(): dayjs.OpUnitType {
-    switch (this.options.viewMode || VM.WEEK) {
+    switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
         return 'day'
       case VM.MONTH:
@@ -222,7 +224,7 @@ export default class View {
     const width = this.getDateWidth()
     let day = dayjs()
 
-    switch (this.options.viewMode || VM.WEEK) {
+    switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
         day = this.minDate.add(1, 'day')
         break
@@ -262,7 +264,7 @@ export default class View {
     const referenceAxis = this.getAxis()
 
     let endDate = this.maxDate
-    // if (size.width < viewport && this.options.viewMode != VM.FILL) {
+    // if (size.width < viewport && this.config.viewMode != VM.FILL) {
     //   let date = this.maxDate
     //   let w = size.width
     //   const unit = this.getDateType()
@@ -275,7 +277,7 @@ export default class View {
     // }
 
     let startDate = this.minDate
-    switch (this.options.viewMode || VM.WEEK) {
+    switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
         startDate = startDate.add(-1, 'day')
         break
@@ -299,12 +301,12 @@ export default class View {
     this.highlights.attr('width', fullWidth)
     this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate])
 
-    if (this.options.viewMode == VM.FILL) {
+    if (this.config.viewMode == VM.FILL) {
       this.x = this.x.nice()
     }
 
     let xAxis = d3.axisTop(this.x)
-    switch (this.options.viewMode || VM.WEEK) {
+    switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
         xAxis = xAxis.ticks(d3.timeDay.every(3))
         break
@@ -339,7 +341,7 @@ export default class View {
       .append('div')
       .classed('group', true)
       .style('width', fullWidth)
-      .style('margin-top', this.options.taskMargin)
+      .style('margin-top', this.config.taskMargin)
 
     const offset: Offset = { x: fullWidth, y: 0 }
     this.groups.each((task: Task, idx: number, arr: SVGElement[]) => {
@@ -357,15 +359,15 @@ export default class View {
       .style('height', '40px')
       .text(' ')
 
-    if (this.options.highlights) {
-      this.options.highlights.forEach(h => {
+    if (this.config.highlights) {
+      this.config.highlights.forEach(h => {
         h.start = dayjs(h.start)
         h.end = dayjs(h.end)
       })
 
       this.highlights
         .selectAll('.highlight')
-        .data(this.options.highlights)
+        .data(this.config.highlights.filter( h => !h.headerOnly))
         .enter()
         .append('rect')
         .classed('highlight', true)
@@ -377,7 +379,7 @@ export default class View {
 
       this.headerSvg
         .selectAll('.highlight')
-        .data(this.options.highlights)
+        .data(this.config.highlights)
         .enter()
         .append('rect')
         .classed('highlight', true)
@@ -389,6 +391,6 @@ export default class View {
     }
 
     this.bodyHeader.node().scrollWidth = this.bodyHolder.node().scrollWidth
-    this.options.eventbus.emit(Events.COLLAPSE)
+    this.config.eventbus.emit(Events.COLLAPSE)
   }
 }

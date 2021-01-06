@@ -1,22 +1,21 @@
-import { Offset, TimelineOptions } from "./types";
-
 import Column from "./column";
 import Task from "./task";
+import { TimelineOptions } from "./types";
 import deepmerge from './deepmerge';
 
 export default class Columns {
   private tasks: Task[]
-  private options: TimelineOptions
+  private config: TimelineOptions
   private columns: Column[]
   dom: any
-  constructor(tasks: Task[], options: TimelineOptions) {
+  constructor(tasks: Task[], config: TimelineOptions) {
     this.tasks = tasks
-    this.options = options
-    this.columns = options.columns.map(o => {
+    this.config = config
+    this.columns = this.config.columns.map(o => {
       const colOptions = deepmerge({
-        taskMargin: options.taskMargin
+        taskMargin: this.config.taskMargin
       }, o)
-      return new Column(this.tasks, colOptions, options)
+      return new Column(this.tasks, colOptions, this.config)
     })
   }
 
@@ -28,9 +27,5 @@ export default class Columns {
 
       column.renderDivs(header, layer, idx)
     })
-  }
-
-  getWidth(): number {
-    return this.dom.node().getBBox().width
   }
 }

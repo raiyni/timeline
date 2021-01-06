@@ -25,10 +25,10 @@ rect {
 a.task-collapse,
 a.task-expand {
   display: inline-block;
-  border: 0.1em solid rgba(255, 255, 255, 0.63);
+  border: 0.1em solid rgba(0, 0, 0, 0.63);
   border-radius: 0.12em;
   box-sizing: border-box;
-  color: #535353;
+  color: #000000;
   display: inline-block;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
@@ -41,8 +41,8 @@ a.task-expand {
 
 a.task-collapse:hover,
 a.task-expand:hover {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #000000;
+  color: #ffffff;
   cursor: pointer;
 }
 

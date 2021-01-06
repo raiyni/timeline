@@ -12,12 +12,12 @@ export default class Task {
   heights: number[]
   labels: { [key: string]: LabelOptions[] }
   options: TaskOptions & obj
-  timelineOptions: TimelineOptions
+  config: TimelineOptions
   id: string
-  constructor(options: TaskOptions & obj, timelineOptions: TimelineOptions) {
+  constructor(options: TaskOptions & obj, config: TimelineOptions) {
     this.id = uid()
     this.rows = []
-    this.timelineOptions = timelineOptions
+    this.config = config
     if (options.plan) {
       this.rows = [[new Plan(options.plan)]]
     } else if (options.plans && Array.isArray(options.plans)) {
@@ -57,19 +57,19 @@ export default class Task {
     this.computeRowHeights()
     this.labels = {}
 
-    if (timelineOptions.columns.length == 0) return
+    if (config.columns.length == 0) return
 
-    timelineOptions.columns.forEach((c: ColumnOptions, idx: number) => {
+    config.columns.forEach((c: ColumnOptions, idx: number) => {
       this.labels[c.field] = this.prepareOptions(c)
     })
 
-    this.timelineOptions.eventbus.on(Events.TOGGLE, (id) => {
+    this.config.eventbus.on(Events.TOGGLE, (id) => {
       if (id == this.id) {
         this.toggle()
       }
     }, Priority.HIGH)
 
-    this.timelineOptions.eventbus.on(Events.COLLAPSE, () => {
+    this.config.eventbus.on(Events.COLLAPSE, () => {
       if (this.options.collapsed) {
         this.collapse()
       }
@@ -193,13 +193,13 @@ export default class Task {
   }
 
   getTaskSubColumns(): any {
-    return this.timelineOptions.wrapper
+    return this.config.wrapper
       .selectAll(`div[data-id="${this.id}"]`)
       .selectAll('.column-plan:not(:first-child)')
   }
 
   getTaskSubRows(): any {
-    return this.timelineOptions.wrapper
+    return this.config.wrapper
       .selectAll(`div[data-id="${this.id}"]`)
       .selectAll('.task-row:not(:first-child)')
   }
@@ -211,7 +211,7 @@ export default class Task {
     this.getTaskSubRows()
       .style('display', 'none')
 
-    this.timelineOptions.wrapper
+    this.config.wrapper
       .select(`a[data-id="${this.id}]`)
       .attr('class', 'task-expand')
   }
@@ -223,7 +223,7 @@ export default class Task {
     this.getTaskSubRows()
       .style('display', 'flex')
 
-    this.timelineOptions.wrapper
+    this.config.wrapper
       .select(`a[data-id="${this.id}]`)
       .attr('class', 'task-collapse')
   }

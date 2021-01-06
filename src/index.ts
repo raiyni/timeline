@@ -10,21 +10,21 @@ import deepmerge from './deepmerge';
 export default class Timeline {
   private view: View
 
-  private options: TimelineOptions
+  private config: TimelineOptions
 
-  constructor(selector: string, taskOptions: TaskOptions[], options: TimelineOptions ) {
-    this.options = deepmerge({
+  constructor(selector: string, taskOptions: TaskOptions[], config: TimelineOptions ) {
+    this.config = deepmerge({
       columns: [],
       padding: {},
       taskMargin: 5
-    }, options)
+    }, config)
 
-    this.options.eventbus = new EventBus()
+    this.config.eventbus = new EventBus()
 
-    this.options.eventbus.on(Events.COLLAPSE, () => true)
-    this.view = new View(selector, taskOptions, this.options)
+    this.config.eventbus.on(Events.COLLAPSE, () => true)
+    this.view = new View(selector, taskOptions, this.config)
 
-    console.log(this.options)
+    console.log(this.config)
       // .call(d3.zoom().on("zoom", function(e) {
         // console.log(e)
         // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')

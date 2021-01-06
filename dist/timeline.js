@@ -9509,18 +9509,18 @@ var Timeline = (function (d3) {
   };
 
   var Column = /*#__PURE__*/function () {
-    function Column(tasks, options, timelineOptions) {
+    function Column(tasks, options, config) {
       _classCallCheck(this, Column);
 
       _defineProperty(this, "tasks", void 0);
 
       _defineProperty(this, "options", void 0);
 
-      _defineProperty(this, "timelineOptions", void 0);
+      _defineProperty(this, "config", void 0);
 
       this.tasks = tasks;
       this.options = options;
-      this.timelineOptions = timelineOptions;
+      this.config = config;
       this.options.padding = this.options.padding || 5;
     }
 
@@ -9552,7 +9552,7 @@ var Timeline = (function (d3) {
           if (task.options.collapsible && columnIdx == 0) {
             var button = layer.selectAll("div:first-child").insert('a', ':first-child').attr('class', _this.buttonCls(task.options.collapsed)).attr('data-id', task.id);
             button.node().addEventListener('click', function (e) {
-              _this.timelineOptions.eventbus.emit(Events.TOGGLE, button.node().getAttribute('data-id'));
+              _this.config.eventbus.emit(Events.TOGGLE, button.node().getAttribute('data-id'));
             });
             layer.selectAll('div:first-child span').style('margin-left', 5);
           }
@@ -9646,26 +9646,26 @@ var Timeline = (function (d3) {
   };
 
   var Columns = /*#__PURE__*/function () {
-    function Columns(tasks, options) {
+    function Columns(tasks, config) {
       var _this = this;
 
       _classCallCheck(this, Columns);
 
       _defineProperty(this, "tasks", void 0);
 
-      _defineProperty(this, "options", void 0);
+      _defineProperty(this, "config", void 0);
 
       _defineProperty(this, "columns", void 0);
 
       _defineProperty(this, "dom", void 0);
 
       this.tasks = tasks;
-      this.options = options;
-      this.columns = options.columns.map(function (o) {
+      this.config = config;
+      this.columns = this.config.columns.map(function (o) {
         var colOptions = deepmerge({
-          taskMargin: options.taskMargin
+          taskMargin: _this.config.taskMargin
         }, o);
-        return new Column(_this.tasks, colOptions, options);
+        return new Column(_this.tasks, colOptions, _this.config);
       });
     }
 
@@ -9676,11 +9676,6 @@ var Timeline = (function (d3) {
           var layer = holder.append('div').style('flex', '0 1 auto').attr('class', 'column');
           column.renderDivs(header, layer, idx);
         });
-      }
-    }, {
-      key: "getWidth",
-      value: function getWidth() {
-        return this.dom.node().getBBox().width;
       }
     }]);
 
@@ -9745,7 +9740,7 @@ var Timeline = (function (d3) {
   };
 
   var Task = /*#__PURE__*/function () {
-    function Task(options, timelineOptions) {
+    function Task(options, config) {
       var _this = this;
 
       _classCallCheck(this, Task);
@@ -9760,13 +9755,13 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "options", void 0);
 
-      _defineProperty(this, "timelineOptions", void 0);
+      _defineProperty(this, "config", void 0);
 
       _defineProperty(this, "id", void 0);
 
       this.id = uid$1();
       this.rows = [];
-      this.timelineOptions = timelineOptions;
+      this.config = config;
 
       if (options.plan) {
         this.rows = [[new Plan(options.plan)]];
@@ -9820,16 +9815,16 @@ var Timeline = (function (d3) {
       this.options = options;
       this.computeRowHeights();
       this.labels = {};
-      if (timelineOptions.columns.length == 0) return;
-      timelineOptions.columns.forEach(function (c, idx) {
+      if (config.columns.length == 0) return;
+      config.columns.forEach(function (c, idx) {
         _this.labels[c.field] = _this.prepareOptions(c);
       });
-      this.timelineOptions.eventbus.on(Events.TOGGLE, function (id) {
+      this.config.eventbus.on(Events.TOGGLE, function (id) {
         if (id == _this.id) {
           _this.toggle();
         }
       }, Priority.HIGH);
-      this.timelineOptions.eventbus.on(Events.COLLAPSE, function () {
+      this.config.eventbus.on(Events.COLLAPSE, function () {
         if (_this.options.collapsed) {
           _this.collapse();
         }
@@ -9950,26 +9945,26 @@ var Timeline = (function (d3) {
     }, {
       key: "getTaskSubColumns",
       value: function getTaskSubColumns() {
-        return this.timelineOptions.wrapper.selectAll("div[data-id=\"".concat(this.id, "\"]")).selectAll('.column-plan:not(:first-child)');
+        return this.config.wrapper.selectAll("div[data-id=\"".concat(this.id, "\"]")).selectAll('.column-plan:not(:first-child)');
       }
     }, {
       key: "getTaskSubRows",
       value: function getTaskSubRows() {
-        return this.timelineOptions.wrapper.selectAll("div[data-id=\"".concat(this.id, "\"]")).selectAll('.task-row:not(:first-child)');
+        return this.config.wrapper.selectAll("div[data-id=\"".concat(this.id, "\"]")).selectAll('.task-row:not(:first-child)');
       }
     }, {
       key: "collapse",
       value: function collapse() {
         this.getTaskSubColumns().style('display', 'none');
         this.getTaskSubRows().style('display', 'none');
-        this.timelineOptions.wrapper.select("a[data-id=\"".concat(this.id, "]")).attr('class', 'task-expand');
+        this.config.wrapper.select("a[data-id=\"".concat(this.id, "]")).attr('class', 'task-expand');
       }
     }, {
       key: "expand",
       value: function expand() {
         this.getTaskSubColumns().style('display', 'flex');
         this.getTaskSubRows().style('display', 'flex');
-        this.timelineOptions.wrapper.select("a[data-id=\"".concat(this.id, "]")).attr('class', 'task-collapse');
+        this.config.wrapper.select("a[data-id=\"".concat(this.id, "]")).attr('class', 'task-collapse');
       }
     }, {
       key: "toggle",
@@ -10004,7 +9999,7 @@ var Timeline = (function (d3) {
   });
 
   var View = /*#__PURE__*/function () {
-    function View(selector, taskOptions, options) {
+    function View(selector, taskOptions, config) {
       var _this = this;
 
       _classCallCheck(this, View);
@@ -10023,7 +10018,7 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "maxDate", void 0);
 
-      _defineProperty(this, "options", void 0);
+      _defineProperty(this, "config", void 0);
 
       _defineProperty(this, "columns", void 0);
 
@@ -10050,18 +10045,18 @@ var Timeline = (function (d3) {
         return;
       }
 
-      this.options = options;
+      this.config = config;
       this.tasks = taskOptions.map(function (t) {
-        return new Task(t, _this.options);
+        return new Task(t, _this.config);
       });
-      this.columns = new Columns(this.tasks, this.options);
+      this.columns = new Columns(this.tasks, this.config);
       var owner = d3.select(document.body.querySelector(selector));
       owner.html("");
       this.parent = owner.append('div').style('display', 'flex').style('flex-direction', 'row').style('align-items', 'stretch').style('width', '100%').style('height', '100%').style('overflow', 'hidden');
-      options.wrapper = this.parent;
+      config.wrapper = this.parent;
       this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
-      this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex');
-      this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
+      this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex').style('border-right', '1px solid #000');
+      this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden').style('border-right', '1px solid #000');
       this.right = this.parent.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
       this.bodyHeader = this.right.append('div').style('overflow', 'hidden').style('padding-right', '18px');
       this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
@@ -10076,13 +10071,13 @@ var Timeline = (function (d3) {
         var a = heights.reduce(function (a, b) {
           return a + b;
         });
-        var b = _this.tasks.length * _this.options.taskMargin;
+        var b = _this.tasks.length * _this.config.taskMargin;
 
         _this.highlights.attr('height', a + b);
       };
 
-      this.options.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW);
-      this.options.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW);
+      this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW);
+      this.config.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW);
       this.bodyHolder.node().addEventListener('scroll', function (event) {
         _this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
       });
@@ -10110,7 +10105,7 @@ var Timeline = (function (d3) {
         this.minDate = dayjs_min.min(startDates);
         this.maxDate = dayjs_min.max(endDates);
 
-        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+        switch (this.config.viewMode || VIEW_MODE.WEEK) {
           case VIEW_MODE.DAY:
             this.maxDate = this.maxDate.add(1, 'day');
             break;
@@ -10136,7 +10131,7 @@ var Timeline = (function (d3) {
     }, {
       key: "getDateDiff",
       value: function getDateDiff() {
-        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+        switch (this.config.viewMode || VIEW_MODE.WEEK) {
           case VIEW_MODE.DAY:
             return Math.ceil(this.maxDate.diff(this.minDate, 'day'));
 
@@ -10157,7 +10152,7 @@ var Timeline = (function (d3) {
     }, {
       key: "getDateWidth",
       value: function getDateWidth() {
-        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+        switch (this.config.viewMode || VIEW_MODE.WEEK) {
           case VIEW_MODE.DAY:
             return 30;
 
@@ -10186,14 +10181,14 @@ var Timeline = (function (d3) {
           return a + b;
         });
         return {
-          width: this.options.viewMode == VIEW_MODE.FILL ? 1 : width,
+          width: this.config.viewMode == VIEW_MODE.FILL ? 1 : width,
           height: Math.max(height, bounds.height)
         };
       }
     }, {
       key: "getDateType",
       value: function getDateType() {
-        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+        switch (this.config.viewMode || VIEW_MODE.WEEK) {
           case VIEW_MODE.DAY:
             return 'day';
 
@@ -10215,7 +10210,7 @@ var Timeline = (function (d3) {
         var width = this.getDateWidth();
         var day = dayjs_min();
 
-        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+        switch (this.config.viewMode || VIEW_MODE.WEEK) {
           case VIEW_MODE.DAY:
             day = this.minDate.add(1, 'day');
             break;
@@ -10253,7 +10248,7 @@ var Timeline = (function (d3) {
           return i + '';
         })).padding(0.1);
         var referenceAxis = this.getAxis();
-        var endDate = this.maxDate; // if (size.width < viewport && this.options.viewMode != VM.FILL) {
+        var endDate = this.maxDate; // if (size.width < viewport && this.config.viewMode != VM.FILL) {
         //   let date = this.maxDate
         //   let w = size.width
         //   const unit = this.getDateType()
@@ -10266,7 +10261,7 @@ var Timeline = (function (d3) {
 
         var startDate = this.minDate;
 
-        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+        switch (this.config.viewMode || VIEW_MODE.WEEK) {
           case VIEW_MODE.DAY:
             startDate = startDate.add(-1, 'day');
             break;
@@ -10293,13 +10288,13 @@ var Timeline = (function (d3) {
         this.highlights.attr('width', fullWidth);
         this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate]);
 
-        if (this.options.viewMode == VIEW_MODE.FILL) {
+        if (this.config.viewMode == VIEW_MODE.FILL) {
           this.x = this.x.nice();
         }
 
         var xAxis = d3.axisTop(this.x);
 
-        switch (this.options.viewMode || VIEW_MODE.WEEK) {
+        switch (this.config.viewMode || VIEW_MODE.WEEK) {
           case VIEW_MODE.DAY:
             xAxis = xAxis.ticks(d3.timeDay.every(3));
             break;
@@ -10324,7 +10319,7 @@ var Timeline = (function (d3) {
         var xAxisSvg = this.headerSvg.append('g').attr('transform', 'translate(-1, 28)').attr('class', 'x axis').call(xAxis);
         xAxisSvg.select('.tick:first-of-type').remove();
         this.headerSvg.attr('width', fullWidth);
-        this.groups = this.bodyHolder.selectAll('.group').data(this.tasks).enter().append('div').classed('group', true).style('width', fullWidth).style('margin-top', this.options.taskMargin);
+        this.groups = this.bodyHolder.selectAll('.group').data(this.tasks).enter().append('div').classed('group', true).style('width', fullWidth).style('margin-top', this.config.taskMargin);
         var offset = {
           x: fullWidth,
           y: 0
@@ -10336,19 +10331,21 @@ var Timeline = (function (d3) {
         this.bodyHolder.append('div').attr('class', 'group').style('height', '20px').text(' ');
         this.columnsBody.selectAll('.column').append('div').style('height', '40px').text(' ');
 
-        if (this.options.highlights) {
-          this.options.highlights.forEach(function (h) {
+        if (this.config.highlights) {
+          this.config.highlights.forEach(function (h) {
             h.start = dayjs_min(h.start);
             h.end = dayjs_min(h.end);
           });
-          this.highlights.selectAll('.highlight').data(this.options.highlights).enter().append('rect').classed('highlight', true).attr('x', function (obj) {
+          this.highlights.selectAll('.highlight').data(this.config.highlights.filter(function (h) {
+            return !h.headerOnly;
+          })).enter().append('rect').classed('highlight', true).attr('x', function (obj) {
             return _this2.x(obj.start.toDate());
           }).attr('y', 0).attr('height', '100%').attr('width', function (obj) {
             return _this2.x(obj.end.toDate()) - _this2.x(obj.start.toDate());
           }).style('fill', function (obj) {
             return obj.fill;
           });
-          this.headerSvg.selectAll('.highlight').data(this.options.highlights).enter().append('rect').classed('highlight', true).attr('x', function (obj) {
+          this.headerSvg.selectAll('.highlight').data(this.config.highlights).enter().append('rect').classed('highlight', true).attr('x', function (obj) {
             return _this2.x(obj.start.toDate());
           }).attr('y', 0).attr('height', '100%').attr('width', function (obj) {
             return _this2.x(obj.end.toDate()) - _this2.x(obj.start.toDate());
@@ -10358,31 +10355,31 @@ var Timeline = (function (d3) {
         }
 
         this.bodyHeader.node().scrollWidth = this.bodyHolder.node().scrollWidth;
-        this.options.eventbus.emit(Events.COLLAPSE);
+        this.config.eventbus.emit(Events.COLLAPSE);
       }
     }]);
 
     return View;
   }();
 
-  var Timeline = function Timeline(selector, taskOptions, options) {
+  var Timeline = function Timeline(selector, taskOptions, config) {
     _classCallCheck(this, Timeline);
 
     _defineProperty(this, "view", void 0);
 
-    _defineProperty(this, "options", void 0);
+    _defineProperty(this, "config", void 0);
 
-    this.options = deepmerge({
+    this.config = deepmerge({
       columns: [],
       padding: {},
       taskMargin: 5
-    }, options);
-    this.options.eventbus = new EventBus();
-    this.options.eventbus.on(Events.COLLAPSE, function () {
+    }, config);
+    this.config.eventbus = new EventBus();
+    this.config.eventbus.on(Events.COLLAPSE, function () {
       return true;
     });
-    this.view = new View(selector, taskOptions, this.options);
-    console.log(this.options); // .call(d3.zoom().on("zoom", function(e) {
+    this.view = new View(selector, taskOptions, this.config);
+    console.log(this.config); // .call(d3.zoom().on("zoom", function(e) {
     // console.log(e)
     // svg.attr('transform', 'translate(' + e.transform.x + ',' + margin.top + ')')
     // })

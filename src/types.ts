@@ -51,6 +51,7 @@ export interface Highlight {
   start: dayjs.Dayjs | string
   end: dayjs.Dayjs | string
   fill: string
+  headerOnly?: boolean
 }
 
 export interface TimelineOptions {

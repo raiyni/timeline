@@ -22,10 +22,7 @@ var tasks = [
       }]
     ],
     name: {
-      label: 'Apply new styles',
-      backgroundStyle: {
-        'background-color': 'red'
-      }
+      label: 'Apply new styles'
     },
     id: 'Task 2',
     pieces: {
@@ -455,12 +452,20 @@ var tasks = [
 ]
 
 var gantt_chart = new Timeline('#abc123', tasks, {
-  viewMode: 'year',
-  highlights: [{
-    start: '2020-02-03T05:00:00.000Z',
-    end: '2023-03-28T05:00:00.000Z',
-    fill: '#ff00ff'
-  }],
+  viewMode: 'week',
+  highlights: [
+    {
+      start: '2020-02-03T05:00:00.000Z',
+      end: '2023-03-28T05:00:00.000Z',
+      fill: '#ff00ff'
+    },
+    {
+      start: '2021-02-03T05:00:00.000Z',
+      end: '2021-03-28T05:00:00.000Z',
+      fill: '#000000',
+      headerOnly: true
+    }
+],
   columns: [
     { text: 'Name', field: 'name', defaults: { labelStyle: { 'textAnchor': 'middle' } } },
     { text: 'Sq/ft', field: 'area' },
