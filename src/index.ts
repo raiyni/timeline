@@ -1,9 +1,9 @@
 import './gant.scss'
 import 'core-js/stable'
 
-import EventBus, { Events } from './EventBus';
 import { TaskOptions, TimelineOptions } from './types';
 
+import EventBus from './EventBus';
 import View from './view';
 import deepmerge from './deepmerge';
 
@@ -21,7 +21,6 @@ export default class Timeline {
 
     this.config.eventbus = new EventBus()
 
-    this.config.eventbus.on(Events.COLLAPSE, () => true)
     this.view = new View(selector, taskOptions, this.config)
     this.view.render()
 

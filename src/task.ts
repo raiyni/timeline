@@ -63,17 +63,19 @@ export default class Task {
       this.labels[c.field] = this.prepareOptions(c)
     })
 
-    this.config.eventbus.on(Events.TOGGLE, (id) => {
-      if (id == this.id) {
-        this.toggle()
-      }
-    }, Priority.HIGH)
+    if (this.options.collapsible) {
+      this.config.eventbus.on(Events.TOGGLE, (id) => {
+        if (id == this.id) {
+          this.toggle()
+        }
+      }, Priority.HIGH)
 
-    this.config.eventbus.on(Events.COLLAPSE, () => {
-      if (this.options.collapsed) {
-        this.collapse()
-      }
-    }, Priority.HIGH)
+      this.config.eventbus.on(Events.COLLAPSE, () => {
+        if (this.options.collapsed) {
+          this.collapse()
+        }
+      }, Priority.HIGH)
+    }
   }
 
   computeRowHeights(): void {
@@ -212,7 +214,7 @@ export default class Task {
       .style('display', 'none')
 
     this.config.wrapper
-      .select(`a[data-id="${this.id}]`)
+      .select(`a[data-id="${this.id}"]`)
       .attr('class', 'task-expand')
   }
 
@@ -224,7 +226,7 @@ export default class Task {
       .style('display', 'flex')
 
     this.config.wrapper
-      .select(`a[data-id="${this.id}]`)
+      .select(`a[data-id="${this.id}"]`)
       .attr('class', 'task-collapse')
   }
 
@@ -238,5 +240,9 @@ export default class Task {
     }
 
     return !!this.options.collapsed
+  }
+
+  getButtonCls() : string {
+    return this.options.collapsed ? 'task-expand' : 'task-collapse'
   }
 }

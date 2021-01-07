@@ -58,7 +58,7 @@ export default class Column {
         const button = layer
           .selectAll("div:first-child")
           .insert('a', ':first-child')
-          .attr('class', this.buttonCls(task.options.collapsed))
+          .attr('class', task.getButtonCls())
           .attr('data-id', task.id)
 
         button.node().addEventListener('click', (e: MouseEvent) => {
@@ -76,9 +76,5 @@ export default class Column {
     const maxWidth = Math.max(titleWidth, parentWidth)
     parent.style('width', maxWidth)
     titleDiv.style('width', maxWidth)
-  }
-
-  buttonCls(collapsed: boolean) : string {
-    return collapsed ? 'task-expand' : 'task-collapse'
   }
 }

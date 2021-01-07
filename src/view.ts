@@ -4,9 +4,11 @@ import { Events, Priority } from './EventBus'
 import { Highlight, Offset, Rect, TaskOptions, TimelineOptions } from './types'
 
 import Columns from './columns'
+import ResizeObserver from 'resize-observer-polyfill'
 import Task from './task'
 import { VIEW_MODE as VM } from './types'
 import dayjs from 'dayjs'
+import { debounce } from './util';
 import minMax from 'dayjs/plugin/minMax'
 
 export default class View {
@@ -63,6 +65,35 @@ export default class View {
 
     config.wrapper = this.parent
 
+    const updateHeight = () => {
+      if (this.config.highlights && this.config.highlights.length > 0) {
+        const heights = this.tasks.map(t => t.getHeight())
+        const a = heights.reduce((a, b) => a + b)
+        const b = this.tasks.length * this.config.taskMargin
+        this.highlights.attr('height', a + b)
+      }
+    }
+
+    this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
+    this.config.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW)
+
+    const logger = debounce(() => {
+      console.log('render')
+      this.render()
+    }, 150)
+
+    const ro = new ResizeObserver((entries, observer) => {
+      logger()
+    })
+
+
+
+    ro.observe(owner.node())
+  }
+
+  private createDom() {
+    this.parent.html("")
+
     this.left = this.parent
       .append('div')
       .style('display', 'flex')
@@ -79,7 +110,6 @@ export default class View {
       .style('flex-direction', 'row')
       .style('display', 'flex')
       .style('overflow', 'hidden')
-      .style('border-right', '1px solid #000')
 
     this.right = this.parent
       .append('div')
@@ -108,15 +138,6 @@ export default class View {
       .style('left', 0)
       .style('top', 0)
       .style('pointer-events', 'none')
-
-    const updateHeight = () => {
-      const heights = this.tasks.map(t => t.getHeight())
-      const a = heights.reduce((a, b) => a + b)
-      const b = this.tasks.length * this.config.taskMargin
-      this.highlights.attr('height', a + b)
-    }
-    this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
-    this.config.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW)
 
     this.bodyHolder.node().addEventListener('scroll', (event: any) => {
       this.updateScroll(event.target.scrollLeft, event.target.scrollTop);
@@ -243,6 +264,8 @@ export default class View {
   }
 
   render() {
+    this.createDom()
+
     this.columns.render(this.columnsHeader, this.columnsBody)
 
     this.computeBoundingDates()

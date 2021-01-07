@@ -26,7 +26,7 @@ export default class EventBus {
     this.listeners = {}
   }
 
-  on(event: Events, callback: EventCallback, priority: Priority = Priority.NORMAL): number {
+  on(event: Events, callback: EventCallback, priority: number = Priority.NORMAL): number {
     if (!this.listeners[event]) {
       this.listeners[event] = []
     }

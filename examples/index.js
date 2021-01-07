@@ -4,7 +4,7 @@ var tasks = [
     plans: [
       [{
         start: '2020-04-03T05:00:00.000Z',
-        end: '2024-04-25T05:00:00.000Z',
+        end: '2021-04-25T05:00:00.000Z',
         progress: 15,
         progressStyle: {
           fill: '#f2c329'
@@ -452,7 +452,7 @@ var tasks = [
 ]
 
 var gantt_chart = new Timeline('#abc123', tasks, {
-  viewMode: 'week',
+  viewMode: 'fill',
   highlights: [
     {
       start: '2020-02-03T05:00:00.000Z',
