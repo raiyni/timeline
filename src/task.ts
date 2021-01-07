@@ -100,6 +100,7 @@ export default class Task {
           .style('height', this.heights[idx])
           .style('width', offset.x)
           .attr('class', 'task-row')
+          .style('background-color', '#fff')
 
       const svg = div.append('svg')
                         .attr('height', this.heights[idx])

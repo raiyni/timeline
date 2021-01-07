@@ -26,6 +26,8 @@ export function debounce (fn: any, wait: number): any {
   let t: NodeJS.Timeout
   return function () {
     clearTimeout(t)
-    t = setTimeout(() => fn.apply(this, arguments), wait)
+    t = setTimeout(function() {
+      fn.call(arguments)
+    }, wait)
   }
 }

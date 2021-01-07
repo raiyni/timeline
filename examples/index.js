@@ -452,11 +452,11 @@ var tasks = [
 ]
 
 var gantt_chart = new Timeline('#abc123', tasks, {
-  viewMode: 'fill',
+  viewMode: 'month',
   highlights: [
     {
-      start: '2020-02-03T05:00:00.000Z',
-      end: '2023-03-28T05:00:00.000Z',
+      start: '2021-02-03T05:00:00.000Z',
+      end: '2021-03-28T05:00:00.000Z',
       fill: '#ff00ff'
     },
     {

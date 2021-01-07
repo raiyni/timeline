@@ -7,7 +7,6 @@ export default class Columns {
   private tasks: Task[]
   private config: TimelineOptions
   private columns: Column[]
-  dom: any
   constructor(tasks: Task[], config: TimelineOptions) {
     this.tasks = tasks
     this.config = config

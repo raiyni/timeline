@@ -28,6 +28,7 @@ export default class View {
 
   private left: any
   private right: any
+  private border: any
 
   private bodyHeader: any
   private headerSvg: any
@@ -66,12 +67,15 @@ export default class View {
     config.wrapper = this.parent
 
     const updateHeight = () => {
+      const heights = this.tasks.map(t => t.getHeight())
+      const a = heights.reduce((a, b) => a + b)
+      const b = this.tasks.length * this.config.taskMargin
+
       if (this.config.highlights && this.config.highlights.length > 0) {
-        const heights = this.tasks.map(t => t.getHeight())
-        const a = heights.reduce((a, b) => a + b)
-        const b = this.tasks.length * this.config.taskMargin
         this.highlights.attr('height', a + b)
       }
+
+      this.border.style('height', a + b + 30)
     }
 
     this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
@@ -86,8 +90,6 @@ export default class View {
       logger()
     })
 
-
-
     ro.observe(owner.node())
   }
 
@@ -99,19 +101,33 @@ export default class View {
       .style('display', 'flex')
       .style('flex-direction', 'column')
       .style('overflow', 'hidden')
+      .style('flex-shrink', 0)
 
     this.columnsHeader = this.left.append('div')
       .style('min-height', 30)
       .style('display', 'flex')
-      .style('border-right', '1px solid #000')
+      .style('background-color', '#fff')
+      // .style('border-right', '1px solid #000')
 
     this.columnsBody = this.left.append('div')
-      .style('flex', 1)
       .style('flex-direction', 'row')
       .style('display', 'flex')
       .style('overflow', 'hidden')
+      // .style('border-right', '1px solid #000')
 
-    this.right = this.parent
+    const rightRapper = this.parent
+      .append('div')
+      .style('display', 'flex')
+      .style('flex', 1)
+      .style('overflow', 'hidden')
+
+    this.border = rightRapper
+      .append('div')
+      .style('position', 'relative')
+      .style('border-right', '1px solid black')
+      .style('overflow', 'hidden')
+
+    this.right = rightRapper
       .append('div')
       .style('position', 'relative')
       .style('flex', 1)
@@ -123,6 +139,7 @@ export default class View {
     this.bodyHeader = this.right.append('div')
       .style('overflow', 'hidden')
       .style('padding-right', '18px')
+      .style('background-color', '#fff')
 
     this.headerSvg = this.bodyHeader.append('svg')
       .attr('height', 30)
@@ -342,7 +359,7 @@ export default class View {
 
     const xAxisSvg = this.headerSvg
       .append('g')
-      .attr('transform', 'translate(-1, 28)')
+      .attr('transform', 'translate(-1, 30)')
       .attr('class', 'x axis')
       .call(xAxis)
 
@@ -357,7 +374,7 @@ export default class View {
       .append('div')
       .classed('group', true)
       .style('width', fullWidth)
-      .style('margin-top', this.config.taskMargin)
+      .style('border-top', `${this.config.taskMargin}px solid black`)
 
     const offset: Offset = { x: fullWidth, y: 0 }
     this.groups.each((task: Task, idx: number, arr: SVGElement[]) => {

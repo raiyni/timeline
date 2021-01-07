@@ -21,12 +21,10 @@ export default class Column {
         .style('align-items', 'flex-end')
         .style('justify-content', 'center')
         .text(this.options.text)
-        .style('box-shadow', 'inset 0 -1px 0 0 #000')
-        .style('margin-bottom', '1px')
 
     this.tasks.forEach((task: Task, idx: number) => {
       const layer = parent.append('div')
-        .style('margin-top', this.options.taskMargin)
+        .style('border-top', `${this.options.taskMargin}px solid black`)
         .attr('class', 'column-task')
         .attr('data-id', task.id)
 
@@ -41,6 +39,7 @@ export default class Column {
           .style('display', 'flex')
           .style('align-items', 'center')
           .attr('class', 'column-plan')
+          .style('background-color', '#fff')
 
         if (l.label) {
           const span = div.append('span').text(l.label)

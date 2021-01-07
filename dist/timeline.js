@@ -9510,12 +9510,9 @@ var Timeline = (function (d3) {
   function debounce(fn, wait) {
     var t;
     return function () {
-      var _arguments = arguments,
-          _this = this;
-
       clearTimeout(t);
       t = setTimeout(function () {
-        return fn.apply(_this, _arguments);
+        fn.call(arguments);
       }, wait);
     };
   }
@@ -9541,14 +9538,14 @@ var Timeline = (function (d3) {
       value: function render(header, parent, columnIdx) {
         var _this = this;
 
-        var titleDiv = header.append('div').style('display', 'flex').style('align-items', 'flex-end').style('justify-content', 'center').text(this.options.text).style('box-shadow', 'inset 0 -1px 0 0 #000').style('margin-bottom', '1px');
+        var titleDiv = header.append('div').style('display', 'flex').style('align-items', 'flex-end').style('justify-content', 'center').text(this.options.text);
         this.tasks.forEach(function (task, idx) {
-          var layer = parent.append('div').style('margin-top', _this.options.taskMargin).attr('class', 'column-task').attr('data-id', task.id);
+          var layer = parent.append('div').style('border-top', "".concat(_this.options.taskMargin, "px solid black")).attr('class', 'column-task').attr('data-id', task.id);
           var labels = task.labels[_this.options.field];
           labels.forEach(function (l, idx2) {
             var height = task.heights[idx2];
             var style = l.backgroundStyle || {};
-            var div = layer.append('div').style('height', height).style('padding', '0 4px 0 4px').style('display', 'flex').style('align-items', 'center').attr('class', 'column-plan');
+            var div = layer.append('div').style('height', height).style('padding', '0 4px 0 4px').style('display', 'flex').style('align-items', 'center').attr('class', 'column-plan').style('background-color', '#fff');
 
             if (l.label) {
               var span = div.append('span').text(l.label);
@@ -9663,8 +9660,6 @@ var Timeline = (function (d3) {
       _defineProperty(this, "config", void 0);
 
       _defineProperty(this, "columns", void 0);
-
-      _defineProperty(this, "dom", void 0);
 
       this.tasks = tasks;
       this.config = config;
@@ -10797,7 +10792,7 @@ var Timeline = (function (d3) {
 
         group.attr('data-id', this.id);
         this.rows.forEach(function (row, idx) {
-          var div = group.append('div').style('height', _this2.heights[idx]).style('width', offset.x).attr('class', 'task-row');
+          var div = group.append('div').style('height', _this2.heights[idx]).style('width', offset.x).attr('class', 'task-row').style('background-color', '#fff');
           var svg = div.append('svg').attr('height', _this2.heights[idx]).attr('width', offset.x);
           row.forEach(function (plan, idx2) {
             var layer = svg.append('g').attr('class', 'plan');
@@ -10968,6 +10963,8 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "right", void 0);
 
+      _defineProperty(this, "border", void 0);
+
       _defineProperty(this, "bodyHeader", void 0);
 
       _defineProperty(this, "headerSvg", void 0);
@@ -10998,18 +10995,20 @@ var Timeline = (function (d3) {
       config.wrapper = this.parent;
 
       var updateHeight = function updateHeight() {
+        var heights = _this.tasks.map(function (t) {
+          return t.getHeight();
+        });
+
+        var a = heights.reduce(function (a, b) {
+          return a + b;
+        });
+        var b = _this.tasks.length * _this.config.taskMargin;
+
         if (_this.config.highlights && _this.config.highlights.length > 0) {
-          var heights = _this.tasks.map(function (t) {
-            return t.getHeight();
-          });
-
-          var a = heights.reduce(function (a, b) {
-            return a + b;
-          });
-          var b = _this.tasks.length * _this.config.taskMargin;
-
           _this.highlights.attr('height', a + b);
         }
+
+        _this.border.style('height', a + b + 30);
       };
 
       this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW);
@@ -11031,11 +11030,15 @@ var Timeline = (function (d3) {
         var _this2 = this;
 
         this.parent.html("");
-        this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden');
-        this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex').style('border-right', '1px solid #000');
-        this.columnsBody = this.left.append('div').style('flex', 1).style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
-        this.right = this.parent.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
-        this.bodyHeader = this.right.append('div').style('overflow', 'hidden').style('padding-right', '18px');
+        this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden').style('flex-shrink', 0);
+        this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex').style('background-color', '#fff'); // .style('border-right', '1px solid #000')
+
+        this.columnsBody = this.left.append('div').style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden'); // .style('border-right', '1px solid #000')
+
+        var rightRapper = this.parent.append('div').style('display', 'flex').style('flex', 1).style('overflow', 'hidden');
+        this.border = rightRapper.append('div').style('position', 'relative').style('border-right', '1px solid black').style('overflow', 'hidden');
+        this.right = rightRapper.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
+        this.bodyHeader = this.right.append('div').style('overflow', 'hidden').style('padding-right', '18px').style('background-color', '#fff');
         this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
         this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto').style('position', 'relative');
         this.highlights = this.bodyHolder.append('svg').style('position', 'absolute').style('left', 0).style('top', 0).style('pointer-events', 'none');
@@ -11274,10 +11277,10 @@ var Timeline = (function (d3) {
             break;
         }
 
-        var xAxisSvg = this.headerSvg.append('g').attr('transform', 'translate(-1, 28)').attr('class', 'x axis').call(xAxis);
+        var xAxisSvg = this.headerSvg.append('g').attr('transform', 'translate(-1, 30)').attr('class', 'x axis').call(xAxis);
         xAxisSvg.select('.tick:first-of-type').remove();
         this.headerSvg.attr('width', fullWidth);
-        this.groups = this.bodyHolder.selectAll('.group').data(this.tasks).enter().append('div').classed('group', true).style('width', fullWidth).style('margin-top', this.config.taskMargin);
+        this.groups = this.bodyHolder.selectAll('.group').data(this.tasks).enter().append('div').classed('group', true).style('width', fullWidth).style('border-top', "".concat(this.config.taskMargin, "px solid black"));
         var offset = {
           x: fullWidth,
           y: 0
@@ -11330,7 +11333,7 @@ var Timeline = (function (d3) {
     this.config = deepmerge({
       columns: [],
       padding: {},
-      taskMargin: 5
+      taskMargin: 2
     }, config);
     this.config.eventbus = new EventBus();
     this.view = new View(selector, taskOptions, this.config);

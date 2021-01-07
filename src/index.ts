@@ -16,7 +16,7 @@ export default class Timeline {
     this.config = deepmerge({
       columns: [],
       padding: {},
-      taskMargin: 5
+      taskMargin: 2
     }, config)
 
     this.config.eventbus = new EventBus()
