@@ -82,16 +82,9 @@ export default class View {
     this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW)
     this.config.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW)
 
-    const logger = debounce(() => {
-      console.log('render')
-      this.render()
-    }, 150)
-
-    const ro = new ResizeObserver((entries, observer) => {
-      logger()
-    })
-
-    ro.observe(owner.node())
+    const renderer = debounce(() => this.render(), 150)
+    const obeserver = new ResizeObserver(() => renderer())
+    obeserver.observe(owner.node())
   }
 
   private createDom() {
@@ -168,9 +161,8 @@ export default class View {
   }
 
   private computeBoundingDates(): void {
-    const dates = this.tasks.map((task) => task.rows).flat(3)
-    const startDates = dates.map((d) => d.start)
-    const endDates = dates.map((d) => d.end)
+    const startDates = this.tasks.map((d) => d.minDate)
+    const endDates = this.tasks.map((d) => d.maxDate)
 
     this.minDate = dayjs.min(startDates)
     this.maxDate = dayjs.max(endDates)

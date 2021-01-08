@@ -10834,6 +10834,10 @@ var Timeline = (function (d3) {
 
       _defineProperty(this, "id", void 0);
 
+      _defineProperty(this, "minDate", void 0);
+
+      _defineProperty(this, "maxDate", void 0);
+
       this.id = uid$1();
       this.rows = [];
       this.config = config;
@@ -10887,6 +10891,21 @@ var Timeline = (function (d3) {
         this.milestones = this.milestones.concat(_fill);
       }
 
+      var plans = this.rows.flat(3);
+      var milestones = this.milestones.flat(3);
+      var iconMilestones = milestones.filter(function (m) {
+        return m.date;
+      }).map(function (m) {
+        return m.date;
+      });
+      var startDates = plans.map(function (p) {
+        return p.start;
+      }).concat(iconMilestones);
+      var endDates = plans.map(function (p) {
+        return p.end;
+      }).concat(iconMilestones);
+      this.minDate = dayjs_min.min(startDates);
+      this.maxDate = dayjs_min.max(endDates);
       this.options = options;
       this.computeRowHeights();
       this.labels = {};
@@ -11143,15 +11162,13 @@ var Timeline = (function (d3) {
 
       this.config.eventbus.on(Events.TOGGLE, updateHeight, Priority.LOW);
       this.config.eventbus.on(Events.COLLAPSE, updateHeight, Priority.LOW);
-      var logger = debounce(function () {
-        console.log('render');
-
-        _this.render();
+      var renderer = debounce(function () {
+        return _this.render();
       }, 150);
-      var ro = new index$1(function (entries, observer) {
-        logger();
+      var obeserver = new index$1(function () {
+        return renderer();
       });
-      ro.observe(owner.node());
+      obeserver.observe(owner.node());
     }
 
     _createClass(View, [{
@@ -11185,14 +11202,11 @@ var Timeline = (function (d3) {
     }, {
       key: "computeBoundingDates",
       value: function computeBoundingDates() {
-        var dates = this.tasks.map(function (task) {
-          return task.rows;
-        }).flat(3);
-        var startDates = dates.map(function (d) {
-          return d.start;
+        var startDates = this.tasks.map(function (d) {
+          return d.minDate;
         });
-        var endDates = dates.map(function (d) {
-          return d.end;
+        var endDates = this.tasks.map(function (d) {
+          return d.maxDate;
         });
         this.minDate = dayjs_min.min(startDates);
         this.maxDate = dayjs_min.max(endDates);

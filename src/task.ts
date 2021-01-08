@@ -5,6 +5,7 @@ import Plan from './plan'
 import deepmerge from './deepmerge'
 import Milestone from './milestone'
 import { Events, Priority } from './EventBus'
+import dayjs from 'dayjs'
 
 export default class Task {
   rows: Plan[][]
@@ -14,6 +15,8 @@ export default class Task {
   options: TaskOptions & obj
   config: TimelineOptions
   id: string
+  minDate: dayjs.Dayjs
+  maxDate: dayjs.Dayjs
   constructor(options: TaskOptions & obj, config: TimelineOptions) {
     this.id = uid()
     this.rows = []
@@ -52,6 +55,16 @@ export default class Task {
       const fill = Array.from({length: this.rows.length - this.milestones.length}, () => [])
       this.milestones = this.milestones.concat(fill)
     }
+
+    const plans = this.rows.flat(3)
+    const milestones = this.milestones.flat(3)
+
+    const iconMilestones = milestones.filter(m => m.date).map(m => m.date)
+    const startDates = plans.map(p => p.start).concat(iconMilestones)
+    const endDates = plans.map(p => p.end).concat(iconMilestones)
+
+    this.minDate = dayjs.min(startDates)
+    this.maxDate = dayjs.max(endDates)
 
     this.options = options
     this.computeRowHeights()
