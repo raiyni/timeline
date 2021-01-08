@@ -13,6 +13,9 @@ export interface PlanOptions {
   progressStyle?: Style
   backgroundStyle?: Style
   labelStyle?: Style
+  name?: LabelOptions
+  startText?: LabelOptions
+  endText?: LabelOptions
 }
 
 export interface MilestoneOptions {

@@ -8,7 +8,28 @@ var tasks = [
         progress: 15,
         progressStyle: {
           fill: '#f2c329'
-        }
+        },
+        name: {
+          label: 'Donkey',
+          labelStyle: {
+            'font-family': 'Arial',
+            'font-weight': 'bold'
+          }
+        },
+        startText: {
+          label: 'Boston',
+          labelStyle: {
+            fill: '#ffffff',
+            'font-family': 'Arial',
+            'font-weight': 'bold',
+            'stroke': 'black',
+            'stroke-width': '0.5px',
+            'stroke-linecape': 'butt',
+            'stroke-linejoin': 'miter',
+            'font-size': '24px'
+          }
+        },
+        endText: 'Jacoby'
       }],
       [{
         start: '2020-03-22T05:00:00.000Z',

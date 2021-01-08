@@ -105,11 +105,9 @@ export default class Task {
       const svg = div.append('svg')
                         .attr('height', this.heights[idx])
                         .attr('width', offset.x)
-      row.forEach((plan: Plan, idx2: number) => {
-        const layer = svg.append('g').attr('class', 'plan')
 
-        this.drawBackground(x, y, layer, plan)
-        this.drawProgress(x, y, layer, plan)
+      row.forEach((plan: Plan) => {
+        plan.render(svg, x)
       })
 
       const mRow = this.milestones[idx]
@@ -117,26 +115,6 @@ export default class Task {
         this.drawMilestone(x, svg, milestone, idx)
       })
     })
-  }
-
-  private drawBackground(x: any, y: any, group: any, plan: Plan): void {
-    const rect = group
-      .append('rect')
-      .attr('x', x(plan.start.toDate()))
-      .attr('y', 0)
-      .attr('height', plan.height)
-      .attr('width', x(plan.end) - x(plan.start))
-    applyStyle(rect, plan.backgroundStyle)
-  }
-
-  private drawProgress(x: any, y: any, group: any, plan: Plan): void {
-    const rect = group
-      .append('rect')
-      .attr('x', x(plan.start.toDate()))
-      .attr('y', 0)
-      .attr('height', plan.height)
-      .attr('width', (x(plan.end) - x(plan.start)) * clamp(plan.progress / 100, 0, 1))
-    applyStyle(rect, plan.progressStyle)
   }
 
   private drawMilestone(x: any, layer: any, milestone: Milestone, idx: number) {

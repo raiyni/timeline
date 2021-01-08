@@ -1,4 +1,6 @@
-import { Style } from "./types"
+import { LabelOptions, Style } from "./types"
+
+import deepmerge from './deepmerge';
 
 export const applyStyle = (el: any, style: Style, attr: boolean = true): any => {
   Object.keys(style).forEach(k => {
@@ -15,10 +17,19 @@ export const clamp = (num: number, min: number, max: number) => {
 export const IS_IE = (() => document.documentMode || /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent))()
 
 export const uid = () => {
-  const data = new Uint32Array(1)
-  crypto.getRandomValues(data)
-
-  return data[0] + '';
+  var d = new Date().getTime();//Timestamp
+  var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16;//random number between 0 and 16
+      if(d > 0){//Use timestamp until depleted
+          r = (d + r)%16 | 0;
+          d = Math.floor(d/16);
+      } else {//Use microseconds since page-load if supported
+          r = (d2 + r)%16 | 0;
+          d2 = Math.floor(d2/16);
+      }
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
 }
 
 
@@ -30,4 +41,15 @@ export function debounce (fn: any, wait: number): any {
       fn.call(arguments)
     }, wait)
   }
+}
+
+
+export const getLabelOptions = (input: string | LabelOptions): LabelOptions => {
+  if (typeof input == 'string') {
+    return {
+      label: input
+    }
+  }
+
+  return deepmerge({}, input)
 }

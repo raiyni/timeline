@@ -63,6 +63,7 @@ export default class View {
       .style('width', '100%')
       .style('height', '100%')
       .style('overflow', 'hidden')
+      .style('background-color', 'white')
 
     config.wrapper = this.parent
 
