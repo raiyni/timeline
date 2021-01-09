@@ -1,11 +1,14 @@
 import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj } from './types'
-import { applyStyle, clamp, uid } from './util'
+import { uid } from './util'
 
 import Plan from './plan'
 import deepmerge from './deepmerge'
 import Milestone from './milestone'
 import { Events, Priority } from './EventBus'
 import dayjs from 'dayjs'
+
+import flat from 'core-js-pure/features/array/flat'
+import fill from 'core-js-pure/features/array/fill'
 
 export default class Task {
   rows: Plan[][]
@@ -56,8 +59,8 @@ export default class Task {
       this.milestones = this.milestones.concat(fill)
     }
 
-    const plans = this.rows.flat(3)
-    const milestones = this.milestones.flat(3)
+    const plans = flat(this.rows, 3)
+    const milestones = flat(this.milestones, 3)
 
     const iconMilestones = milestones.filter(m => m.date).map(m => m.date)
     const startDates = plans.map(p => p.start).concat(iconMilestones)
@@ -165,7 +168,7 @@ export default class Task {
     })
 
     if (options.length < this.rows.length) {
-      options = options.concat(new Array(this.rows.length - options.length).fill({}))
+      options = fill(options.concat(new Array(this.rows.length - options.length)), {})
     }
 
     if (options.length > this.rows.length) {

@@ -9,6 +9,7 @@ import Task from './task'
 import { VIEW_MODE as VM } from './types'
 import dayjs from 'dayjs'
 import { debounce } from './util';
+import flat from 'core-js-pure/features/array/flat'
 import minMax from 'dayjs/plugin/minMax'
 
 export default class View {
@@ -223,9 +224,8 @@ export default class View {
     const diff = this.getDateDiff()
     const width = this.getDateWidth() * diff
 
-    const height = this.tasks
-      .map((task) => [5].concat(task.heights))
-      .flat(3)
+    const height = flat(this.tasks
+      .map((task) => [5].concat(task.heights)), 3)
       .reduce((a, b) => a + b)
 
     return {
