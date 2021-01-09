@@ -85,8 +85,8 @@ var tasks = [
     area: '232k',
     milestones: [
       {
-        date: '2020-05-23T05:00:00.000Z',
-        href: 'https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png'
+        start: '2020-05-23T05:00:00.000Z',
+        end: '2020-07-23T05:00:00.000Z'
       }
     ]
   },
@@ -103,10 +103,37 @@ var tasks = [
     id: 'Task 2',
     pieces: 4.44,
     area: '232k',
+    milestones: [[
+      {
+        date: '2020-05-23T05:00:00.000Z',
+        shape: 'square'
+      },
+      {
+        date: '2020-07-23T05:00:00.000Z',
+        shape: 'square',
+        style: {
+          'transform': 'skewX(15)'
+        }
+      }
+    ]]
+  },
+  {
+    plan: {
+      start: '2020-03-22T05:00:00.000Z',
+      end: '2020-08-29T05:00:00.000Z',
+      progress: 87,
+      progressStyle: {
+        fill: '#f2c329'
+      }
+    },
+    name: 'Where',
+    id: 'Task 2',
+    pieces: 4.44,
+    area: '232k',
     milestones: [
       {
         date: '2020-05-23T05:00:00.000Z',
-        href: 'https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png'
+        shape: 'circle'
       }
     ]
   },
@@ -126,7 +153,10 @@ var tasks = [
     milestones: [
       {
         date: '2020-05-23T05:00:00.000Z',
-        href: 'https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png'
+        shape: 'triangle',
+        width: 30,
+        height: 15,
+        rotate: 90
       }
     ]
   },
@@ -146,27 +176,13 @@ var tasks = [
     milestones: [
       {
         date: '2020-05-23T05:00:00.000Z',
-        href: 'https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png'
-      }
-    ]
-  },
-  {
-    plan: {
-      start: '2020-03-22T05:00:00.000Z',
-      end: '2020-08-29T05:00:00.000Z',
-      progress: 87,
-      progressStyle: {
-        fill: '#f2c329'
-      }
-    },
-    name: 'Where',
-    id: 'Task 2',
-    pieces: 4.44,
-    area: '232k',
-    milestones: [
-      {
-        date: '2020-05-23T05:00:00.000Z',
-        href: 'https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png'
+        shape: 'star',
+        width: 30,
+        height: 20,
+        style: {
+          fill: 'red',
+          stroke: ''
+        }
       }
     ]
   },

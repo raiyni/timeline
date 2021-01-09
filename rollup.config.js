@@ -44,6 +44,7 @@ export default (args) => {
       format: 'iife',
       name,
       strict: false,
+      sourcemap: true,
 
       // https://rollupjs.org/guide/en#output-globals-g-globals
       globals: {
@@ -67,6 +68,7 @@ export default (args) => {
       format: 'iife',
       name,
       strict: false,
+      sourcemap: true,
 
       // https://rollupjs.org/guide/en#output-globals-g-globals
       globals: {

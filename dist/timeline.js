@@ -10794,25 +10794,136 @@ var Timeline = (function (d3) {
     return Plan;
   }();
 
-  var Milestone = function Milestone(options) {
-    _classCallCheck(this, Milestone);
+  var ShapeType;
 
-    _defineProperty(this, "date", void 0);
+  (function (ShapeType) {
+    ShapeType["SQUARE"] = "square";
+    ShapeType["CIRCLE"] = "circle";
+    ShapeType["TRIANGLE"] = "triangle";
+    ShapeType["ARROW"] = "arrow";
+    ShapeType["STAR"] = "star";
+  })(ShapeType || (ShapeType = {}));
 
-    _defineProperty(this, "href", void 0);
-
-    _defineProperty(this, "height", void 0);
-
-    _defineProperty(this, "width", void 0);
-
-    _defineProperty(this, "y", void 0);
-
-    this.date = dayjs_min(options.date);
-    this.href = options.href;
-    this.height = options.height || 15;
-    this.width = options.width || 15;
-    this.y = options.y;
+  var isImage = function isImage(obj) {
+    return 'href' in obj;
   };
+  var isShape = function isShape(obj) {
+    return 'shape' in obj;
+  };
+  var isLine = function isLine(obj) {
+    return 'start' in obj && 'end' in obj;
+  };
+  var VIEW_MODE;
+
+  (function (VIEW_MODE) {
+    VIEW_MODE["DAY"] = "day";
+    VIEW_MODE["WEEK"] = "week";
+    VIEW_MODE["MONTH"] = "month";
+    VIEW_MODE["YEAR"] = "year";
+    VIEW_MODE["FILL"] = "fill";
+  })(VIEW_MODE || (VIEW_MODE = {}));
+
+  var Milestone = /*#__PURE__*/function () {
+    function Milestone(options) {
+      _classCallCheck(this, Milestone);
+
+      _defineProperty(this, "x", void 0);
+
+      _defineProperty(this, "y", void 0);
+
+      _defineProperty(this, "image", void 0);
+
+      _defineProperty(this, "line", void 0);
+
+      _defineProperty(this, "shape", void 0);
+
+      this.y = options.y;
+      this.x = options.x;
+
+      if (isImage(options)) {
+        this.image = {
+          date: dayjs_min(options.date),
+          href: options.href,
+          width: options.width || 15,
+          height: options.height || 15,
+          style: deepmerge({}, options.style || {})
+        };
+      } else if (isLine(options)) {
+        this.line = {
+          start: dayjs_min(options.start),
+          end: dayjs_min(options.end),
+          style: deepmerge({
+            stroke: 'black'
+          }, options.style || {})
+        };
+      } else if (isShape(options)) {
+        this.shape = {
+          date: dayjs_min(options.date),
+          shape: options.shape,
+          width: options.width || 15,
+          height: options.height || 15,
+          rotate: options.rotate || 0,
+          style: deepmerge({
+            stroke: '#000',
+            fill: '#fff',
+            'stroke-width': 2,
+            'stroke-linejoin': "miter"
+          }, options.style || {})
+        };
+      }
+    }
+
+    _createClass(Milestone, [{
+      key: "render",
+      value: function render(x, layer, height) {
+        if (this.image) {
+          var y = this.y || (height - this.image.height) / 2;
+          var image = layer.append('image').attr('href', this.image.href).attr('height', this.image.height).attr('width', this.image.width).attr('x', x(this.image.date) - this.image.width / 2).attr('y', y);
+          applyStyle(image, this.image.style);
+        } else if (this.line) {
+          var _y = this.y || height / 2;
+
+          var line = layer.append('line').attr('x1', x(this.line.start)).attr('x2', x(this.line.end)).attr('y1', _y).attr('y2', _y);
+          applyStyle(line, this.line.style);
+        } else if (this.shape) {
+          var _y2 = this.y || (height - this.shape.height) / 2;
+
+          var shape = null;
+
+          switch (this.shape.shape) {
+            case ShapeType.SQUARE:
+              {
+                shape = layer.append('rect').attr('x', x(this.shape.date) - this.shape.width / 2).attr('y', _y2).attr('width', this.shape.width).attr('height', this.shape.height);
+                break;
+              }
+
+            case ShapeType.CIRCLE:
+              {
+                shape = layer.append('ellipse').attr('cx', x(this.shape.date)).attr('cy', height / 2).attr('rx', this.shape.width / 2).attr('ry', this.shape.height / 2);
+                break;
+              }
+
+            case ShapeType.TRIANGLE:
+              {
+                shape = layer.append('svg').attr('width', this.shape.width).attr('height', this.shape.height).attr('preserveAspectRatio', 'none').attr('x', x(this.shape.date) - this.shape.width / 2).attr('y', _y2).attr('viewBox', '0 0 20 20').append('g').attr('transform', "translate(10, 10)").append('g').attr('transform', "rotate(".concat(this.shape.rotate, ")")).append('polygon').attr('points', '10,2 2,18 18,18').attr('transform', "translate(-10, -10)");
+                break;
+              }
+
+            case ShapeType.STAR:
+              {
+                shape = layer.append('svg').attr('width', this.shape.width).attr('height', this.shape.height).attr('x', x(this.shape.date) - this.shape.width / 2).attr('y', _y2).attr('preserveAspectRatio', 'none').attr('viewBox', '0 0 20 20').append('polygon').attr('points', "10,1 12,8, 19,8, 13.5,12 15.5,19 10,15, 4.5,19 6.5,12 1,8 8,8");
+              }
+          }
+
+          if (shape) {
+            applyStyle(shape, this.shape.style);
+          }
+        }
+      }
+    }]);
+
+    return Milestone;
+  }();
 
   var Task = /*#__PURE__*/function () {
     function Task(options, config) {
@@ -10957,26 +11068,17 @@ var Timeline = (function (d3) {
 
         group.attr('data-id', this.id);
         this.rows.forEach(function (row, idx) {
-          var div = group.append('div').style('height', _this2.heights[idx]).style('width', offset.x).attr('class', 'task-row').style('background-color', '#fff');
+          var rowHeight = _this2.heights[idx];
+          var div = group.append('div').style('height', rowHeight).style('width', offset.x).attr('class', 'task-row').style('background-color', '#fff');
           var svg = div.append('svg').attr('height', _this2.heights[idx]).attr('width', offset.x);
           row.forEach(function (plan) {
             plan.render(svg, x);
           });
           var mRow = _this2.milestones[idx];
-          mRow.forEach(function (milestone, idx2) {
-            _this2.drawMilestone(x, svg, milestone, idx);
+          mRow.forEach(function (milestone) {
+            milestone.render(x, svg, rowHeight);
           });
         });
-      }
-    }, {
-      key: "drawMilestone",
-      value: function drawMilestone(x, layer, milestone, idx) {
-        var height = this.heights[idx];
-        var y = milestone.y || (height - milestone.height) / 2;
-
-        if (milestone.href) {
-          layer.append('image').attr('href', milestone.href).attr('height', milestone.height).attr('width', milestone.width).attr('x', x(milestone.date)).attr('y', y);
-        }
       }
     }, {
       key: "prepareOptions",
@@ -11069,16 +11171,6 @@ var Timeline = (function (d3) {
 
     return Task;
   }();
-
-  var VIEW_MODE;
-
-  (function (VIEW_MODE) {
-    VIEW_MODE["DAY"] = "day";
-    VIEW_MODE["WEEK"] = "week";
-    VIEW_MODE["MONTH"] = "month";
-    VIEW_MODE["YEAR"] = "year";
-    VIEW_MODE["FILL"] = "fill";
-  })(VIEW_MODE || (VIEW_MODE = {}));
 
   var minMax = createCommonjsModule(function (module, exports) {
   !function(n,e){module.exports=e();}(commonjsGlobal,function(){return function(n,e,t){var i=function(n,e){if(!e||!e.length||!e[0]||1===e.length&&!e[0].length)return null;var t;1===e.length&&e[0].length>0&&(e=e[0]),t=e[0];for(var i=1;i<e.length;i+=1)e[i].isValid()&&!e[i][n](t)||(t=e[i]);return t};t.max=function(){var n=[].slice.call(arguments,0);return i("isAfter",n)},t.min=function(){var n=[].slice.call(arguments,0);return i("isBefore",n)};}});
@@ -11488,3 +11580,4 @@ var Timeline = (function (d3) {
   return Timeline;
 
 }(d3));
+//# sourceMappingURL=timeline.js.map

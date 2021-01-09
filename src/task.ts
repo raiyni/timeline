@@ -108,9 +108,10 @@ export default class Task {
   renderDivs(x: any, y: any, group: any, offset: Offset) {
     group.attr('data-id', this.id)
     this.rows.forEach((row: Plan[], idx: number) => {
+      const rowHeight = this.heights[idx]
       const div = group
           .append('div')
-          .style('height', this.heights[idx])
+          .style('height', rowHeight)
           .style('width', offset.x)
           .attr('class', 'task-row')
           .style('background-color', '#fff')
@@ -124,23 +125,10 @@ export default class Task {
       })
 
       const mRow = this.milestones[idx]
-      mRow.forEach((milestone: Milestone, idx2: number) => {
-        this.drawMilestone(x, svg, milestone, idx)
+      mRow.forEach((milestone: Milestone) => {
+        milestone.render(x, svg, rowHeight)
       })
     })
-  }
-
-  private drawMilestone(x: any, layer: any, milestone: Milestone, idx: number) {
-    const height = this.heights[idx]
-    const y = milestone.y || (height - milestone.height) / 2
-    if (milestone.href) {
-      layer.append('image')
-        .attr('href', milestone.href)
-        .attr('height', milestone.height)
-        .attr('width', milestone.width)
-        .attr('x', x(milestone.date))
-        .attr('y', y)
-    }
   }
 
   private prepareOptions(columnOptions: ColumnOptions): LabelOptions[] {

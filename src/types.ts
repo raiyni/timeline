@@ -18,14 +18,53 @@ export interface PlanOptions {
   endText?: LabelOptions
 }
 
-export interface MilestoneOptions {
+export enum ShapeType {
+  SQUARE = 'square',
+  CIRCLE = 'circle',
+  TRIANGLE = 'triangle',
+  ARROW = 'arrow',
+  STAR = 'star'
+}
+
+export interface Image {
   date: string | dayjs.Dayjs
-  href?: string
+  href: string
   width: number
   height: number
-  y?: number
   style?: Style
 }
+
+export const isImage = (obj: any): obj is Image => {
+  return 'href' in obj
+}
+
+export interface Shape  {
+  date: string | dayjs.Dayjs
+  shape: ShapeType
+  width: number
+  height: number
+  rotate?: number
+  style?: Style
+}
+
+export const isShape = (obj: any): obj is Shape => {
+  return 'shape' in obj
+}
+
+export interface Line {
+  start: string | dayjs.Dayjs
+  end: string | dayjs.Dayjs
+  style?: Style
+}
+
+export const isLine = (obj: any): obj is Line => {
+  return 'start' in obj && 'end' in obj
+}
+
+export type MilestoneOptions = {
+  x?: number
+  y?: number
+} & (Image | Shape | Line)
 
 export interface TaskOptions {
   collapsible?: boolean
