@@ -37,7 +37,7 @@ export default {
   ],
 
   output: [{
-    dir: 'dist',
+    file: 'dist/timeline.js',
     format: 'iife',
     name,
 

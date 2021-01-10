@@ -1,9 +1,7 @@
 {
-  "name": "preact-rollup-typescript-babel",
+  "name": "timeline",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "module": "dist/bundle.js",
   "private": true,
   "scripts": {
     "type-check": "tsc --noEmit",
