@@ -1,6 +1,6 @@
 import { LabelOptions, Style } from "./types"
 
-import deepmerge from './deepmerge';
+import deepmerge from 'deepmerge';
 
 export const applyStyle = (el: any, style: Style, attr: boolean = true): any => {
   Object.keys(style).forEach(k => {

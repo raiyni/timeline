@@ -1,7 +1,8 @@
+import { ColumnOptions, TimelineOptions } from "./types";
+
 import Column from "./column";
 import Task from "./task";
-import { TimelineOptions } from "./types";
-import deepmerge from './deepmerge';
+import deepmerge from 'deepmerge';
 
 export default class Columns {
   private tasks: Task[]
@@ -10,11 +11,11 @@ export default class Columns {
   constructor(tasks: Task[], config: TimelineOptions) {
     this.tasks = tasks
     this.config = config
-    this.columns = this.config.columns.map(o => {
-      const colOptions = deepmerge({
+    this.columns = this.config.columns.map((o: ColumnOptions) => {
+      const colOptions  = deepmerge({
         taskMargin: this.config.taskMargin
       }, o)
-      return new Column(this.tasks, colOptions, this.config)
+      return new Column(this.tasks, colOptions as ColumnOptions, this.config)
     })
   }
 

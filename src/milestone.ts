@@ -2,7 +2,7 @@ import { Image, Line, MilestoneOptions, Shape, ShapeType, isImage, isLine, isSha
 
 import { applyStyle } from './util'
 import dayjs from 'dayjs'
-import deepmerge from './deepmerge'
+import deepmerge from 'deepmerge'
 
 export default class Milestone {
   x?: number

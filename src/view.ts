@@ -1,7 +1,8 @@
-import * as d3 from 'd3'
+// import * as d3 from 'd3'
 
 import { Events, Priority } from './EventBus'
 import { Highlight, Offset, Rect, TaskOptions, TimelineOptions } from './types'
+import { Selection, axisTop, scaleBand, scaleTime, select, timeDay, timeMonth, timeWeek, timeYear } from 'd3'
 
 import Columns from './columns'
 import ResizeObserver from 'resize-observer-polyfill'
@@ -9,6 +10,7 @@ import Task from './task'
 import { VIEW_MODE as VM } from './types'
 import dayjs from 'dayjs'
 import { debounce } from './util';
+// @ts-ignore
 import flat from 'core-js-pure/features/array/flat'
 import minMax from 'dayjs/plugin/minMax'
 
@@ -17,7 +19,7 @@ export default class View {
   private y: any
   private groups: any
 
-  private parent: any
+  private parent: Selection<any, any, any, any>
   private tasks: Task[]
 
   private minDate: dayjs.Dayjs
@@ -53,7 +55,7 @@ export default class View {
     this.tasks = taskOptions.map((t) => new Task(t, this.config))
     this.columns = new Columns(this.tasks, this.config)
 
-    const owner = d3.select(document.body.querySelector(selector))
+    const owner = select(document.body.querySelector(selector))
     owner.html("")
 
     this.parent = owner
@@ -270,7 +272,7 @@ export default class View {
         return 1
     }
 
-    return d3.scaleTime().range([0, width]).domain([this.minDate, day])
+    return scaleTime().range([0, width]).domain([this.minDate, day])
   }
 
   render() {
@@ -284,8 +286,7 @@ export default class View {
     const viewport = bounds.width
     const size = this.computeSize(viewport)
 
-    this.y = d3
-      .scaleBand()
+    this.y = scaleBand()
       .range([size.height, 0])
       .domain(this.tasks.map((c, i) => i + ''))
       .padding(0.1)
@@ -325,28 +326,28 @@ export default class View {
 
     const fullWidth = Math.max(size.width, viewport)
     this.highlights.attr('width', fullWidth)
-    this.x = d3.scaleTime().range([0, fullWidth]).domain([startDate, endDate])
+    this.x = scaleTime().range([0, fullWidth]).domain([startDate, endDate])
 
     if (this.config.viewMode == VM.FILL) {
       this.x = this.x.nice()
     }
 
-    let xAxis = d3.axisTop(this.x)
+    let xAxis = axisTop(this.x)
     switch (this.config.viewMode || VM.WEEK) {
       case VM.DAY:
-        xAxis = xAxis.ticks(d3.timeDay.every(3))
+        xAxis = xAxis.ticks(timeDay.every(3))
         break
       case VM.MONTH:
-        xAxis = xAxis.ticks(d3.timeMonth.every(1))
+        xAxis = xAxis.ticks(timeMonth.every(1))
         break
       case VM.YEAR:
-        xAxis = xAxis.ticks(d3.timeYear.every(1))
+        xAxis = xAxis.ticks(timeYear.every(1))
         break
       case VM.FILL:
         break
       case VM.WEEK:
       default:
-        xAxis = xAxis.ticks(d3.timeWeek.every(1))
+        xAxis = xAxis.ticks(timeWeek.every(1))
         break
     }
 
@@ -371,7 +372,7 @@ export default class View {
 
     const offset: Offset = { x: fullWidth, y: 0 }
     this.groups.each((task: Task, idx: number, arr: SVGElement[]) => {
-      const group = d3.select(arr[idx])
+      const group = select(arr[idx])
       task.renderDivs(this.x, this.y, group, offset)
     })
 

@@ -4,7 +4,7 @@ import { TaskOptions, TimelineOptions } from './types';
 
 import EventBus from './EventBus';
 import View from './view';
-import deepmerge from './deepmerge';
+import deepmerge from 'deepmerge';
 
 export default class Timeline {
   private view: View

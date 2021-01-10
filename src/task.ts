@@ -2,12 +2,14 @@ import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj 
 import { uid } from './util'
 
 import Plan from './plan'
-import deepmerge from './deepmerge'
+import deepmerge from 'deepmerge'
 import Milestone from './milestone'
 import { Events, Priority } from './EventBus'
 import dayjs from 'dayjs'
 
+// @ts-ignore
 import flat from 'core-js-pure/features/array/flat'
+// @ts-ignore
 import fill from 'core-js-pure/features/array/fill'
 
 export default class Task {

@@ -47,9 +47,6 @@ export default (args) => {
       sourcemap: true,
 
       // https://rollupjs.org/guide/en#output-globals-g-globals
-      globals: {
-        d3: 'd3'
-      }
     }
   ]
 
@@ -71,9 +68,6 @@ export default (args) => {
       sourcemap: true,
 
       // https://rollupjs.org/guide/en#output-globals-g-globals
-      globals: {
-        d3: 'd3'
-      },
       plugins: [
         terser()
       ]
@@ -85,7 +79,6 @@ export default (args) => {
 
     // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
     // https://rollupjs.org/guide/en#external-e-external
-    external: ['d3'],
 
     plugins: plugins,
 

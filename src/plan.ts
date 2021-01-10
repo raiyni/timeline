@@ -2,7 +2,7 @@ import { LabelOptions, PlanOptions, Style } from "./types";
 import { applyStyle, clamp, getLabelOptions } from "./util";
 
 import dayjs from "dayjs";
-import deepmerge from "./deepmerge";
+import deepmerge from "deepmerge";
 
 export default class Plan {
   start: dayjs.Dayjs;
