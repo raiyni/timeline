@@ -5636,7 +5636,16 @@ var Timeline = (function () {
 
       this.start = dayjs_min(options.start);
       this.end = dayjs_min(options.end);
-      this.progress = options.progress || 0;
+      var progress = options.progress || 0;
+
+      if (typeof progress == 'number') {
+        var diff = clamp(progress / 100) * (this.end.unix() - this.start.unix());
+        this.progress = dayjs_min.unix(this.start.unix() + diff);
+      } else {
+        this.progress = dayjs_min(options.progress);
+      }
+
+      console.log(this.progress);
       this.height = options.height || 30;
       this.label = options.label;
       this.progressStyle = cjs({
@@ -5684,7 +5693,7 @@ var Timeline = (function () {
     }, {
       key: "drawProgress",
       value: function drawProgress(group, x) {
-        var rect = group.append('rect').attr('x', x(this.start.toDate())).attr('y', 0).attr('height', this.height).attr('width', (x(this.end) - x(this.start)) * clamp(this.progress / 100));
+        var rect = group.append('rect').attr('x', x(this.start)).attr('y', 0).attr('height', this.height).attr('width', x(this.progress) - x(this.start));
         applyStyle(rect, this.progressStyle);
       }
     }, {
@@ -6632,7 +6641,7 @@ var Timeline = (function () {
           obj.height = defaults.height;
         }
 
-        if (obj.progress !== 0 && defaults.progress) {
+        if (obj.progress !== 0 && !obj.progress && defaults.progress) {
           obj.progress = defaults.progress;
         }
       }

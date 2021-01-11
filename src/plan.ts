@@ -7,7 +7,7 @@ import deepmerge from "deepmerge";
 export default class Plan {
   start: dayjs.Dayjs;
   end: dayjs.Dayjs;
-  progress: number;
+  progress: dayjs.Dayjs;
   height?: number;
   label?: string;
   progressStyle: Style;
@@ -20,7 +20,15 @@ export default class Plan {
   constructor(options: PlanOptions) {
     this.start = dayjs(options.start)
     this.end = dayjs(options.end)
-    this.progress = options.progress || 0
+    const progress = options.progress || 0
+    if (typeof progress == 'number') {
+      const diff = clamp(progress / 100, 0, 1) * (this.end.unix() - this.start.unix())
+      this.progress = dayjs.unix(this.start.unix() + diff)
+    } else {
+      this.progress = dayjs(options.progress)
+    }
+
+    console.log(this.progress)
     this.height = options.height || 30
     this.label = options.label
     this.progressStyle = deepmerge({
@@ -71,10 +79,10 @@ export default class Plan {
   private drawProgress(group: any, x: any): void {
     const rect = group
       .append('rect')
-      .attr('x', x(this.start.toDate()))
+      .attr('x', x(this.start))
       .attr('y', 0)
       .attr('height', this.height)
-      .attr('width', (x(this.end) - x(this.start)) * clamp(this.progress / 100, 0, 1))
+      .attr('width', x(this.progress) - x(this.start))
     applyStyle(rect, this.progressStyle)
   }
 

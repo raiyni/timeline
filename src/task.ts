@@ -218,7 +218,7 @@ export default class Task {
       obj.height = defaults.height
     }
 
-    if (obj.progress !== 0 && defaults.progress) {
+    if (obj.progress !== 0 && !obj.progress && defaults.progress) {
       obj.progress = defaults.progress
     }
   }

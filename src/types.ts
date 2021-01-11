@@ -14,7 +14,7 @@ export interface BasePlanOptions {
 export type PlanOptions = BasePlanOptions & {
   start: string | dayjs.Dayjs
   end: string | dayjs.Dayjs
-  progress: number
+  progress: number | string | dayjs.Dayjs
   label?: string
   name?: LabelOptions
   startText?: LabelOptions
