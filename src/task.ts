@@ -1,4 +1,4 @@
-import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj } from './types'
+import { LabelOptions, Offset, TaskOptions, TimelineOptions, ColumnOptions, obj, Style } from './types'
 import { uid } from './util'
 
 import Plan from './plan'
@@ -165,19 +165,28 @@ export default class Task {
       options[idx] = v
       const defaults = columnOptions.defaults || {}
       if (defaults) {
-        v.labelStyle = deepmerge.all([
-          {
-            color: '#000000'
-          },
-          defaults.labelStyle || {},
-          v.labelStyle || {}
-        ])
-
-        v.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, v.backgroundStyle || {})
+        if (Array.isArray(defaults)) {
+          this.applyDefaultStyle(v, defaults[idx] || {})
+        } else {
+          this.applyDefaultStyle(v, defaults)
+        }
       }
     })
 
     return options
+  }
+
+  applyDefaultStyle(obj: Style, defaults: any) {
+    obj.labelStyle = deepmerge.all([
+      {
+        color: '#000000'
+      },
+      defaults.labelStyle || {},
+      obj.labelStyle || {}
+    ])
+
+    obj.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, obj.backgroundStyle || {})
+
   }
 
   getTaskSubColumns(): any {

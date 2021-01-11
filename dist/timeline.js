@@ -6534,6 +6534,8 @@ var Timeline = (function () {
     }, {
       key: "prepareOptions",
       value: function prepareOptions(columnOptions) {
+        var _this3 = this;
+
         var options = this.options[columnOptions.field];
         if (!options) return [];
 
@@ -6567,13 +6569,22 @@ var Timeline = (function () {
           var defaults = columnOptions.defaults || {};
 
           if (defaults) {
-            v.labelStyle = cjs.all([{
-              color: '#000000'
-            }, defaults.labelStyle || {}, v.labelStyle || {}]);
-            v.backgroundStyle = cjs(defaults.backgroundStyle || {}, v.backgroundStyle || {});
+            if (Array.isArray(defaults)) {
+              _this3.applyDefaultStyle(v, defaults[idx] || {});
+            } else {
+              _this3.applyDefaultStyle(v, defaults);
+            }
           }
         });
         return options;
+      }
+    }, {
+      key: "applyDefaultStyle",
+      value: function applyDefaultStyle(obj, defaults) {
+        obj.labelStyle = cjs.all([{
+          color: '#000000'
+        }, defaults.labelStyle || {}, obj.labelStyle || {}]);
+        obj.backgroundStyle = cjs(defaults.backgroundStyle || {}, obj.backgroundStyle || {});
       }
     }, {
       key: "getTaskSubColumns",

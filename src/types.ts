@@ -78,7 +78,7 @@ export interface ColumnOptions {
   text: string
   field: string
   padding?: number
-  defaults?: obj
+  defaults?: obj | obj[]
   taskMargin?: number
 }
 
