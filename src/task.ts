@@ -169,9 +169,13 @@ export default class Task {
       }
     })
 
+    console.log('pre', options)
+
     if (options.length < this.rows.length) {
-      options = fill(options.concat(new Array(this.rows.length - options.length)), {})
+      options = options.concat(fill(new Array(this.rows.length - options.length), {}))
     }
+
+    console.log('post', options)
 
     if (options.length > this.rows.length) {
       options = options.slice(0, this.rows.length)

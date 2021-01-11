@@ -6560,10 +6560,13 @@ var Timeline = (function () {
             v.backgroundStyle = cjs(defaults.backgroundStyle || {}, v.backgroundStyle || {});
           }
         });
+        console.log('pre', options);
 
         if (options.length < this.rows.length) {
-          options = fill$1(options.concat(new Array(this.rows.length - options.length)), {});
+          options = options.concat(fill$1(new Array(this.rows.length - options.length), {}));
         }
+
+        console.log('post', options);
 
         if (options.length > this.rows.length) {
           options = options.slice(0, this.rows.length);
