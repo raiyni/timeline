@@ -49,6 +49,22 @@ export default class Milestone {
     }
   }
 
+  getDates() {
+    if (this.image) {
+      return this.image.date
+    }
+
+    if (this.line) {
+      return [this.line.start, this.line.end]
+    }
+
+    if (this.shape) {
+      return this.shape.date
+    }
+
+    return []
+  }
+
   render(x: any, layer: any, height: number) {
     if (this.image) {
       const y = this.y || (height - this.image.height) / 2

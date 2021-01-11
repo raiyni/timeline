@@ -4,15 +4,18 @@ import dayjs from 'dayjs'
 export type Style = {[key: string]: any;}
 export type obj = { [key: string]: any }
 
-export interface PlanOptions {
-  start: string | dayjs.Dayjs
-  end: string | dayjs.Dayjs
-  progress: number
+export interface BasePlanOptions {
   height?: number
-  label?: string
   progressStyle?: Style
   backgroundStyle?: Style
   labelStyle?: Style
+}
+
+export type PlanOptions = BasePlanOptions & {
+  start: string | dayjs.Dayjs
+  end: string | dayjs.Dayjs
+  progress: number
+  label?: string
   name?: LabelOptions
   startText?: LabelOptions
   endText?: LabelOptions
@@ -98,7 +101,7 @@ export interface Highlight {
 
 export interface TimelineOptions {
   columns: Array<ColumnOptions>
-  planDefaults?: PlanOptions
+  planDefaults?: BasePlanOptions | BasePlanOptions[]
   viewMode ?: VIEW_MODE,
   taskMargin ?: number
   wrapper?: any

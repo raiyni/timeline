@@ -25,23 +25,12 @@ export default class Task {
   constructor(options: TaskOptions & obj, config: TimelineOptions) {
     this.id = uid()
     this.rows = []
-    this.config = config
-    if (options.plan) {
-      this.rows = [[new Plan(options.plan)]]
-    } else if (options.plans && Array.isArray(options.plans)) {
-      // @ts-ignore
-      this.rows = options.plans.map((p) => {
-        if (!Array.isArray(p)) {
-          return [new Plan(p)]
-        }
-
-        return p.map((pl) => new Plan(pl))
-      })
-    } else if (options.plans) {
-      console.error('Plans object is not an array')
-    }
-
     this.milestones = []
+    this.config = config
+    this.options = options
+
+    this.createPlans()
+
     if (options.milestones && Array.isArray(options.milestones)) {
       // @ts-ignore
       this.milestones = options.milestones.map(m => {
@@ -64,14 +53,14 @@ export default class Task {
     const plans = flat(this.rows, 3)
     const milestones = flat(this.milestones, 3)
 
-    const iconMilestones = milestones.filter(m => m.date).map(m => m.date)
-    const startDates = plans.map(p => p.start).concat(iconMilestones)
-    const endDates = plans.map(p => p.end).concat(iconMilestones)
+    const iconMilestones = milestones.map(m => m.getDates())
+    const startDates = flat(plans.map(p => p.start).concat(iconMilestones))
+    const endDates = flat(plans.map(p => p.end).concat(iconMilestones))
 
     this.minDate = dayjs.min(startDates)
     this.maxDate = dayjs.max(endDates)
 
-    this.options = options
+
     this.computeRowHeights()
     this.labels = {}
 
@@ -93,6 +82,38 @@ export default class Task {
           this.collapse()
         }
       }, Priority.HIGH)
+    }
+  }
+
+  createPlans() {
+    const defaults = this.config.planDefaults || {}
+
+    if (this.options.plan) {
+      this.applyDefaultStyle(this.options.plan, defaults[0] || defaults)
+      this.rows = [[new Plan(this.options.plan)]]
+    } else if (this.options.plans && Array.isArray(this.options.plans)) {
+      // @ts-ignore
+      this.rows = this.options.plans.map((p, idx) => {
+        if (!Array.isArray(p)) {
+          if (Array.isArray(defaults)) {
+            this.applyDefaultStyle(p, defaults[idx] || {})
+          } else {
+            this.applyDefaultStyle(p, defaults)
+          }
+          return [new Plan(p)]
+        }
+
+        return p.map((pl) => {
+          if (Array.isArray(defaults)) {
+            this.applyDefaultStyle(pl, defaults[idx] || {})
+          } else {
+            this.applyDefaultStyle(pl, defaults)
+          }
+          return new Plan(pl)
+        })
+      })
+    } else if (this.options.plans) {
+      console.error('Plans object is not an array')
     }
   }
 
@@ -164,12 +185,10 @@ export default class Task {
 
       options[idx] = v
       const defaults = columnOptions.defaults || {}
-      if (defaults) {
-        if (Array.isArray(defaults)) {
-          this.applyDefaultStyle(v, defaults[idx] || {})
-        } else {
-          this.applyDefaultStyle(v, defaults)
-        }
+      if (Array.isArray(defaults)) {
+        this.applyDefaultStyle(v, defaults[idx] || {})
+      } else {
+        this.applyDefaultStyle(v, defaults)
       }
     })
 
@@ -177,16 +196,27 @@ export default class Task {
   }
 
   applyDefaultStyle(obj: Style, defaults: any) {
-    obj.labelStyle = deepmerge.all([
-      {
-        color: '#000000'
-      },
-      defaults.labelStyle || {},
-      obj.labelStyle || {}
-    ])
+    if (obj.progressStyle || defaults.progressStyle) {
 
-    obj.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, obj.backgroundStyle || {})
+    }
 
+    if (obj.labelStyle || defaults.labelStyle) {
+      obj.labelStyle = deepmerge.all([
+        {
+          color: '#000000'
+        },
+        defaults.labelStyle || {},
+        obj.labelStyle || {}
+      ])
+    }
+
+    if (obj.backgroundStyle || defaults.backgroundStyle) {
+      obj.backgroundStyle = deepmerge(defaults.backgroundStyle || {}, obj.backgroundStyle || {})
+    }
+
+    if (!obj.height && defaults.height) {
+      obj.height = defaults.height
+    }
   }
 
   getTaskSubColumns(): any {

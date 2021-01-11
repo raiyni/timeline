@@ -45,6 +45,7 @@ export default class View {
 
   constructor(selector: string, taskOptions: TaskOptions[], config: TimelineOptions) {
     dayjs.extend(minMax)
+    console.log(dayjs)
     if (!Array.isArray(taskOptions) || taskOptions.length == 0) {
       console.warn('Tasks required to be an array of data')
       return

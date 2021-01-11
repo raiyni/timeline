@@ -5832,6 +5832,23 @@ var Timeline = (function () {
     }
 
     _createClass(Milestone, [{
+      key: "getDates",
+      value: function getDates() {
+        if (this.image) {
+          return this.image.date;
+        }
+
+        if (this.line) {
+          return [this.line.start, this.line.end];
+        }
+
+        if (this.shape) {
+          return this.shape.date;
+        }
+
+        return [];
+      }
+    }, {
       key: "render",
       value: function render(x, layer, height) {
         if (this.image) {
@@ -6401,26 +6418,10 @@ var Timeline = (function () {
 
       this.id = uid();
       this.rows = [];
-      this.config = config;
-
-      if (options.plan) {
-        this.rows = [[new Plan(options.plan)]];
-      } else if (options.plans && Array.isArray(options.plans)) {
-        // @ts-ignore
-        this.rows = options.plans.map(function (p) {
-          if (!Array.isArray(p)) {
-            return [new Plan(p)];
-          }
-
-          return p.map(function (pl) {
-            return new Plan(pl);
-          });
-        });
-      } else if (options.plans) {
-        console.error('Plans object is not an array');
-      }
-
       this.milestones = [];
+      this.config = config;
+      this.options = options;
+      this.createPlans();
 
       if (options.milestones && Array.isArray(options.milestones)) {
         // @ts-ignore
@@ -6455,20 +6456,17 @@ var Timeline = (function () {
 
       var plans = flat$1(this.rows, 3);
       var milestones = flat$1(this.milestones, 3);
-      var iconMilestones = milestones.filter(function (m) {
-        return m.date;
-      }).map(function (m) {
-        return m.date;
+      var iconMilestones = milestones.map(function (m) {
+        return m.getDates();
       });
-      var startDates = plans.map(function (p) {
+      var startDates = flat$1(plans.map(function (p) {
         return p.start;
-      }).concat(iconMilestones);
-      var endDates = plans.map(function (p) {
+      }).concat(iconMilestones));
+      var endDates = flat$1(plans.map(function (p) {
         return p.end;
-      }).concat(iconMilestones);
+      }).concat(iconMilestones));
       this.minDate = dayjs_min.min(startDates);
       this.maxDate = dayjs_min.max(endDates);
-      this.options = options;
       this.computeRowHeights();
       this.labels = {};
       if (config.columns.length == 0) return;
@@ -6491,6 +6489,43 @@ var Timeline = (function () {
     }
 
     _createClass(Task, [{
+      key: "createPlans",
+      value: function createPlans() {
+        var _this2 = this;
+
+        var defaults = this.config.planDefaults || {};
+
+        if (this.options.plan) {
+          this.applyDefaultStyle(this.options.plan, defaults[0] || defaults);
+          this.rows = [[new Plan(this.options.plan)]];
+        } else if (this.options.plans && Array.isArray(this.options.plans)) {
+          // @ts-ignore
+          this.rows = this.options.plans.map(function (p, idx) {
+            if (!Array.isArray(p)) {
+              if (Array.isArray(defaults)) {
+                _this2.applyDefaultStyle(p, defaults[idx] || {});
+              } else {
+                _this2.applyDefaultStyle(p, defaults);
+              }
+
+              return [new Plan(p)];
+            }
+
+            return p.map(function (pl) {
+              if (Array.isArray(defaults)) {
+                _this2.applyDefaultStyle(pl, defaults[idx] || {});
+              } else {
+                _this2.applyDefaultStyle(pl, defaults);
+              }
+
+              return new Plan(pl);
+            });
+          });
+        } else if (this.options.plans) {
+          console.error('Plans object is not an array');
+        }
+      }
+    }, {
       key: "computeRowHeights",
       value: function computeRowHeights() {
         this.heights = this.rows.map(function (row) {
@@ -6515,17 +6550,17 @@ var Timeline = (function () {
     }, {
       key: "renderDivs",
       value: function renderDivs(x, y, group, offset) {
-        var _this2 = this;
+        var _this3 = this;
 
         group.attr('data-id', this.id);
         this.rows.forEach(function (row, idx) {
-          var rowHeight = _this2.heights[idx];
+          var rowHeight = _this3.heights[idx];
           var div = group.append('div').style('height', rowHeight).style('width', offset.x).attr('class', 'task-row').style('background-color', '#fff');
-          var svg = div.append('svg').attr('height', _this2.heights[idx]).attr('width', offset.x);
+          var svg = div.append('svg').attr('height', _this3.heights[idx]).attr('width', offset.x);
           row.forEach(function (plan) {
             plan.render(svg, x);
           });
-          var mRow = _this2.milestones[idx];
+          var mRow = _this3.milestones[idx];
           mRow.forEach(function (milestone) {
             milestone.render(x, svg, rowHeight);
           });
@@ -6534,7 +6569,7 @@ var Timeline = (function () {
     }, {
       key: "prepareOptions",
       value: function prepareOptions(columnOptions) {
-        var _this3 = this;
+        var _this4 = this;
 
         var options = this.options[columnOptions.field];
         if (!options) return [];
@@ -6568,12 +6603,10 @@ var Timeline = (function () {
           options[idx] = v;
           var defaults = columnOptions.defaults || {};
 
-          if (defaults) {
-            if (Array.isArray(defaults)) {
-              _this3.applyDefaultStyle(v, defaults[idx] || {});
-            } else {
-              _this3.applyDefaultStyle(v, defaults);
-            }
+          if (Array.isArray(defaults)) {
+            _this4.applyDefaultStyle(v, defaults[idx] || {});
+          } else {
+            _this4.applyDefaultStyle(v, defaults);
           }
         });
         return options;
@@ -6581,10 +6614,21 @@ var Timeline = (function () {
     }, {
       key: "applyDefaultStyle",
       value: function applyDefaultStyle(obj, defaults) {
-        obj.labelStyle = cjs.all([{
-          color: '#000000'
-        }, defaults.labelStyle || {}, obj.labelStyle || {}]);
-        obj.backgroundStyle = cjs(defaults.backgroundStyle || {}, obj.backgroundStyle || {});
+        if (obj.progressStyle || defaults.progressStyle) ;
+
+        if (obj.labelStyle || defaults.labelStyle) {
+          obj.labelStyle = cjs.all([{
+            color: '#000000'
+          }, defaults.labelStyle || {}, obj.labelStyle || {}]);
+        }
+
+        if (obj.backgroundStyle || defaults.backgroundStyle) {
+          obj.backgroundStyle = cjs(defaults.backgroundStyle || {}, obj.backgroundStyle || {});
+        }
+
+        if (!obj.height && defaults.height) {
+          obj.height = defaults.height;
+        }
       }
     }, {
       key: "getTaskSubColumns",
@@ -6644,6 +6688,7 @@ var Timeline = (function () {
       _classCallCheck(this, View);
 
       dayjs_min.extend(minMax);
+      console.log(dayjs_min);
 
       if (!Array.isArray(taskOptions) || taskOptions.length == 0) {
         console.warn('Tasks required to be an array of data');
