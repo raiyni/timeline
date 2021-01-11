@@ -197,7 +197,7 @@ export default class Task {
 
   applyDefaultStyle(obj: Style, defaults: any) {
     if (obj.progressStyle || defaults.progressStyle) {
-
+      obj.progressStyle = deepmerge(defaults.progressStyle || {}, obj.progressStyle || {})
     }
 
     if (obj.labelStyle || defaults.labelStyle) {
@@ -216,6 +216,10 @@ export default class Task {
 
     if (!obj.height && defaults.height) {
       obj.height = defaults.height
+    }
+
+    if (obj.progress !== 0 && defaults.progress) {
+      obj.progress = defaults.progress
     }
   }
 

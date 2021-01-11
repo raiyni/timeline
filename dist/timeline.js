@@ -6614,7 +6614,9 @@ var Timeline = (function () {
     }, {
       key: "applyDefaultStyle",
       value: function applyDefaultStyle(obj, defaults) {
-        if (obj.progressStyle || defaults.progressStyle) ;
+        if (obj.progressStyle || defaults.progressStyle) {
+          obj.progressStyle = cjs(defaults.progressStyle || {}, obj.progressStyle || {});
+        }
 
         if (obj.labelStyle || defaults.labelStyle) {
           obj.labelStyle = cjs.all([{
@@ -6628,6 +6630,10 @@ var Timeline = (function () {
 
         if (!obj.height && defaults.height) {
           obj.height = defaults.height;
+        }
+
+        if (obj.progress !== 0 && defaults.progress) {
+          obj.progress = defaults.progress;
         }
       }
     }, {

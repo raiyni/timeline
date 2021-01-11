@@ -1,13 +1,11 @@
-rect {
-  fill-opacity: 0.8;
-}
-
 .highlight {
   fill-opacity: 0.175;
 }
 
 .plan:hover rect {
-  fill-opacity: 1;
+  transition: all 0.2s;
+  stroke: rgba(0, 0, 0, 0.8);
+  stroke-width: 3px;
 }
 
 .axis {
