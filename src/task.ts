@@ -149,6 +149,14 @@ export default class Task {
     }
 
     console.assert(Array.isArray(options), "Column options isn't a string, array, nor label")
+    if (options.length < this.rows.length) {
+      options = options.concat(fill(new Array(this.rows.length - options.length), {}))
+    }
+
+    if (options.length > this.rows.length) {
+      options = options.slice(0, this.rows.length)
+    }
+
     ;(<obj[]>options).forEach((v, idx) => {
       if (typeof v == 'string' || typeof v == 'number') {
         v = { label: v }
@@ -169,17 +177,6 @@ export default class Task {
       }
     })
 
-    console.log('pre', options)
-
-    if (options.length < this.rows.length) {
-      options = options.concat(fill(new Array(this.rows.length - options.length), {}))
-    }
-
-    console.log('post', options)
-
-    if (options.length > this.rows.length) {
-      options = options.slice(0, this.rows.length)
-    }
     return options
   }
 

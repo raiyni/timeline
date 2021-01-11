@@ -28,4 +28,8 @@ export default class Columns {
       column.render(header, layer, idx)
     })
   }
+
+  length(): number {
+    return this.columns.length;
+  }
 }

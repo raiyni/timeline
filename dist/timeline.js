@@ -4682,6 +4682,11 @@ var Timeline = (function () {
           column.render(header, layer, idx);
         });
       }
+    }, {
+      key: "length",
+      value: function length() {
+        return this.columns.length;
+      }
     }]);
 
     return Columns;
@@ -6543,6 +6548,14 @@ var Timeline = (function () {
         }
 
         console.assert(Array.isArray(options), "Column options isn't a string, array, nor label");
+
+        if (options.length < this.rows.length) {
+          options = options.concat(fill$1(new Array(this.rows.length - options.length), {}));
+        }
+
+        if (options.length > this.rows.length) {
+          options = options.slice(0, this.rows.length);
+        }
         options.forEach(function (v, idx) {
           if (typeof v == 'string' || typeof v == 'number') {
             v = {
@@ -6560,18 +6573,6 @@ var Timeline = (function () {
             v.backgroundStyle = cjs(defaults.backgroundStyle || {}, v.backgroundStyle || {});
           }
         });
-        console.log('pre', options);
-
-        if (options.length < this.rows.length) {
-          options = options.concat(fill$1(new Array(this.rows.length - options.length), {}));
-        }
-
-        console.log('post', options);
-
-        if (options.length > this.rows.length) {
-          options = options.slice(0, this.rows.length);
-        }
-
         return options;
       }
     }, {
@@ -6683,13 +6684,11 @@ var Timeline = (function () {
 
         this.parent.html("");
         this.left = this.parent.append('div').style('display', 'flex').style('flex-direction', 'column').style('overflow', 'hidden').style('flex-shrink', 0);
-        this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex').style('background-color', '#fff'); // .style('border-right', '1px solid #000')
-
-        this.columnsBody = this.left.append('div').style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden'); // .style('border-right', '1px solid #000')
-
-        var rightRapper = this.parent.append('div').style('display', 'flex').style('flex', 1).style('overflow', 'hidden');
-        this.border = rightRapper.append('div').style('position', 'relative').style('border-right', '1px solid black').style('overflow', 'hidden');
-        this.right = rightRapper.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
+        this.columnsHeader = this.left.append('div').style('min-height', 30).style('display', 'flex').style('background-color', '#fff');
+        this.columnsBody = this.left.append('div').style('flex-direction', 'row').style('display', 'flex').style('overflow', 'hidden');
+        var rightWrapper = this.parent.append('div').style('display', 'flex').style('flex', 1).style('overflow', 'hidden');
+        this.border = rightWrapper.append('div').style('position', 'relative').style('border-right', '1px solid black').style('overflow', 'hidden').style('display', this.columns.length() > 0 ? 'visible' : 'none');
+        this.right = rightWrapper.append('div').style('position', 'relative').style('flex', 1).style('display', 'flex').style('flex-direction', 'column').style('align-items', 'stretch').style('overflow', 'hidden');
         this.bodyHeader = this.right.append('div').style('overflow', 'hidden').style('padding-right', '18px').style('background-color', '#fff');
         this.headerSvg = this.bodyHeader.append('svg').attr('height', 30);
         this.bodyHolder = this.right.append('div').style('flex', 1).style('overflow-y', 'auto').style('position', 'relative');

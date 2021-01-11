@@ -104,27 +104,26 @@ export default class View {
       .style('min-height', 30)
       .style('display', 'flex')
       .style('background-color', '#fff')
-      // .style('border-right', '1px solid #000')
 
     this.columnsBody = this.left.append('div')
       .style('flex-direction', 'row')
       .style('display', 'flex')
       .style('overflow', 'hidden')
-      // .style('border-right', '1px solid #000')
 
-    const rightRapper = this.parent
+    const rightWrapper = this.parent
       .append('div')
       .style('display', 'flex')
       .style('flex', 1)
       .style('overflow', 'hidden')
 
-    this.border = rightRapper
+    this.border = rightWrapper
       .append('div')
       .style('position', 'relative')
       .style('border-right', '1px solid black')
       .style('overflow', 'hidden')
+      .style('display', this.columns.length() > 0 ? 'visible' : 'none')
 
-    this.right = rightRapper
+    this.right = rightWrapper
       .append('div')
       .style('position', 'relative')
       .style('flex', 1)
