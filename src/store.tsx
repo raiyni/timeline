@@ -76,7 +76,7 @@ export const reducer = (state: any, action: Action) => {
       }
     case Actions.TOGGLE_TASK:
       const tasks = state.tasks
-      const task = tasks.find(t => t.id == action.payload)
+      const task = tasks.find((t: TaskOptions) => t.id == action.payload)
       task.collapsed = !!!task.collapsed
 
       return {

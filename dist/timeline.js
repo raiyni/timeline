@@ -512,7 +512,9 @@ var Timeline = (function () {
     if (isImage(options)) {
       var y = (height - options.height) / 2;
       var x = state.x(options.date) - options.width / 2;
-      return v("g", null, v("image", {
+      return v("g", {
+        className: "milestone-image"
+      }, v("image", {
         href: options.href,
         width: options.width,
         height: options.height,
@@ -526,6 +528,18 @@ var Timeline = (function () {
 
       var _x = state.x(options.date) - options.width / 2;
 
+      if (options.shape == ShapeType.DASH) {
+        var x2 = state.x(options.date);
+        return v("g", null, v("line", {
+          x1: x2,
+          x2: x2,
+          y1: 0,
+          y2: height,
+          style: options.style,
+          "stroke-dasharray": 2
+        }));
+      }
+
       return v(Icon, {
         options: options,
         width: options.width,
@@ -538,7 +552,9 @@ var Timeline = (function () {
     if (isLine(options)) {
       var _y2 = height / 2;
 
-      return v("g", null, v("line", {
+      return v("g", {
+        className: "milestone-line"
+      }, v("line", {
         x1: state.x(options.start),
         x2: state.x(options.end),
         y1: _y2,
@@ -2043,10 +2059,14 @@ var Timeline = (function () {
   };
 
   var prepareLine = function prepareLine(source) {
-    return _objectSpread2(_objectSpread2({}, source), {}, {
+    return {
+      style: _objectSpread2({
+        stroke: 'black',
+        strokeWidth: 2
+      }, source.style),
       start: dayjs_min(source.start),
       end: dayjs_min(source.end)
-    });
+    };
   };
 
   var prepareArrow = function prepareArrow(source) {

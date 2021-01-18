@@ -112,7 +112,11 @@ const prepareIcon = (source: Icon): Icon => {
 
 const prepareLine = (source: Line): Line => {
   return {
-    ...source,
+    style: {
+      stroke: 'black',
+      strokeWidth: 2,
+      ...source.style
+    },
     start: dayjs(source.start),
     end: dayjs(source.end),
   }

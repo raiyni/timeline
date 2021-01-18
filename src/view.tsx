@@ -1,8 +1,7 @@
 import { Config, DEFAULT_STATE, reducer } from "./store";
-import { useEffect, useReducer, useRef, useState } from "preact/hooks";
+import { useEffect, useReducer, useRef } from "preact/hooks";
 
 import { Column } from "./column";
-import { Columns } from "./columns";
 import { Grid } from "./grid";
 import { Header } from "./header";
 import { ViewProps } from "./types";
