@@ -516,12 +516,12 @@ var timeline = new Timeline('test1', tasks, {
         {
           backgroundStyle: {
             background: 'rgb(255,192,0)',
-            'justify-content': 'center'
+            'justifyContent': 'center'
           }
         },
         {
           backgroundStyle: {
-            'justify-content': 'flex-end'
+            'justifyContent': 'flex-end'
           }
         }
       ]

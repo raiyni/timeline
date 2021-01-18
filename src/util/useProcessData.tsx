@@ -168,7 +168,7 @@ const prepareColumns = (task: TaskInputOptions, config: ColumnOptions[], plans: 
   const labels: { [key: string]: LabelOptions[] } = {}
 
   config.forEach((c: ColumnOptions) => {
-    let options = task[c.field]
+    let options = task[c.field] || []
 
     if (!Array.isArray(options)) {
       options = [options]
@@ -279,6 +279,7 @@ export const useProcessData = (dispatch: (_action: Action) => void, data: TaskIn
     }
 
     const tasks = data.map((t) => prepareTask(t, config))
+    // tasks.push({planes: [], labels: {}})
 
     dispatch(setTasks(tasks))
   }, [data, config])

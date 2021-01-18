@@ -1,6 +1,7 @@
 import { Config, DEFAULT_STATE, reducer } from "./store";
 import { useEffect, useReducer, useRef, useState } from "preact/hooks";
 
+import { Column } from "./column";
 import { Columns } from "./columns";
 import { Grid } from "./grid";
 import { Header } from "./header";
@@ -15,35 +16,42 @@ export function View ({data, config}: ViewProps) {
     const [state, dispatch] = useReducer(reducer, DEFAULT_STATE)
     const store = {state, dispatch}
 
-    const ref = useRef(null)
-    const columnRef = useRef(null)
+    const bodyRef = useRef(null)
+    const leftRef = useRef(null)
 
     const gridRef = useRef(null)
     const headerRef = useRef(null)
 
-    const size = useResizeObserver(ref)
+    const columnsRef = useRef([])
+
+    const size = useResizeObserver(bodyRef)
     useDebounce(() => {
-      if (columnRef.current == null) {
+      if (leftRef.current == null) {
         return
       }
 
       // subtract padding + columns width
-      size[0] -= columnRef.current.clientWidth + 18
+      size[0] -= leftRef.current.clientWidth + 18
       dispatch(changeSize(size))
-    }, 150, [size, columnRef])
+    }, 150, [size, leftRef])
 
     useEffect(() => {
       if (headerRef.current == null || gridRef.current == null) return;
 
-      gridRef.current.base.addEventListener('scroll', (e: any) => headerRef.current.base.scrollLeft = e.target.scrollLeft)
-      return () => gridRef.current.base.removeEventListener('scroll')
+      gridRef.current.addEventListener('scroll', (e: any) => {
+        headerRef.current.scrollLeft = e.target.scrollLeft
+        columnsRef.current.forEach((ref: any) => ref.scrollTop = e.target.scrollTop)
+      })
+      return () => gridRef.current.removeEventListener('scroll')
     }, [headerRef, gridRef])
 
     useProcessData(dispatch, data, config)
 
+    const columns = config.columns || []
+
     return (
         <Config.Provider value={store}>
-          <div ref={ref} style={{
+          <div ref={bodyRef} style={{
             width: '100%',
             height: '100%',
             'display': 'flex',
@@ -53,14 +61,14 @@ export function View ({data, config}: ViewProps) {
             'background-color': 'white'
           }}>
             {/* Left side */}
-            <div ref={columnRef} style={{
+            <div ref={leftRef} style={{
               display: 'flex',
               flexDirection: 'row',
               overflow: 'hidden',
               flexShrink: 0
             }}
             >
-              <Columns columns={config.columns || []}/>
+              {columns.map((c, idx) => <Column forwardedRef={(dom: any) => columnsRef.current[idx] = dom} column={c}/>)}
             </div>
 
             {/* Right side */}
@@ -82,8 +90,8 @@ export function View ({data, config}: ViewProps) {
                 alignItems: 'stretch',
                 overflow: 'hidden'
               }}>
-                <Header ref={headerRef} />
-                <Grid ref={gridRef} />
+                <Header forwardedRef={headerRef} />
+                <Grid forwardedRef={gridRef} />
               </div>
             </div>
 

@@ -328,7 +328,8 @@ var Timeline = (function () {
   };
 
   var Column = function Column(_ref3) {
-    var column = _ref3.column;
+    var column = _ref3.column,
+        forwardedRef = _ref3.forwardedRef;
     var store = useConfig();
     var state = store.state;
     return v("div", {
@@ -349,6 +350,8 @@ var Timeline = (function () {
         alignSelf: 'flex-end'
       }
     }, column.text)), v("div", {
+      className: "colum-sections",
+      ref: forwardedRef,
       style: {
         display: 'flex',
         flexShrink: 0,
@@ -362,16 +365,11 @@ var Timeline = (function () {
         task: task,
         field: column.field
       });
-    })));
-  };
-
-  var Columns = function Columns(_ref) {
-    var columns = _ref.columns;
-    return v(p, null, columns.map(function (c) {
-      return v(Column, {
-        column: c
-      });
-    }));
+    }), v("div", null, v("div", {
+      style: {
+        height: 40
+      }
+    }, " "))));
   };
 
   var Plan = function Plan(_ref) {
@@ -425,12 +423,13 @@ var Timeline = (function () {
     }));
   };
 
-  var Grid = function Grid(props, ref) {
+  var Grid = function Grid(_ref) {
+    var forwardedRef = _ref.forwardedRef;
     var store = useConfig();
     var state = store.state;
     var tasks = store.state.tasks;
     return v("div", {
-      ref: ref,
+      ref: forwardedRef,
       style: {
         flex: 1,
         height: state.height - 35,
@@ -442,6 +441,10 @@ var Timeline = (function () {
       return v(Task, {
         task: task
       });
+    }), v("div", {
+      style: {
+        height: 20
+      }
     }));
   };
 
@@ -1067,13 +1070,14 @@ var Timeline = (function () {
     return v(p, null, props.children);
   };
 
-  var Header = function Header(props, ref) {
+  var Header = function Header(_ref) {
+    var forwardedRef = _ref.forwardedRef;
     var store = F(Config);
     var state = store.state;
     var ticks = state.ticks;
     var height = 30;
     return v("div", {
-      ref: ref,
+      ref: forwardedRef,
       style: {
         overflow: 'hidden',
         'padding-right': '18px',
@@ -1882,7 +1886,7 @@ var Timeline = (function () {
   var prepareColumns = function prepareColumns(task, config, plans) {
     var labels = {};
     config.forEach(function (c) {
-      var options = task[c.field];
+      var options = task[c.field] || [];
 
       if (!Array.isArray(options)) {
         options = [options];
@@ -2001,7 +2005,8 @@ var Timeline = (function () {
 
       var tasks = data.map(function (t) {
         return prepareTask(t, config);
-      });
+      }); // tasks.push({planes: [], labels: {}})
+
       dispatch(setTasks(tasks));
     }, [data, config]);
   };
@@ -2970,34 +2975,39 @@ var Timeline = (function () {
       state: state,
       dispatch: dispatch
     };
-    var ref = s$2(null);
-    var columnRef = s$2(null);
+    var bodyRef = s$2(null);
+    var leftRef = s$2(null);
     var gridRef = s$2(null);
     var headerRef = s$2(null);
-    var size = useResizeObserver(ref);
+    var columnsRef = s$2([]);
+    var size = useResizeObserver(bodyRef);
     useDebounce(function () {
-      if (columnRef.current == null) {
+      if (leftRef.current == null) {
         return;
       } // subtract padding + columns width
 
 
-      size[0] -= columnRef.current.clientWidth + 18;
+      size[0] -= leftRef.current.clientWidth + 18;
       dispatch(changeSize(size));
-    }, 150, [size, columnRef]);
+    }, 150, [size, leftRef]);
     y$1(function () {
       if (headerRef.current == null || gridRef.current == null) return;
-      gridRef.current.base.addEventListener('scroll', function (e) {
-        return headerRef.current.base.scrollLeft = e.target.scrollLeft;
+      gridRef.current.addEventListener('scroll', function (e) {
+        headerRef.current.scrollLeft = e.target.scrollLeft;
+        columnsRef.current.forEach(function (ref) {
+          return ref.scrollTop = e.target.scrollTop;
+        });
       });
       return function () {
-        return gridRef.current.base.removeEventListener('scroll');
+        return gridRef.current.removeEventListener('scroll');
       };
     }, [headerRef, gridRef]);
     useProcessData(dispatch, data, config);
+    var columns = config.columns || [];
     return v(Config.Provider, {
       value: store
     }, v("div", {
-      ref: ref,
+      ref: bodyRef,
       style: {
         width: '100%',
         height: '100%',
@@ -3008,15 +3018,20 @@ var Timeline = (function () {
         'background-color': 'white'
       }
     }, v("div", {
-      ref: columnRef,
+      ref: leftRef,
       style: {
         display: 'flex',
         flexDirection: 'row',
         overflow: 'hidden',
         flexShrink: 0
       }
-    }, v(Columns, {
-      columns: config.columns || []
+    }, columns.map(function (c, idx) {
+      return v(Column, {
+        forwardedRef: function forwardedRef(dom) {
+          return columnsRef.current[idx] = dom;
+        },
+        column: c
+      });
     })), v("div", {
       style: {
         display: 'flex',
@@ -3040,9 +3055,9 @@ var Timeline = (function () {
         overflow: 'hidden'
       }
     }, v(Header, {
-      ref: headerRef
+      forwardedRef: headerRef
     }), v(Grid, {
-      ref: gridRef
+      forwardedRef: gridRef
     })))));
   }
 

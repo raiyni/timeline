@@ -1,6 +1,6 @@
 import { ColumnOptions, LabelOptions, TaskOptions } from './types';
+import { Ref, h } from 'preact'
 
-import { h } from 'preact'
 import { useConfig } from './util/useConfig';
 
 const Label = ({ label, height }: {label: LabelOptions, height: number}) => {
@@ -30,7 +30,7 @@ const LabelSection = ({ task, field }: {task: TaskOptions, field: string}) => {
   )
 }
 
-export const Column = ({ column }: { column: ColumnOptions}) => {
+export const Column = ({ column, forwardedRef }: { column: ColumnOptions, forwardedRef: Ref<any>}) => {
   const store = useConfig()
   const state = store.state
 
@@ -47,7 +47,7 @@ export const Column = ({ column }: { column: ColumnOptions}) => {
       }}>
         <span style={{alignSelf: 'flex-end'}}>{column.text}</span>
       </div>
-      <div style={{
+      <div className="colum-sections" ref={forwardedRef} style={{
         display: 'flex',
         flexShrink: 0,
         flex: 1,
@@ -56,6 +56,7 @@ export const Column = ({ column }: { column: ColumnOptions}) => {
         whiteSpace: 'nowrap'
       }}>
         {state.tasks.map((task: TaskOptions) => <LabelSection task={task} field={column.field} />)}
+        <div><div style={{height: 40}}> </div></div>
       </div>
     </div>
   )

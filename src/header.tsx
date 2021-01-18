@@ -5,7 +5,7 @@ import { Config } from './store'
 import dayjs from 'dayjs'
 import { useContext } from 'preact/hooks'
 
-export const Header = (props: any, ref: Ref<any>) => {
+export const Header = ({ forwardedRef }: { forwardedRef: Ref<any> }) => {
   const store = useContext(Config)
   const state = store.state
 
@@ -14,7 +14,7 @@ export const Header = (props: any, ref: Ref<any>) => {
 
   return (
     <div
-      ref={ref}
+      ref={forwardedRef}
       style={{
         overflow: 'hidden',
         'padding-right': '18px',
