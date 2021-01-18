@@ -67,3 +67,11 @@ export const interpolate = (
 
   return width * ratio
 }
+
+export const deinterpolate = (width: number, start: Tick, end: Tick, x: number): Tick => {
+  const ratio = x / width
+  const distance = end.diff(start)
+
+  const inputDistance = ratio * distance
+  return start.add(inputDistance, 'millisecond')
+}

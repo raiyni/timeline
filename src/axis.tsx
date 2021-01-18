@@ -1,6 +1,6 @@
 import { Fragment, h } from 'preact'
 import { TaskOptions, Tick, VIEW_MODE } from './types'
-import { interpolate, setDates, setScrollWidth, setX, updateTicks } from './actions'
+import { deinterpolate, interpolate, setDates, setScrollWidth, setX, updateTicks } from './actions'
 import { useContext, useEffect } from 'preact/hooks'
 
 import { Config } from './store'
@@ -41,19 +41,19 @@ const toDayjsUnit = (viewMode: VIEW_MODE): dayjs.OpUnitType => {
   return 'day'
 }
 
-const nextDate = (viewMode: VIEW_MODE, date: dayjs.Dayjs) => {
+const nextDate = (viewMode: VIEW_MODE, date: dayjs.Dayjs, step: number = 1) => {
   switch (viewMode) {
     case VIEW_MODE.DAY:
-      return date.add(1, 'day')
+      return date.add(step, 'day')
     case VIEW_MODE.MONTH:
-      return date.add(1, 'month')
+      return date.add(step, 'month')
     case VIEW_MODE.WEEK:
-      return date.add(1, 'week')
+      return date.add(step, 'week')
     case VIEW_MODE.YEAR:
-      return date.add(1, 'year')
+      return date.add(step, 'year')
   }
 
-  return date.add(1, 'day')
+  return date.add(step, 'day')
 }
 
 const startDate = (viewMode: VIEW_MODE, date: Tick) => {
@@ -105,26 +105,33 @@ export const Axis = (props: any) => {
       return
     }
 
+    console.log('here')
+
     let { minDate, maxDate } = getBoundingDates(state.tasks)
 
     minDate = startDate(state.viewMode, minDate)
 
     const diff = Math.floor(maxDate.diff(minDate, toDayjsUnit(state.viewMode))) + 1
-    const modeWidth = getModeWidth(state.viewMode)
+    let modeWidth = getModeWidth(state.viewMode)
 
     let scrollWidth = modeWidth * diff
-    console.log(diff, modeWidth, scrollWidth, state.width)
     if (scrollWidth < state.width) {
       scrollWidth = state.width
     }
 
     const ticks = []
-    let currentTick = nextDate(state.viewMode, minDate)
+    let step = 1
+    if (state.viewMode == VIEW_MODE.FILL) {
+      const stepDate = deinterpolate(scrollWidth, minDate, maxDate, 100)
+      step = stepDate.diff(minDate, 'day')
+      modeWidth = scrollWidth
+    }
 
-    const referenceDate = currentTick.clone()
+    let currentTick = nextDate(state.viewMode, minDate, step)
+    const referenceDate = state.viewMode == VIEW_MODE.FILL ? maxDate : currentTick.clone()
     while (interpolate(modeWidth, minDate, referenceDate, currentTick) < scrollWidth) {
       ticks.push(currentTick)
-      currentTick = nextDate(state.viewMode, currentTick)
+      currentTick = nextDate(state.viewMode, currentTick, step)
     }
 
     store.dispatch(setX(modeWidth, minDate, referenceDate))

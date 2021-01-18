@@ -194,6 +194,12 @@ var Timeline = (function () {
     var ratio = inputDistance / distance;
     return width * ratio;
   };
+  var deinterpolate = function deinterpolate(width, start, end, x) {
+    var ratio = x / width;
+    var distance = end.diff(start);
+    var inputDistance = ratio * distance;
+    return start.add(inputDistance, 'millisecond');
+  };
 
   var VIEW_MODE;
 
@@ -1175,21 +1181,23 @@ var Timeline = (function () {
   };
 
   var nextDate = function nextDate(viewMode, date) {
+    var step = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
     switch (viewMode) {
       case VIEW_MODE.DAY:
-        return date.add(1, 'day');
+        return date.add(step, 'day');
 
       case VIEW_MODE.MONTH:
-        return date.add(1, 'month');
+        return date.add(step, 'month');
 
       case VIEW_MODE.WEEK:
-        return date.add(1, 'week');
+        return date.add(step, 'week');
 
       case VIEW_MODE.YEAR:
-        return date.add(1, 'year');
+        return date.add(step, 'year');
     }
 
-    return date.add(1, 'day');
+    return date.add(step, 'day');
   };
 
   var startDate = function startDate(viewMode, date) {
@@ -1242,6 +1250,8 @@ var Timeline = (function () {
         return;
       }
 
+      console.log('here');
+
       var _getBoundingDates = getBoundingDates(state.tasks),
           minDate = _getBoundingDates.minDate,
           maxDate = _getBoundingDates.maxDate;
@@ -1250,19 +1260,26 @@ var Timeline = (function () {
       var diff = Math.floor(maxDate.diff(minDate, toDayjsUnit(state.viewMode))) + 1;
       var modeWidth = getModeWidth(state.viewMode);
       var scrollWidth = modeWidth * diff;
-      console.log(diff, modeWidth, scrollWidth, state.width);
 
       if (scrollWidth < state.width) {
         scrollWidth = state.width;
       }
 
       var ticks = [];
-      var currentTick = nextDate(state.viewMode, minDate);
-      var referenceDate = currentTick.clone();
+      var step = 1;
+
+      if (state.viewMode == VIEW_MODE.FILL) {
+        var stepDate = deinterpolate(scrollWidth, minDate, maxDate, 100);
+        step = stepDate.diff(minDate, 'day');
+        modeWidth = scrollWidth;
+      }
+
+      var currentTick = nextDate(state.viewMode, minDate, step);
+      var referenceDate = state.viewMode == VIEW_MODE.FILL ? maxDate : currentTick.clone();
 
       while (interpolate(modeWidth, minDate, referenceDate, currentTick) < scrollWidth) {
         ticks.push(currentTick);
-        currentTick = nextDate(state.viewMode, currentTick);
+        currentTick = nextDate(state.viewMode, currentTick, step);
       }
 
       store.dispatch(setX(modeWidth, minDate, referenceDate));
