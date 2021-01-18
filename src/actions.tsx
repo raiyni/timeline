@@ -9,7 +9,8 @@ export enum Actions {
   SET_TASKS,
   SET_DATES,
   SET_SCROLL_WIDTH,
-  SET_X
+  SET_X,
+  TOGGLE_TASK
 }
 
 export interface Action {
@@ -48,6 +49,10 @@ export const setScrollWidth = (width: number): Action => {
 
 export const setX = (scrollWidth: number, minDate: Tick, maxDate: Tick): Action => {
   return createAction(Actions.SET_X, (tick: Tick) => interpolate(scrollWidth, minDate, maxDate, tick))
+}
+
+export const toggleTask = (id: string): Action => {
+  return createAction(Actions.TOGGLE_TASK, id)
 }
 
 export const interpolate = (

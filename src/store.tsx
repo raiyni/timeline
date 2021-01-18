@@ -12,7 +12,7 @@ interface State {
   width: number
   scrollWidth: number
   height: number
-  x: (tick: Tick) => number
+  x: (tick: string | Tick) => number
 }
 
 export const DEFAULT_STATE: State = {
@@ -24,7 +24,7 @@ export const DEFAULT_STATE: State = {
   width: 0,
   scrollWidth: 0,
   height: 0,
-  x: (tick: Tick) => 0
+  x: (tick: string | Tick) => 0
 }
 
 export const Config = createContext({
@@ -70,10 +70,18 @@ export const reducer = (state: any, action: Action) => {
         }
       }
     case Actions.SET_X:
-      console.log(action.payload)
       return {
         ...state,
         x: action.payload
+      }
+    case Actions.TOGGLE_TASK:
+      const tasks = state.tasks
+      const task = tasks.find(t => t.id == action.payload)
+      task.collapsed = !!!task.collapsed
+
+      return {
+        ...state,
+        tasks: tasks
       }
   }
 

@@ -68,7 +68,7 @@ export function View ({data, config}: ViewProps) {
               flexShrink: 0
             }}
             >
-              {columns.map((c, idx) => <Column forwardedRef={(dom: any) => columnsRef.current[idx] = dom} column={c}/>)}
+              {columns.map((c, idx) => <Column forwardedRef={(dom: any) => columnsRef.current[idx] = dom} column={c} idx={idx}/>)}
             </div>
 
             {/* Right side */}

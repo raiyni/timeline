@@ -2,6 +2,7 @@ import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload'
 import resolve from '@rollup/plugin-node-resolve';
+import scss from 'rollup-plugin-scss'
 import serve from 'rollup-plugin-serve'
 import sizes from 'rollup-plugin-sizes'
 
@@ -22,7 +23,7 @@ export default {
   plugins: [
     // Allows node_modules resolution
     resolve({ extensions }),
-
+    scss(),
     // Allow bundling cjs modules. Rollup doesn't understand cjs
     commonjs(),
 

@@ -146,6 +146,7 @@ var Timeline = (function () {
     Actions[Actions["SET_DATES"] = 4] = "SET_DATES";
     Actions[Actions["SET_SCROLL_WIDTH"] = 5] = "SET_SCROLL_WIDTH";
     Actions[Actions["SET_X"] = 6] = "SET_X";
+    Actions[Actions["TOGGLE_TASK"] = 7] = "TOGGLE_TASK";
   })(Actions || (Actions = {}));
 
   var createAction = function createAction(action, payload) {
@@ -183,6 +184,9 @@ var Timeline = (function () {
     return createAction(Actions.SET_X, function (tick) {
       return interpolate(scrollWidth, minDate, maxDate, tick);
     });
+  };
+  var toggleTask = function toggleTask(id) {
+    return createAction(Actions.TOGGLE_TASK, id);
   };
   var interpolate = function interpolate(width, start, end, input) {
     var distance = end.diff(start);
@@ -281,9 +285,18 @@ var Timeline = (function () {
         }
 
       case Actions.SET_X:
-        console.log(action.payload);
         return _objectSpread2(_objectSpread2({}, state), {}, {
           x: action.payload
+        });
+
+      case Actions.TOGGLE_TASK:
+        var tasks = state.tasks;
+        var task = tasks.find(function (t) {
+          return t.id == action.payload;
+        });
+        task.collapsed = !!!task.collapsed;
+        return _objectSpread2(_objectSpread2({}, state), {}, {
+          tasks: tasks
         });
     }
 
@@ -296,40 +309,91 @@ var Timeline = (function () {
     return F(Config);
   };
 
-  var Label = function Label(_ref) {
-    var label = _ref.label,
-        height = _ref.height;
+  var CollapseButton = function CollapseButton(_ref) {
+    var collapsed = _ref.collapsed,
+        id = _ref.id;
+    var store = useConfig();
+
+    var _useState = l$1(false),
+        _useState2 = _slicedToArray(_useState, 2),
+        hover = _useState2[0],
+        setHover = _useState2[1];
+
+    return v("a", {
+      style: {
+        width: 20,
+        display: 'inline-block',
+        border: '0.1em solid rgba(0, 0, 0, 0.63)',
+        borderRadius: '0.12em',
+        boxSizing: 'border-box',
+        fontFamily: 'Roboto, sans-serif',
+        fontWeight: 300,
+        textAlign: 'center',
+        textDecoration: 'none',
+        transition: 'all 0.2s',
+        cursor: hover ? 'pointer' : 'default',
+        color: hover ? '#fff' : '#000',
+        backgroundColor: hover ? '#000' : 'rgba(255, 255, 255, 0.63)',
+        marginRight: 5,
+        userSelect: 'none'
+      },
+      onMouseEnter: function onMouseEnter() {
+        return setHover(true);
+      },
+      onMouseLeave: function onMouseLeave() {
+        return setHover(false);
+      },
+      onClick: function onClick() {
+        return store.dispatch(toggleTask(id));
+      }
+    }, collapsed ? '+' : '-');
+  };
+
+  var Label = function Label(_ref2) {
+    var label = _ref2.label,
+        height = _ref2.height,
+        idx = _ref2.idx,
+        row = _ref2.row,
+        task = _ref2.task;
     return v("div", {
       style: _objectSpread2({
         height: height,
         paddingLeft: 4,
         paddingRight: 4,
-        display: 'flex',
+        display: task.collapsed && row !== 0 ? 'none' : 'flex',
         alignItems: 'center'
       }, label.backgroundStyle)
-    }, v("span", {
+    }, idx === 0 && row === 0 && task.collapsible ? v(CollapseButton, {
+      id: task.id,
+      collapsed: task.collapsed
+    }) : null, v("span", {
       style: _objectSpread2({}, label.labelStyle)
     }, label.label));
   };
 
-  var LabelSection = function LabelSection(_ref2) {
-    var task = _ref2.task,
-        field = _ref2.field;
+  var LabelSection = function LabelSection(_ref3) {
+    var task = _ref3.task,
+        field = _ref3.field,
+        idx = _ref3.idx;
     return v("div", {
       style: {
         borderTop: '2px solid black'
       }
-    }, task.labels[field].map(function (label, idx) {
+    }, task.labels[field].map(function (label, row) {
       return v(Label, {
         label: label,
-        height: task.heights[idx]
+        height: task.heights[row],
+        idx: idx,
+        row: row,
+        task: task
       });
     }));
   };
 
-  var Column = function Column(_ref3) {
-    var column = _ref3.column,
-        forwardedRef = _ref3.forwardedRef;
+  var Column = function Column(_ref4) {
+    var column = _ref4.column,
+        forwardedRef = _ref4.forwardedRef,
+        idx = _ref4.idx;
     var store = useConfig();
     var state = store.state;
     return v("div", {
@@ -363,13 +427,129 @@ var Timeline = (function () {
     }, state.tasks.map(function (task) {
       return v(LabelSection, {
         task: task,
-        field: column.field
+        field: column.field,
+        idx: idx
       });
     }), v("div", null, v("div", {
       style: {
         height: 40
       }
     }, " "))));
+  };
+
+  var Icon = function Icon(_ref) {
+    var options = _ref.options,
+        width = _ref.width,
+        height = _ref.height,
+        x = _ref.x,
+        y = _ref.y;
+    return v("svg", {
+      x: x,
+      y: y,
+      width: width,
+      height: height,
+      preserveAspectRatio: "none",
+      viewBox: "0 0 20 20",
+      style: {
+        overflow: 'visible'
+      }
+    }, v(Shape, {
+      options: options
+    }));
+  };
+  var Shape = function Shape(_ref2) {
+    var options = _ref2.options;
+
+    switch (options.shape) {
+      case ShapeType.TRIANGLE:
+        return v("g", {
+          transform: "translate(10, 10)"
+        }, v("g", {
+          transform: "rotate(".concat(options.rotate || 0, ")")
+        }, v("polygon", {
+          style: options.style,
+          points: "10,2 2,18, 18,18",
+          transform: "translate(-10, -10)"
+        })));
+
+      case ShapeType.SQUARE:
+        return v("rect", {
+          x: 1,
+          y: 1,
+          width: 18,
+          height: 18,
+          style: options.style
+        });
+
+      case ShapeType.CIRCLE:
+        return v("g", {
+          transform: "translate(10, 10)"
+        }, v("g", null, v("ellipse", {
+          cx: 10,
+          cy: 10,
+          rx: 9,
+          ry: 9,
+          transform: "translate(-10, -10)",
+          style: options.style
+        })));
+
+      case ShapeType.STAR:
+        return v("polygon", {
+          style: options.style,
+          points: "10,1 12,8, 19,8, 13.5,12 15.5,19 10,15, 4.5,19 6.5,12 1,8 8,8"
+        });
+    }
+
+    return null;
+  };
+
+  var Milestone = function Milestone(_ref) {
+    var options = _ref.options,
+        height = _ref.height;
+    var store = useConfig();
+    var state = store.state;
+
+    if (isImage(options)) {
+      var y = (height - options.height) / 2;
+      var x = state.x(options.date) - options.width / 2;
+      return v("g", null, v("image", {
+        href: options.href,
+        width: options.width,
+        height: options.height,
+        y: y,
+        x: x
+      }));
+    }
+
+    if (isShape(options)) {
+      var _y = (height - options.height) / 2;
+
+      var _x = state.x(options.date) - options.width / 2;
+
+      return v(Icon, {
+        options: options,
+        width: options.width,
+        height: options.height,
+        x: _x,
+        y: _y
+      });
+    }
+
+    if (isLine(options)) {
+      var _y2 = height / 2;
+
+      return v("g", null, v("line", {
+        x1: state.x(options.start),
+        x2: state.x(options.end),
+        y1: _y2,
+        y2: _y2,
+        style: options.style
+      }));
+    }
+
+    if (isArrow(options)) ;
+
+    return null;
   };
 
   var Plan = function Plan(_ref) {
@@ -404,20 +584,27 @@ var Timeline = (function () {
         width: state.scrollWidth,
         borderTop: '2px solid black'
       }
-    }, task.plans.map(function (plans, idx) {
+    }, task.plans.map(function (plans, row) {
+      var milestones = task.milestones[row];
       return v("div", {
         className: "task-row",
         style: {
-          height: task.heights[idx],
+          height: task.heights[row],
           width: state.scrollWidth,
-          backgroundColor: '#fff'
+          backgroundColor: '#fff',
+          display: task.collapsed && row > 0 ? 'none' : 'block'
         }
       }, v("svg", {
-        height: 30,
+        height: task.heights[row],
         width: state.scrollWidth
       }, plans.map(function (plan) {
         return v(Plan, {
           plan: plan
+        });
+      }), milestones.map(function (milestone) {
+        return v(Milestone, {
+          options: milestone,
+          height: task.heights[row]
         });
       })));
     }));
@@ -1128,6 +1315,27 @@ var Timeline = (function () {
   var clamp = function clamp(num, min, max) {
     return Math.min(Math.max(num, min), max);
   };
+  var uid$1 = function uid() {
+    var d = new Date().getTime(); //Timestamp
+
+    var d2 = performance && performance.now && performance.now() * 1000 || 0; //Time in microseconds since page-load or 0 if unsupported
+
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16; //random number between 0 and 16
+
+      if (d > 0) {
+        //Use timestamp until depleted
+        r = (d + r) % 16 | 0;
+        d = Math.floor(d / 16);
+      } else {
+        //Use microseconds since page-load if supported
+        r = (d2 + r) % 16 | 0;
+        d2 = Math.floor(d2 / 16);
+      }
+
+      return (c === 'x' ? r : r & 0x3 | 0x8).toString(16);
+    });
+  };
 
   // `String.prototype.{ codePointAt, at }` methods implementation
   var createMethod = function (CONVERT_TO_STRING) {
@@ -1821,7 +2029,11 @@ var Timeline = (function () {
   };
 
   var prepareIcon = function prepareIcon(source) {
-    var copy = _objectSpread2({}, source);
+    var copy = _objectSpread2({
+      width: 15,
+      height: 15,
+      rotate: 0
+    }, source);
 
     if (source.date) {
       copy.date = dayjs_min(source.date);
@@ -1855,8 +2067,17 @@ var Timeline = (function () {
   };
 
   var prepareShape = function prepareShape(source) {
-    return _objectSpread2(_objectSpread2({}, source), {}, {
-      date: dayjs_min(source.date)
+    return _objectSpread2(_objectSpread2({
+      width: 15,
+      height: 15
+    }, source), {}, {
+      date: dayjs_min(source.date),
+      style: _objectSpread2({
+        stroke: '#000',
+        fill: '#fff',
+        strokeWidth: 2,
+        strokeLinejoin: 'miter'
+      }, source.style)
     });
   };
 
@@ -1991,8 +2212,11 @@ var Timeline = (function () {
 
     if (config.columns && config.columns.length > 0) {
       task.labels = prepareColumns(options, config.columns, task.plans.length);
-    } // TODO: apply default heights to missing plans
+    }
 
+    task.collapsed = options.collapsed;
+    task.collapsible = options.collapsible;
+    task.id = uid$1(); // TODO: apply default heights to missing plans
 
     return task;
   };
@@ -3030,7 +3254,8 @@ var Timeline = (function () {
         forwardedRef: function forwardedRef(dom) {
           return columnsRef.current[idx] = dom;
         },
-        column: c
+        column: c,
+        idx: idx
       });
     })), v("div", {
       style: {

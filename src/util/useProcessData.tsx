@@ -18,10 +18,10 @@ import {
   isShape,
   obj,
 } from './../types'
+import { clamp, uid } from './math'
 
 import { PlanOptions } from '../types'
 import { changeView } from './../actions'
-import { clamp } from './math'
 import dayjs from 'dayjs'
 // @ts-ignore
 import flat from 'core-js-pure/features/array/flat'
@@ -97,7 +97,10 @@ const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions): Pla
 
 const prepareIcon = (source: Icon): Icon => {
   const copy: Icon = {
-    ...source,
+    width: 15,
+    height: 15,
+    rotate: 0,
+    ...source
   }
 
   if (source.date) {
@@ -135,8 +138,17 @@ const prepareArrow = (source: Arrow): Arrow => {
 
 const prepareShape = (source: Shape): Shape => {
   return {
+    width: 15,
+    height: 15,
     ...source,
     date: dayjs(source.date),
+    style: {
+      stroke: '#000',
+      fill: '#fff',
+      strokeWidth: 2,
+      strokeLinejoin: 'miter',
+      ...source.style
+    }
   }
 }
 
@@ -266,6 +278,10 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   if (config.columns && config.columns.length > 0) {
     task.labels = prepareColumns(options, config.columns, task.plans.length)
   }
+
+  task.collapsed = options.collapsed
+  task.collapsible = options.collapsible
+  task.id = uid()
 
   // TODO: apply default heights to missing plans
 

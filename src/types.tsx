@@ -109,6 +109,7 @@ export type TaskOptions  = obj & {
   heights?: number[]
   plans?: PlanOptions[][]
   milestones?: MilestoneOptions[][]
+  id?: string
   labels?: { [key: string]: LabelOptions[] }
 }
 
