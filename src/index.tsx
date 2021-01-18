@@ -1,7 +1,6 @@
 // Must be the first import
 
 import 'preact/debug'
-import './timeline.scss'
 
 import { TimelineOptions } from './types'
 import { View } from './view'
