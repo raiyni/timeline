@@ -32,6 +32,8 @@ import { useEffect } from 'preact/hooks'
 const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions = {} as LabelOptions): LabelOptions => {
   if (typeof input == 'string') {
     return {
+      alignment: 'left',
+      ...defaults,
       label: input,
       labelStyle: {
         ...defaults.labelStyle,
@@ -42,8 +44,10 @@ const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions = {} 
     }
   }
 
-  return {
-    label: input.label,
+  const obj: LabelOptions = {
+    alignment: 'left',
+    ...defaults,
+    ...input,
     labelStyle: {
       ...defaults.labelStyle,
       ...input.labelStyle,
@@ -53,6 +57,17 @@ const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions = {} 
       ...input.backgroundStyle,
     },
   }
+
+  if (input.icons || defaults.icons) {
+    let icons = input.icons || defaults.icons
+    if (!Array.isArray(icons)) {
+      icons = [icons]
+    }
+
+    obj.icons = icons.map((i: Icon) => prepareIcon(i))
+  }
+
+  return obj
 }
 
 const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions): PlanOptions => {
@@ -199,27 +214,12 @@ const prepareColumns = (task: TaskInputOptions, config: ColumnOptions[], plans: 
         v = { label: v }
       }
 
-      options[idx] = v
-      // if (v.icons) {
-      //   if (!Array.isArray(v.icons)) {
-      //     v.icons = [v.icons]
-      //   }
-      // }
-
       let defaults = c.defaults || {}
       if (Array.isArray(defaults)) {
         defaults = defaults[idx] || {}
       }
 
-      v.labelStyle = {
-        ...defaults.labelStyle,
-        ...v.labelStyle
-      }
-
-      v.backgroundStyle = {
-        ...defaults.backgroundStyle,
-        ...v.backgroundStyle
-      }
+      options[idx] = prepareLabel(v, defaults as LabelOptions)
     })
 
     labels[c.field] = options

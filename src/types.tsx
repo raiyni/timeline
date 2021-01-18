@@ -96,7 +96,11 @@ export const isLine = (obj: any): obj is Line => {
   return 'start' in obj && 'end' in obj && !('shape' in obj)
 }
 
-export type Icon = Image | Shape
+export interface Alignment {
+  alignment?: 'left' | 'center' | 'right'
+}
+
+export type Icon = (Image | Shape) & Alignment
 
 export type MilestoneOptions = {
   x?: number
@@ -164,12 +168,14 @@ export interface Offset {
   y: number
 }
 
-export interface LabelOptions {
+export interface LabelBaseOptions {
   label: string
   labelStyle?: any
   backgroundStyle?: any
   icons?: Icon | Icon[]
 }
+
+export type LabelOptions = LabelBaseOptions & Alignment
 
 export interface ViewProps {
   data?: TaskInputOptions[]

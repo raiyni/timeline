@@ -1,10 +1,10 @@
-import { Icon as IconOptions, Shape as ShapeOptions, ShapeType } from './types'
+import { Icon as IconOptions, Shape as ShapeOptions, ShapeType, Style } from './types'
 
 import { h } from 'preact'
 
-export const Icon = ({ options, width, height, x, y }: {options: IconOptions, width: number, height: number, x: number, y: number}) => {
+export const Icon = ({ options, width, height, x, y, style = {} }: {options: IconOptions, width: number, height: number, x?: number, y?: number, style?: Style}) => {
   return (
-    <svg x={x} y={y} width={width} height={height} preserveAspectRatio='none' viewBox='0 0 20 20' style={{overflow: 'visible'}}>
+    <svg x={x} y={y} width={width} height={height} preserveAspectRatio='none' viewBox='0 0 20 20' style={{overflow: 'visible', ...style}}>
       <Shape options={options} />
     </svg>
   )

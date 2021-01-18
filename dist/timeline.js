@@ -311,144 +311,14 @@ var Timeline = (function () {
 
   var t$1,u$2,r$1,o$2=0,i$2=[],c$2=n.__b,f$2=n.__r,e$1=n.diffed,a$2=n.__c,v$1=n.unmount;function m$1(t,r){n.__h&&n.__h(u$2,t,o$2||r),o$2=0;var i=u$2.__H||(u$2.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({}),i.__[t]}function l$1(n){return o$2=1,p$2(w$1,n)}function p$2(n,r,o){var i=m$1(t$1++,2);return i.t=n,i.__c||(i.__=[o?o(r):w$1(void 0,r),function(n){var t=i.t(i.__[0],n);i.__[0]!==t&&(i.__=[t,i.__[1]],i.__c.setState({}));}],i.__c=u$2),i.__}function y$1(r,o){var i=m$1(t$1++,3);!n.__s&&k$1(i.__H,o)&&(i.__=r,i.__H=o,u$2.__H.__h.push(i));}function s$2(n){return o$2=5,d$2(function(){return {current:n}},[])}function d$2(n,u){var r=m$1(t$1++,7);return k$1(r.__H,u)&&(r.__=n(),r.__H=u,r.__h=n),r.__}function A$1(n,t){return o$2=8,d$2(function(){return n},t)}function F(n){var r=u$2.context[n.__c],o=m$1(t$1++,9);return o.__c=n,r?(null==o.__&&(o.__=!0,r.sub(u$2)),r.props.value):n.__}function x(){i$2.forEach(function(t){if(t.__P)try{t.__H.__h.forEach(g$1),t.__H.__h.forEach(j$1),t.__H.__h=[];}catch(u){t.__H.__h=[],n.__e(u,t.__v);}}),i$2=[];}n.__b=function(n){u$2=null,c$2&&c$2(n);},n.__r=function(n){f$2&&f$2(n),t$1=0;var r=(u$2=n.__c).__H;r&&(r.__h.forEach(g$1),r.__h.forEach(j$1),r.__h=[]);},n.diffed=function(t){e$1&&e$1(t);var o=t.__c;o&&o.__H&&o.__H.__h.length&&(1!==i$2.push(o)&&r$1===n.requestAnimationFrame||((r$1=n.requestAnimationFrame)||function(n){var t,u=function(){clearTimeout(r),b$1&&cancelAnimationFrame(t),setTimeout(n);},r=setTimeout(u,100);b$1&&(t=requestAnimationFrame(u));})(x)),u$2=void 0;},n.__c=function(t,u){u.some(function(t){try{t.__h.forEach(g$1),t.__h=t.__h.filter(function(n){return !n.__||j$1(n)});}catch(r){u.some(function(n){n.__h&&(n.__h=[]);}),u=[],n.__e(r,t.__v);}}),a$2&&a$2(t,u);},n.unmount=function(t){v$1&&v$1(t);var u=t.__c;if(u&&u.__H)try{u.__H.__.forEach(g$1);}catch(t){n.__e(t,u.__v);}};var b$1="function"==typeof requestAnimationFrame;function g$1(n){var t=u$2;"function"==typeof n.__c&&n.__c(),u$2=t;}function j$1(n){var t=u$2;n.__c=n.__(),u$2=t;}function k$1(n,t){return !n||n.length!==t.length||t.some(function(t,u){return t!==n[u]})}function w$1(n,t){return "function"==typeof t?t(n):t}
 
-  var useConfig = function useConfig() {
-    return F(Config);
-  };
-
-  var CollapseButton = function CollapseButton(_ref) {
-    var collapsed = _ref.collapsed,
-        id = _ref.id;
-    var store = useConfig();
-
-    var _useState = l$1(false),
-        _useState2 = _slicedToArray(_useState, 2),
-        hover = _useState2[0],
-        setHover = _useState2[1];
-
-    return v("a", {
-      style: {
-        width: 20,
-        display: 'inline-block',
-        border: '0.1em solid rgba(0, 0, 0, 0.63)',
-        borderRadius: '0.12em',
-        boxSizing: 'border-box',
-        fontFamily: 'Roboto, sans-serif',
-        fontWeight: 300,
-        textAlign: 'center',
-        textDecoration: 'none',
-        transition: 'all 0.2s',
-        cursor: hover ? 'pointer' : 'default',
-        color: hover ? '#fff' : '#000',
-        backgroundColor: hover ? '#000' : 'rgba(255, 255, 255, 0.63)',
-        marginRight: 5,
-        userSelect: 'none'
-      },
-      onMouseEnter: function onMouseEnter() {
-        return setHover(true);
-      },
-      onMouseLeave: function onMouseLeave() {
-        return setHover(false);
-      },
-      onClick: function onClick() {
-        return store.dispatch(toggleTask(id));
-      }
-    }, collapsed ? '+' : '-');
-  };
-
-  var Label = function Label(_ref2) {
-    var label = _ref2.label,
-        height = _ref2.height,
-        idx = _ref2.idx,
-        row = _ref2.row,
-        task = _ref2.task;
-    return v("div", {
-      style: _objectSpread2({
-        height: height,
-        paddingLeft: 4,
-        paddingRight: 4,
-        display: task.collapsed && row !== 0 ? 'none' : 'flex',
-        alignItems: 'center'
-      }, label.backgroundStyle)
-    }, idx === 0 && row === 0 && task.collapsible ? v(CollapseButton, {
-      id: task.id,
-      collapsed: task.collapsed
-    }) : null, v("span", {
-      style: _objectSpread2({}, label.labelStyle)
-    }, label.label));
-  };
-
-  var LabelSection = function LabelSection(_ref3) {
-    var task = _ref3.task,
-        field = _ref3.field,
-        idx = _ref3.idx;
-    return v("div", {
-      style: {
-        borderTop: '2px solid black'
-      }
-    }, task.labels[field].map(function (label, row) {
-      return v(Label, {
-        label: label,
-        height: task.heights[row],
-        idx: idx,
-        row: row,
-        task: task
-      });
-    }));
-  };
-
-  var Column = function Column(_ref4) {
-    var column = _ref4.column,
-        forwardedRef = _ref4.forwardedRef,
-        idx = _ref4.idx;
-    var store = useConfig();
-    var state = store.state;
-    return v("div", {
-      key: column.field,
-      style: {
-        display: 'flex',
-        flexShrink: 0,
-        flexDirection: 'column'
-      }
-    }, v("div", {
-      style: {
-        height: 30,
-        display: 'flex',
-        justifyContent: 'center'
-      }
-    }, v("span", {
-      style: {
-        alignSelf: 'flex-end'
-      }
-    }, column.text)), v("div", {
-      className: "colum-sections",
-      ref: forwardedRef,
-      style: {
-        display: 'flex',
-        flexShrink: 0,
-        flex: 1,
-        overflow: 'hidden',
-        flexDirection: 'column',
-        whiteSpace: 'nowrap'
-      }
-    }, state.tasks.map(function (task) {
-      return v(LabelSection, {
-        task: task,
-        field: column.field,
-        idx: idx
-      });
-    }), v("div", null, v("div", {
-      style: {
-        height: 40
-      }
-    }, " "))));
-  };
-
   var Icon = function Icon(_ref) {
     var options = _ref.options,
         width = _ref.width,
         height = _ref.height,
         x = _ref.x,
-        y = _ref.y;
+        y = _ref.y,
+        _ref$style = _ref.style,
+        style = _ref$style === void 0 ? {} : _ref$style;
     return v("svg", {
       x: x,
       y: y,
@@ -456,9 +326,9 @@ var Timeline = (function () {
       height: height,
       preserveAspectRatio: "none",
       viewBox: "0 0 20 20",
-      style: {
+      style: _objectSpread2({
         overflow: 'visible'
-      }
+      }, style)
     }, v(Shape, {
       options: options
     }));
@@ -507,6 +377,208 @@ var Timeline = (function () {
     }
 
     return null;
+  };
+
+  var useConfig = function useConfig() {
+    return F(Config);
+  };
+
+  var CollapseButton = function CollapseButton(_ref) {
+    var collapsed = _ref.collapsed,
+        id = _ref.id;
+    var store = useConfig();
+
+    var _useState = l$1(false),
+        _useState2 = _slicedToArray(_useState, 2),
+        hover = _useState2[0],
+        setHover = _useState2[1];
+
+    return v("a", {
+      style: {
+        width: 20,
+        display: 'inline',
+        border: '0.1em solid rgba(0, 0, 0, 0.63)',
+        borderRadius: '0.12em',
+        boxSizing: 'border-box',
+        fontFamily: 'Roboto, sans-serif',
+        fontWeight: 300,
+        textAlign: 'center',
+        textDecoration: 'none',
+        transition: 'all 0.2s',
+        cursor: hover ? 'pointer' : 'default',
+        color: hover ? '#fff' : '#000',
+        backgroundColor: hover ? '#000' : 'rgba(255, 255, 255, 0.63)',
+        marginRight: 5,
+        userSelect: 'none'
+      },
+      onMouseEnter: function onMouseEnter() {
+        return setHover(true);
+      },
+      onMouseLeave: function onMouseLeave() {
+        return setHover(false);
+      },
+      onClick: function onClick() {
+        return store.dispatch(toggleTask(id));
+      }
+    }, collapsed ? '+' : '-');
+  };
+
+  var LabelIcon = function LabelIcon(_ref2) {
+    var options = _ref2.options;
+
+    if (isImage(options)) {
+      return v("img", {
+        src: options.href,
+        width: options.width,
+        height: options.height,
+        style: _objectSpread2({
+          marginRight: 4
+        }, options.style)
+      });
+    }
+
+    return v(Icon, {
+      options: options,
+      width: options.width,
+      height: options.height,
+      style: {
+        marginRight: 4
+      }
+    });
+  };
+
+  var Left = function Left(props) {
+    return v("div", {
+      style: {
+        display: 'inline-flex',
+        marginRight: 4
+      }
+    }, props.children);
+  };
+
+  var Center = function Center(props) {
+    return v("div", {
+      style: {
+        display: 'inline-flex'
+      }
+    }, props.children);
+  };
+
+  var Right = function Right(props) {
+    return v("div", {
+      style: {
+        display: 'inline-flex',
+        marginLeft: 4
+      }
+    }, props.children);
+  };
+
+  var Label = function Label(_ref3) {
+    var label = _ref3.label,
+        height = _ref3.height,
+        idx = _ref3.idx,
+        row = _ref3.row,
+        task = _ref3.task;
+    var spanner = v("span", {
+      style: _objectSpread2({}, label.labelStyle)
+    }, label.label);
+    return v("div", {
+      style: _objectSpread2({
+        height: height,
+        paddingLeft: 4,
+        paddingRight: 4,
+        display: task.collapsed && row !== 0 ? 'none' : 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }, label.backgroundStyle)
+    }, v(Left, null, idx === 0 && row === 0 && task.collapsible ? v(CollapseButton, {
+      id: task.id,
+      collapsed: task.collapsed
+    }) : null, !!label.icons ? label.icons.filter(function (i) {
+      return !i.alignment || i.alignment == 'left';
+    }).map(function (l) {
+      return v(LabelIcon, {
+        options: l
+      });
+    }) : null, !label.alignment || label.alignment == 'left' ? spanner : null), v(Center, null, !!label.icons ? label.icons.filter(function (i) {
+      return i.alignment == 'center';
+    }).map(function (l) {
+      return v(LabelIcon, {
+        options: l
+      });
+    }) : null, label.alignment == 'center' ? spanner : null), v(Right, null, !!label.icons ? label.icons.filter(function (i) {
+      return i.alignment == 'right';
+    }).map(function (l) {
+      return v(LabelIcon, {
+        options: l
+      });
+    }) : null, label.alignment == 'right' ? spanner : null));
+  };
+
+  var LabelSection = function LabelSection(_ref4) {
+    var task = _ref4.task,
+        field = _ref4.field,
+        idx = _ref4.idx;
+    return v("div", {
+      style: {
+        borderTop: '2px solid black'
+      }
+    }, task.labels[field].map(function (label, row) {
+      return v(Label, {
+        label: label,
+        height: task.heights[row],
+        idx: idx,
+        row: row,
+        task: task
+      });
+    }));
+  };
+
+  var Column = function Column(_ref5) {
+    var column = _ref5.column,
+        forwardedRef = _ref5.forwardedRef,
+        idx = _ref5.idx;
+    var store = useConfig();
+    var state = store.state;
+    return v("div", {
+      key: column.field,
+      style: {
+        display: 'flex',
+        flexShrink: 0,
+        flexDirection: 'column'
+      }
+    }, v("div", {
+      style: {
+        height: 30,
+        display: 'flex',
+        justifyContent: 'center'
+      }
+    }, v("span", {
+      style: {
+        alignSelf: 'flex-end'
+      }
+    }, column.text)), v("div", {
+      className: "colum-sections",
+      ref: forwardedRef,
+      style: {
+        display: 'flex',
+        flexShrink: 0,
+        flex: 1,
+        overflow: 'hidden',
+        flexDirection: 'column',
+        whiteSpace: 'nowrap'
+      }
+    }, state.tasks.map(function (task) {
+      return v(LabelSection, {
+        task: task,
+        field: column.field,
+        idx: idx
+      });
+    }), v("div", null, v("div", {
+      style: {
+        height: 40
+      }
+    }, " "))));
   };
 
   var Milestone = function Milestone(_ref) {
@@ -2010,18 +2082,35 @@ var Timeline = (function () {
     var defaults = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     if (typeof input == 'string') {
-      return {
+      return _objectSpread2(_objectSpread2({
+        alignment: 'left'
+      }, defaults), {}, {
         label: input,
         labelStyle: _objectSpread2({}, defaults.labelStyle),
         backgroundStyle: _objectSpread2({}, defaults.backgroundStyle)
-      };
+      });
     }
 
-    return {
-      label: input.label,
+    var obj = _objectSpread2(_objectSpread2(_objectSpread2({
+      alignment: 'left'
+    }, defaults), input), {}, {
       labelStyle: _objectSpread2(_objectSpread2({}, defaults.labelStyle), input.labelStyle),
       backgroundStyle: _objectSpread2(_objectSpread2({}, defaults.backgroundStyle), input.backgroundStyle)
-    };
+    });
+
+    if (input.icons || defaults.icons) {
+      var icons = input.icons || defaults.icons;
+
+      if (!Array.isArray(icons)) {
+        icons = [icons];
+      }
+
+      obj.icons = icons.map(function (i) {
+        return prepareIcon(i);
+      });
+    }
+
+    return obj;
   };
 
   var preparePlan = function preparePlan(options, defaults) {
@@ -2161,20 +2250,13 @@ var Timeline = (function () {
           };
         }
 
-        options[idx] = v; // if (v.icons) {
-        //   if (!Array.isArray(v.icons)) {
-        //     v.icons = [v.icons]
-        //   }
-        // }
-
         var defaults = c.defaults || {};
 
         if (Array.isArray(defaults)) {
           defaults = defaults[idx] || {};
         }
 
-        v.labelStyle = _objectSpread2(_objectSpread2({}, defaults.labelStyle), v.labelStyle);
-        v.backgroundStyle = _objectSpread2(_objectSpread2({}, defaults.backgroundStyle), v.backgroundStyle);
+        options[idx] = prepareLabel(v, defaults);
       });
       labels[c.field] = options;
     });

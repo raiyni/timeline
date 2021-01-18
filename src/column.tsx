@@ -1,6 +1,8 @@
-import { ColumnOptions, LabelOptions, TaskOptions } from './types';
+import { ColumnOptions, LabelOptions, TaskOptions, isImage } from './types';
 import { Ref, h } from 'preact'
 
+import { Icon } from './svg';
+import { Icon as IconOptions } from './types';
 import { toggleTask } from './actions';
 import { useConfig } from './util/useConfig';
 import { useState } from 'preact/hooks';
@@ -11,7 +13,7 @@ const CollapseButton = ({collapsed, id} : {collapsed: boolean, id: string}) => {
   return (
     <a style={{
       width: 20,
-      display: 'inline-block',
+      display: 'inline',
       border: '0.1em solid rgba(0, 0, 0, 0.63)',
       borderRadius: '0.12em',
       boxSizing: 'border-box',
@@ -35,7 +37,46 @@ const CollapseButton = ({collapsed, id} : {collapsed: boolean, id: string}) => {
   )
 }
 
+const LabelIcon = ({ options }: {options: IconOptions}) => {
+  if (isImage(options)) {
+    return (
+      <img src={options.href} width={options.width} height={options.height} style={{marginRight: 4, ...options.style}} />
+    )
+  }
+
+  return (
+    <Icon options={options} width={options.width} height={options.height} style={{marginRight: 4}} />
+  )
+}
+
+const Left = (props: any) => {
+  return (
+    <div style={{display: 'inline-flex', marginRight: 4 }}>{props.children}</div>
+  )
+}
+
+const Center = (props: any) => {
+  return (
+    <div style={{display: 'inline-flex' }}>{props.children}</div>
+  )
+}
+
+const Right = (props: any) => {
+  return (
+    <div style={{display: 'inline-flex',  marginLeft: 4 }}>{props.children}</div>
+  )
+}
+
 const Label = ({ label, height, idx, row, task }: {label: LabelOptions, height: number, idx: number, row: number, task: TaskOptions}) => {
+
+  const spanner = (
+    <span style={{
+      ...label.labelStyle
+    }}>
+      {label.label}
+    </span>
+  )
+
   return (
     <div style={{
       height: height,
@@ -43,12 +84,25 @@ const Label = ({ label, height, idx, row, task }: {label: LabelOptions, height: 
       paddingRight: 4,
       display: task.collapsed && row !== 0 ? 'none' : 'flex',
       alignItems: 'center',
+      justifyContent: 'space-between',
       ...label.backgroundStyle,
     }}>
-      {idx === 0 && row === 0 && task.collapsible ? <CollapseButton id={task.id} collapsed={task.collapsed}/> : null}
-      <span style={{
-        ...label.labelStyle
-      }}>{label.label}</span>
+      <Left>
+        {idx === 0 && row === 0 && task.collapsible ? <CollapseButton id={task.id} collapsed={task.collapsed}/> : null}
+        {!!label.icons ? (label.icons as IconOptions[]).filter((i) => !i.alignment || i.alignment == 'left').map((l: IconOptions) => <LabelIcon options={l} />) : null}
+        {!label.alignment || label.alignment == 'left' ? spanner : null}
+      </Left>
+
+      {/* {!!label.icons ? (label.icons as IconOptions[]).map((l: IconOptions) => <LabelIcon options={l} />) : null} */}
+      <Center>
+      {!!label.icons ? (label.icons as IconOptions[]).filter((i) =>  i.alignment == 'center').map((l: IconOptions) => <LabelIcon options={l} />) : null}
+      {label.alignment == 'center' ? spanner : null}
+      </Center>
+
+      <Right>
+        {!!label.icons ? (label.icons as IconOptions[]).filter((i) =>  i.alignment == 'right').map((l: IconOptions) => <LabelIcon options={l} />) : null}
+        {label.alignment == 'right' ? spanner : null}
+      </Right>
     </div>
   )
 }

@@ -160,8 +160,7 @@ var tasks = [
           width: 20,
           style: {
             fill: 'green',
-            stroke: 'black',
-            'margin-right': 'auto'
+            stroke: 'black'
           }
         }]
       },
@@ -519,14 +518,14 @@ var timeline = new Timeline('test1', tasks, {
       field: 'name',
       defaults: [
         {
+          alignment: 'center',
           backgroundStyle: {
-            background: 'rgb(255,192,0)',
-            'justifyContent': 'center'
+            background: 'rgb(255,192,0)'
           }
         },
         {
+          alignment: 'right',
           backgroundStyle: {
-            'justifyContent': 'flex-end'
           }
         }
       ]
@@ -535,9 +534,9 @@ var timeline = new Timeline('test1', tasks, {
       text: 'Sq/ft',
       field: 'sqft',
       defaults: {
+        alignment: 'center',
         backgroundStyle: {
-          background: 'rgb(217, 217, 217)',
-          'justify-content': 'center'
+          background: 'rgb(217, 217, 217)'
         }
       }
     },
@@ -545,9 +544,9 @@ var timeline = new Timeline('test1', tasks, {
       text: 'Pcs',
       field: 'pcs',
       defaults: {
+        alignment: 'center',
         backgroundStyle: {
-          background: 'rgb(217, 217, 217)',
-          'justify-content': 'center'
+          background: 'rgb(217, 217, 217)'
         }
       }
     }
