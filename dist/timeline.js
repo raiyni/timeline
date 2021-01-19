@@ -148,6 +148,7 @@ var Timeline = (function () {
     Actions[Actions["SET_SCROLL_WIDTH"] = 6] = "SET_SCROLL_WIDTH";
     Actions[Actions["SET_X"] = 7] = "SET_X";
     Actions[Actions["TOGGLE_TASK"] = 8] = "TOGGLE_TASK";
+    Actions[Actions["SET_HIGHLIGHTS"] = 9] = "SET_HIGHLIGHTS";
   })(Actions || (Actions = {}));
 
   var createAction = function createAction(action, payload) {
@@ -188,6 +189,9 @@ var Timeline = (function () {
   };
   var toggleTask = function toggleTask(id) {
     return createAction(Actions.TOGGLE_TASK, id);
+  };
+  var setHighlights = function setHighlights(highlights) {
+    return createAction(Actions.SET_HIGHLIGHTS, highlights);
   };
   var interpolate = function interpolate(width, start, end, input) {
     var distance = end.diff(start);
@@ -245,6 +249,7 @@ var Timeline = (function () {
     width: 0,
     scrollWidth: 0,
     height: 0,
+    highlights: [],
     x: function x(tick) {
       return 0;
     }
@@ -312,6 +317,13 @@ var Timeline = (function () {
         return _objectSpread2(_objectSpread2({}, state), {}, {
           tasks: tasks
         });
+
+      case Actions.SET_HIGHLIGHTS:
+        {
+          return _objectSpread2(_objectSpread2({}, state), {}, {
+            highlights: action.payload
+          });
+        }
     }
 
     return state;
@@ -594,6 +606,33 @@ var Timeline = (function () {
     }, " "))));
   };
 
+  var Highlights = function Highlights() {
+    var store = useConfig();
+    var state = store.state;
+    var highlights = state.highlights;
+    return v("svg", {
+      style: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        pointerEvents: 'none',
+        height: state.height - 58,
+        width: state.scrollWidth
+      }
+    }, highlights.map(function (hl) {
+      return v("rect", {
+        x: state.x(hl.start),
+        y: 0,
+        width: state.x(hl.end) - state.x(hl.start),
+        height: "100%",
+        style: {
+          fill: hl.fill,
+          opacity: 0.125
+        }
+      });
+    }));
+  };
+
   var Milestone = function Milestone(_ref) {
     var options = _ref.options,
         height = _ref.height;
@@ -758,7 +797,7 @@ var Timeline = (function () {
         overflowX: 'auto',
         position: 'relative'
       }
-    }, tasks.map(function (task) {
+    }, v(Highlights, null), tasks.map(function (task) {
       return v(Task, {
         task: task,
         key: task.id
@@ -2377,6 +2416,21 @@ var Timeline = (function () {
     return task;
   };
 
+  var prepareHighlights = function prepareHighlights(config) {
+    if (!config.highlights || !Array.isArray(config.highlights)) {
+      return [];
+    }
+
+    return config.highlights.map(function (h) {
+      return {
+        fill: h.fill,
+        headerOnly: !!h.headerOnly,
+        start: dayjs_min(h.start),
+        end: dayjs_min(h.end)
+      };
+    });
+  };
+
   var useProcessData = function useProcessData(dispatch, data, config) {
     y$1(function () {
       if (config.viewMode) {
@@ -2385,16 +2439,17 @@ var Timeline = (function () {
 
       var tasks = data.map(function (t) {
         return prepareTask(t, config);
-      });
-      var height = 70 + tasks.map(function (t) {
+      }); // 68 = header (30) + fake row (20) + scrollbar (18)
+
+      var height = 68 + tasks.map(function (t) {
         return t.heights;
       }).flat(3).reduce(function (a, b) {
         return a + b;
-      }) + tasks.length * 2; // tasks.push({planes: [], labels: {}})
-
-      console.log(height);
+      }) + tasks.length * 2;
       dispatch(setTasks(tasks));
       dispatch(setHeight(height));
+      var highlights = prepareHighlights(config);
+      dispatch(setHighlights(highlights));
     }, [data, config]);
   };
 

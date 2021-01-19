@@ -1,3 +1,4 @@
+import { Highlights } from './highlights';
 import { Ref } from 'preact/hooks';
 import { Task } from './task';
 import { TaskOptions } from './types';
@@ -21,8 +22,10 @@ export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
       position: 'relative'
     }}
     >
+      <Highlights />
       {tasks.map((task: TaskOptions) => <Task task={task} key={task.id}/>)}
       <div style={{ height: 20 }}></div>
+
     </div>
   )
 }

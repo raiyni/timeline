@@ -1,4 +1,4 @@
-import { PlanOptions, TaskOptions, Tick, VIEW_MODE } from "./types"
+import { Highlight, PlanOptions, TaskOptions, Tick, VIEW_MODE } from "./types"
 
 import  dayjs  from 'dayjs';
 
@@ -11,7 +11,8 @@ export enum Actions {
   SET_DATES,
   SET_SCROLL_WIDTH,
   SET_X,
-  TOGGLE_TASK
+  TOGGLE_TASK,
+  SET_HIGHLIGHTS
 }
 
 export interface Action {
@@ -58,6 +59,10 @@ export const setX = (scrollWidth: number, minDate: Tick, maxDate: Tick): Action 
 
 export const toggleTask = (id: string): Action => {
   return createAction(Actions.TOGGLE_TASK, id)
+}
+
+export const setHighlights = (highlights: Highlight[]): Action => {
+  return createAction(Actions.SET_HIGHLIGHTS, highlights)
 }
 
 export const interpolate = (

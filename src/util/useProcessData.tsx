@@ -1,8 +1,9 @@
-import { Action, setHeight, setTasks } from '../actions'
+import { Action, setHeight, setHighlights, setTasks } from '../actions'
 import {
   Arrow,
   BasePlanOptions,
   ColumnOptions,
+  Highlight,
   Icon,
   LabelOptions,
   Line,
@@ -290,6 +291,21 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   return task
 }
 
+const prepareHighlights = (config: TimelineOptions): Highlight[] => {
+  if (!config.highlights || !Array.isArray(config.highlights)) {
+    return []
+  }
+
+  return config.highlights.map((h: Highlight) => {
+    return {
+      fill: h.fill,
+      headerOnly: !!h.headerOnly,
+      start: dayjs(h.start),
+      end: dayjs(h.end)
+    }
+  })
+}
+
 export const useProcessData = (dispatch: (_action: Action) => void, data: TaskInputOptions[], config: TimelineOptions) => {
   useEffect(() => {
     if (config.viewMode) {
@@ -297,11 +313,14 @@ export const useProcessData = (dispatch: (_action: Action) => void, data: TaskIn
     }
 
     const tasks = data.map((t) => prepareTask(t, config))
-    const height = 70 + tasks.map((t: TaskOptions) => t.heights).flat(3).reduce((a, b) => a + b) + tasks.length * 2
-    // tasks.push({planes: [], labels: {}})
 
-    console.log(height)
+    // 68 = header (30) + fake row (20) + scrollbar (18)
+    const height = 68 + tasks.map((t: TaskOptions) => t.heights).flat(3).reduce((a, b) => a + b) + tasks.length * 2
+
     dispatch(setTasks(tasks))
     dispatch(setHeight(height))
+
+    const highlights = prepareHighlights(config)
+    dispatch(setHighlights(highlights))
   }, [data, config])
 }

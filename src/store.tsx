@@ -1,5 +1,5 @@
-import { Action, Actions, interpolate } from './actions'
-import { PlanOptions, TaskOptions, Tick, VIEW_MODE } from './types'
+import { Action, Actions } from './actions'
+import { Highlight, TaskOptions, Tick, VIEW_MODE } from './types'
 
 import { createContext } from 'preact'
 
@@ -12,6 +12,7 @@ interface State {
   width: number
   scrollWidth: number
   height: number
+  highlights: Highlight[]
   x: (tick: string | Tick) => number
 }
 
@@ -24,6 +25,7 @@ export const DEFAULT_STATE: State = {
   width: 0,
   scrollWidth: 0,
   height: 0,
+  highlights: [],
   x: (tick: string | Tick) => 0
 }
 
@@ -88,6 +90,12 @@ export const reducer = (state: any, action: Action) => {
         ...state,
         tasks: tasks
       }
+    case Actions.SET_HIGHLIGHTS: {
+      return {
+        ...state,
+        highlights: action.payload
+      }
+    }
   }
 
   return state

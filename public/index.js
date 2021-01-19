@@ -511,6 +511,11 @@ var timeline = new Timeline('test1', tasks, {
       start: '02-16-2020',
       end: '03-04-2020',
       fill: 'blue'
+    },
+    {
+      start: '02-16-2020',
+      end: '03-04-2020',
+      fill: 'blue'
     }
   ],
   columns: [
