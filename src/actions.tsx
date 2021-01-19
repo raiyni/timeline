@@ -4,7 +4,8 @@ import  dayjs  from 'dayjs';
 
 export enum Actions {
   CHANGE_VIEW,
-  CHANGE_SIZE,
+  SET_WIDTH,
+  SET_HEIGHT,
   UPDATE_TICKS,
   SET_TASKS,
   SET_DATES,
@@ -27,8 +28,12 @@ export const changeView = (viewMode: VIEW_MODE): Action => {
   return createAction(Actions.CHANGE_VIEW, viewMode)
 }
 
-export const changeSize = (size: [number, number]): Action => {
-  return createAction(Actions.CHANGE_SIZE, {width: size[0], height: size[1]})
+export const setWidth = (width: number): Action => {
+  return createAction(Actions.SET_WIDTH, width)
+}
+
+export const setHeight = (height: number): Action => {
+  return createAction(Actions.SET_HEIGHT, height)
 }
 
 export const updateTicks = (ticks: dayjs.Dayjs[]): Action => {

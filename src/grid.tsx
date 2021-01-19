@@ -3,17 +3,20 @@ import { Task } from './task';
 import { TaskOptions } from './types';
 import { h } from 'preact'
 import { useConfig } from './util/useConfig';
+import { useEffect } from 'preact/hooks';
 
 export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
   const store = useConfig()
   const state = store.state
   const tasks = store.state.tasks
 
+  useEffect(() => {
+    console.log(state.height)
+  }, [state.height])
+
   return (
     <div ref={forwardedRef} style={{
       flex: 1,
-      height: state.height - 35,
-      overflowY: 'auto',
       overflowX: 'auto',
       position: 'relative'
     }}

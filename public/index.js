@@ -462,7 +462,7 @@ var tasks = [
 ]
 
 var timeline = new Timeline('test1', tasks, {
-  viewMode: 'fill',
+  viewMode: 'week',
   planDefaults: [
     {
       backgroundStyle: {

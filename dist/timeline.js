@@ -140,13 +140,14 @@ var Timeline = (function () {
 
   (function (Actions) {
     Actions[Actions["CHANGE_VIEW"] = 0] = "CHANGE_VIEW";
-    Actions[Actions["CHANGE_SIZE"] = 1] = "CHANGE_SIZE";
-    Actions[Actions["UPDATE_TICKS"] = 2] = "UPDATE_TICKS";
-    Actions[Actions["SET_TASKS"] = 3] = "SET_TASKS";
-    Actions[Actions["SET_DATES"] = 4] = "SET_DATES";
-    Actions[Actions["SET_SCROLL_WIDTH"] = 5] = "SET_SCROLL_WIDTH";
-    Actions[Actions["SET_X"] = 6] = "SET_X";
-    Actions[Actions["TOGGLE_TASK"] = 7] = "TOGGLE_TASK";
+    Actions[Actions["SET_WIDTH"] = 1] = "SET_WIDTH";
+    Actions[Actions["SET_HEIGHT"] = 2] = "SET_HEIGHT";
+    Actions[Actions["UPDATE_TICKS"] = 3] = "UPDATE_TICKS";
+    Actions[Actions["SET_TASKS"] = 4] = "SET_TASKS";
+    Actions[Actions["SET_DATES"] = 5] = "SET_DATES";
+    Actions[Actions["SET_SCROLL_WIDTH"] = 6] = "SET_SCROLL_WIDTH";
+    Actions[Actions["SET_X"] = 7] = "SET_X";
+    Actions[Actions["TOGGLE_TASK"] = 8] = "TOGGLE_TASK";
   })(Actions || (Actions = {}));
 
   var createAction = function createAction(action, payload) {
@@ -159,11 +160,11 @@ var Timeline = (function () {
   var changeView = function changeView(viewMode) {
     return createAction(Actions.CHANGE_VIEW, viewMode);
   };
-  var changeSize = function changeSize(size) {
-    return createAction(Actions.CHANGE_SIZE, {
-      width: size[0],
-      height: size[1]
-    });
+  var setWidth = function setWidth(width) {
+    return createAction(Actions.SET_WIDTH, width);
+  };
+  var setHeight = function setHeight(height) {
+    return createAction(Actions.SET_HEIGHT, height);
   };
   var updateTicks = function updateTicks(ticks) {
     return createAction(Actions.UPDATE_TICKS, ticks);
@@ -259,8 +260,15 @@ var Timeline = (function () {
           viewMode: action.payload
         });
 
-      case Actions.CHANGE_SIZE:
-        return _objectSpread2(_objectSpread2({}, state), action.payload);
+      case Actions.SET_WIDTH:
+        return _objectSpread2(_objectSpread2({}, state), {}, {
+          width: action.payload
+        });
+
+      case Actions.SET_HEIGHT:
+        return _objectSpread2(_objectSpread2({}, state), {}, {
+          height: action.payload
+        });
 
       case Actions.SET_TASKS:
         return _objectSpread2(_objectSpread2({}, state), {}, {
@@ -740,12 +748,13 @@ var Timeline = (function () {
     var store = useConfig();
     var state = store.state;
     var tasks = store.state.tasks;
+    y$1(function () {
+      console.log(state.height);
+    }, [state.height]);
     return v("div", {
       ref: forwardedRef,
       style: {
         flex: 1,
-        height: state.height - 35,
-        overflowY: 'auto',
         overflowX: 'auto',
         position: 'relative'
       }
@@ -2376,9 +2385,16 @@ var Timeline = (function () {
 
       var tasks = data.map(function (t) {
         return prepareTask(t, config);
-      }); // tasks.push({planes: [], labels: {}})
+      });
+      var height = 70 + tasks.map(function (t) {
+        return t.heights;
+      }).flat(3).reduce(function (a, b) {
+        return a + b;
+      }) + tasks.length * 2; // tasks.push({planes: [], labels: {}})
 
+      console.log(height);
       dispatch(setTasks(tasks));
+      dispatch(setHeight(height));
     }, [data, config]);
   };
 
@@ -3310,16 +3326,14 @@ var Timeline = (function () {
   })();
 
   var useResizeObserver = function useResizeObserver(elRef) {
-    var _useState = l$1([0, 0]),
+    var _useState = l$1(0),
         _useState2 = _slicedToArray(_useState, 2),
-        size = _useState2[0],
-        setSize = _useState2[1];
+        width = _useState2[0],
+        setWidth = _useState2[1];
 
     var observer = s$2(new index(function (entries) {
-      var _entries$0$contentRec = entries[0].contentRect,
-          width = _entries$0$contentRec.width,
-          height = _entries$0$contentRec.height;
-      setSize([width, height]);
+      var width = entries[0].contentRect.width;
+      setWidth(width);
     }));
     y$1(function () {
       if (elRef.current) {
@@ -3330,7 +3344,7 @@ var Timeline = (function () {
         observer.current.unobserve(elRef.current);
       };
     }, [elRef, observer]);
-    return size;
+    return width;
   };
 
   function View(_ref) {
@@ -3351,16 +3365,15 @@ var Timeline = (function () {
     var gridRef = s$2(null);
     var headerRef = s$2(null);
     var columnsRef = s$2([]);
-    var size = useResizeObserver(bodyRef);
+    var width = useResizeObserver(bodyRef);
     useDebounce(function () {
       if (leftRef.current == null) {
         return;
       } // subtract padding + columns width
 
 
-      size[0] -= leftRef.current.clientWidth + 18;
-      dispatch(changeSize(size));
-    }, 150, [size, leftRef]);
+      dispatch(setWidth(width - (leftRef.current.clientWidth + 18)));
+    }, 150, [width, leftRef]);
     y$1(function () {
       if (headerRef.current == null || gridRef.current == null) return;
       gridRef.current.addEventListener('scroll', function (e) {
@@ -3381,7 +3394,8 @@ var Timeline = (function () {
       ref: bodyRef,
       style: {
         width: '100%',
-        height: '100%',
+        height: '100vh',
+        maxHeight: store.state.height,
         'display': 'flex',
         'flex-direction': 'row',
         'align-items': 'stretch',

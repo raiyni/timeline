@@ -2,16 +2,15 @@ import { useEffect, useRef, useState } from "preact/hooks"
 
 import ResizeObserver from "resize-observer-polyfill"
 
-type Size = [number, number]
-export const useResizeObserver = (elRef: any): Size => {
+export const useResizeObserver = (elRef: any): number => {
 
-  const [size, setSize] = useState([0, 0] as Size)
+  const [width, setWidth] = useState(0)
 
   const observer = useRef(
     new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect
+      const { width} = entries[0].contentRect
 
-      setSize([width, height])
+      setWidth(width)
     })
   )
 
@@ -25,5 +24,5 @@ export const useResizeObserver = (elRef: any): Size => {
     }
   }, [elRef, observer])
 
-  return size
+  return width
 }

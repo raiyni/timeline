@@ -39,10 +39,15 @@ export const reducer = (state: any, action: Action) => {
         ...state,
         viewMode: action.payload,
       }
-    case Actions.CHANGE_SIZE:
+    case Actions.SET_WIDTH:
       return {
         ...state,
-        ...action.payload
+        width: action.payload
+      }
+    case Actions.SET_HEIGHT:
+      return {
+        ...state,
+        height: action.payload
       }
     case Actions.SET_TASKS:
       return {

@@ -1,4 +1,4 @@
-import { Action, setTasks } from '../actions'
+import { Action, setHeight, setTasks } from '../actions'
 import {
   Arrow,
   BasePlanOptions,
@@ -297,8 +297,11 @@ export const useProcessData = (dispatch: (_action: Action) => void, data: TaskIn
     }
 
     const tasks = data.map((t) => prepareTask(t, config))
+    const height = 70 + tasks.map((t: TaskOptions) => t.heights).flat(3).reduce((a, b) => a + b) + tasks.length * 2
     // tasks.push({planes: [], labels: {}})
 
+    console.log(height)
     dispatch(setTasks(tasks))
+    dispatch(setHeight(height))
   }, [data, config])
 }

@@ -5,8 +5,8 @@ import { Column } from "./column";
 import { Grid } from "./grid";
 import { Header } from "./header";
 import { ViewProps } from "./types";
-import { changeSize } from "./actions";
 import { h } from 'preact'
+import { setWidth } from "./actions";
 import { useDebounce } from "./util/useDebounce";
 import { useProcessData } from './util/useProcessData';
 import { useResizeObserver } from './util/useResizeObserver';
@@ -23,16 +23,15 @@ export function View ({data, config}: ViewProps) {
 
     const columnsRef = useRef([])
 
-    const size = useResizeObserver(bodyRef)
+    const width = useResizeObserver(bodyRef)
     useDebounce(() => {
       if (leftRef.current == null) {
         return
       }
 
       // subtract padding + columns width
-      size[0] -= leftRef.current.clientWidth + 18
-      dispatch(changeSize(size))
-    }, 150, [size, leftRef])
+      dispatch(setWidth(width - (leftRef.current.clientWidth + 18)))
+    }, 150, [width, leftRef])
 
     useEffect(() => {
       if (headerRef.current == null || gridRef.current == null) return;
@@ -52,7 +51,8 @@ export function View ({data, config}: ViewProps) {
         <Config.Provider value={store}>
           <div ref={bodyRef} style={{
             width: '100%',
-            height: '100%',
+            height: '100vh',
+            maxHeight: store.state.height,
             'display': 'flex',
             'flex-direction': 'row',
             'align-items': 'stretch',
