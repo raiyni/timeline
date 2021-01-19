@@ -9,6 +9,7 @@ import {
   MilestoneOptions,
   PlanInputOptions,
   Shape,
+  ShapeType,
   TaskInputOptions,
   TaskOptions,
   TimelineOptions,
@@ -139,17 +140,14 @@ const prepareLine = (source: Line): Line => {
 
 const prepareArrow = (source: Arrow): Arrow => {
   const arrow: Arrow = {
-    ...source,
+    shape: ShapeType.ARROW,
+    style: {
+      stroke: 'black',
+      strokeWidth: 2,
+      ...source.style
+    },
     start: dayjs(source.start),
     end: dayjs(source.end),
-  }
-
-  if (source.startIcon) {
-    arrow.startIcon = prepareIcon(source.startIcon)
-  }
-
-  if (source.endIcon) {
-    arrow.endIcon = prepareIcon(source.endIcon)
   }
 
   return arrow

@@ -71,7 +71,8 @@ var tasks = [
         },
         {
           shape: 'square',
-          date: '12-17-2019'
+          date: '12-17-2019',
+          rotate: 45
         },
         {
           shape: 'circle',
@@ -81,7 +82,7 @@ var tasks = [
         },
         {
           shape: 'square',
-          date: '01-21-2020'
+          date: '01-19-2020'
         },
         {
           shape: 'arrow',
@@ -190,7 +191,7 @@ var tasks = [
         {
           shape: 'square',
           date: '12-17-2019',
-          skew: 'right',
+          skew: 15,
           style: {
             fill: 'green',
             stroke: 'green'

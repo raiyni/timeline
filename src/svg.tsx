@@ -23,7 +23,11 @@ export const Shape = ({ options }: {options: ShapeOptions}) => {
 
     case ShapeType.SQUARE:
       return (
-        <rect x={1} y={1} width={18} height={18} style={options.style}></rect>
+        <g transform='translate(10, 10)'>
+          <g transform={`rotate(${options.rotate || 0})`}>
+            <rect x={1} y={1} width={18} height={18} style={options.style} transform={`translate(-10, -10) skewX(${options.skew ? options.skew : 0})`}></rect>
+          </g>
+        </g>
       )
 
     case ShapeType.CIRCLE:

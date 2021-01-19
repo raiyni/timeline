@@ -63,12 +63,10 @@ export interface Arrow {
   shape?: ShapeType.ARROW
   start?: string | Tick
   end?: string | Tick
-  startIcon?: Icon
-  endIcon?: Icon,
   style?: Style
 }
 
-export const isArrow = (obj: any): obj is Shape => {
+export const isArrow = (obj: any): obj is Arrow => {
   return obj.shape === ShapeType.ARROW
 }
 

@@ -349,13 +349,18 @@ var Timeline = (function () {
         })));
 
       case ShapeType.SQUARE:
-        return v("rect", {
+        return v("g", {
+          transform: "translate(10, 10)"
+        }, v("g", {
+          transform: "rotate(".concat(options.rotate || 0, ")")
+        }, v("rect", {
           x: 1,
           y: 1,
           width: 18,
           height: 18,
-          style: options.style
-        });
+          style: options.style,
+          transform: "translate(-10, -10) skewX(".concat(options.skew ? options.skew : 0, ")")
+        })));
 
       case ShapeType.CIRCLE:
         return v("g", {
@@ -589,7 +594,8 @@ var Timeline = (function () {
 
     if (isImage(options)) {
       var y = (height - options.height) / 2;
-      var x = state.x(options.date) - options.width / 2;
+      var offset = options.alignment == 'left' ? 0 : options.alignment == 'right' ? options.width : options.width / 2;
+      var x = state.x(options.date) - offset;
       return v("g", {
         className: "milestone-image"
       }, v("image", {
@@ -601,10 +607,37 @@ var Timeline = (function () {
       }));
     }
 
-    if (isShape(options)) {
-      var _y = (height - options.height) / 2;
+    if (isArrow(options)) {
+      var _y = height / 2;
 
-      var _x = state.x(options.date) - options.width / 2;
+      var isBackwards = options.end < options.start;
+      return v("g", {
+        className: "milestone-arrow"
+      }, v("line", {
+        x1: state.x(options.start),
+        x2: state.x(options.end),
+        y1: _y,
+        y2: _y,
+        style: options.style
+      }), v(Icon, {
+        options: {
+          shape: ShapeType.TRIANGLE,
+          rotate: isBackwards ? -90 : 90,
+          style: options.style
+        },
+        width: 15,
+        height: 15,
+        x: state.x(options.end) - (isBackwards ? 15 : 1),
+        y: _y / 2
+      }));
+    }
+
+    if (isShape(options)) {
+      var _y2 = (height - options.height) / 2;
+
+      var _offset = options.alignment == 'left' ? 0 : options.alignment == 'right' ? options.width : options.width / 2;
+
+      var _x = state.x(options.date) - _offset;
 
       if (options.shape == ShapeType.DASH) {
         var x2 = state.x(options.date);
@@ -623,25 +656,23 @@ var Timeline = (function () {
         width: options.width,
         height: options.height,
         x: _x,
-        y: _y
+        y: _y2
       });
     }
 
     if (isLine(options)) {
-      var _y2 = height / 2;
+      var _y3 = height / 2;
 
       return v("g", {
         className: "milestone-line"
       }, v("line", {
         x1: state.x(options.start),
         x2: state.x(options.end),
-        y1: _y2,
-        y2: _y2,
+        y1: _y3,
+        y2: _y3,
         style: options.style
       }));
     }
-
-    if (isArrow(options)) ;
 
     return null;
   };
@@ -720,7 +751,8 @@ var Timeline = (function () {
       }
     }, tasks.map(function (task) {
       return v(Task, {
-        task: task
+        task: task,
+        key: task.id
       });
     }), v("div", {
       style: {
@@ -2176,19 +2208,15 @@ var Timeline = (function () {
   };
 
   var prepareArrow = function prepareArrow(source) {
-    var arrow = _objectSpread2(_objectSpread2({}, source), {}, {
+    var arrow = {
+      shape: ShapeType.ARROW,
+      style: _objectSpread2({
+        stroke: 'black',
+        strokeWidth: 2
+      }, source.style),
       start: dayjs_min(source.start),
       end: dayjs_min(source.end)
-    });
-
-    if (source.startIcon) {
-      arrow.startIcon = prepareIcon(source.startIcon);
-    }
-
-    if (source.endIcon) {
-      arrow.endIcon = prepareIcon(source.endIcon);
-    }
-
+    };
     return arrow;
   };
 

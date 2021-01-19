@@ -18,7 +18,7 @@ export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
       position: 'relative'
     }}
     >
-      {tasks.map((task: TaskOptions) => <Task task={task} />)}
+      {tasks.map((task: TaskOptions) => <Task task={task} key={task.id}/>)}
       <div style={{ height: 20 }}></div>
     </div>
   )
