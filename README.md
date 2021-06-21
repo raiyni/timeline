@@ -1,4 +1,3 @@
-# Hello World (Preact, TypeScript, Babel, and Rollup)
 
 This is an example of compiling a Preact component and including it in an HTML page. 
 
