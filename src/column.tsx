@@ -1,5 +1,5 @@
 import { ColumnOptions, LabelOptions, TaskOptions, isImage } from './types';
-import { Ref, h } from 'preact'
+import { Ref, h, RefObject } from 'preact'
 
 import { Icon } from './svg';
 import { Icon as IconOptions } from './types';
@@ -117,10 +117,11 @@ const LabelSection = ({ task, field, idx }: {task: TaskOptions, field: string, i
   )
 }
 
-export const Column = ({ column, forwardedRef, idx }: { column: ColumnOptions, forwardedRef: Ref<any>, idx: number}) => {
+export const Column = ({ column, gridRef, forwardedRef, idx }: { column: ColumnOptions, gridRef: RefObject<any>, forwardedRef: Ref<any>, idx: number}) => {
   const store = useConfig()
   const state = store.state
 
+  console.log(gridRef)
   return (
     <div key={column.field} style={{
       display: 'flex',
@@ -134,7 +135,9 @@ export const Column = ({ column, forwardedRef, idx }: { column: ColumnOptions, f
       }}>
         <span style={{alignSelf: 'flex-end'}}>{column.text}</span>
       </div>
-      <div className="colum-sections" ref={forwardedRef} style={{
+      <div className="column-sections" onWheel={(e) => {
+        gridRef.current.scrollBy(0, e.deltaY,)
+      }} ref={forwardedRef} style={{
         display: 'flex',
         flexShrink: 0,
         flex: 1,

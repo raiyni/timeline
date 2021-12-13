@@ -1939,10 +1939,12 @@ var Timeline = (function () {
 
   var Column = function Column(_ref5) {
     var column = _ref5.column,
+        gridRef = _ref5.gridRef,
         forwardedRef = _ref5.forwardedRef,
         idx = _ref5.idx;
     var store = useConfig();
     var state = store.state;
+    console.log(gridRef);
     return v("div", {
       key: column.field,
       style: {
@@ -1961,7 +1963,10 @@ var Timeline = (function () {
         alignSelf: 'flex-end'
       }
     }, column.text)), v("div", {
-      className: "colum-sections",
+      className: "column-sections",
+      onWheel: function onWheel(e) {
+        gridRef.current.scrollBy(0, e.deltaY);
+      },
       ref: forwardedRef,
       style: {
         display: 'flex',
@@ -3472,6 +3477,7 @@ var Timeline = (function () {
       }
     }, columns.map(function (c, idx) {
       return v(Column, {
+        gridRef: gridRef,
         forwardedRef: function forwardedRef(dom) {
           return columnsRef.current[idx] = dom;
         },
