@@ -18,7 +18,11 @@ export default class Timeline {
     dayjs.extend(minMax)
     this.data = data
     this.config = config || {}
-    this.target = document.getElementById(id)
+    if (id.indexOf('.') === 0) {
+
+    } else {
+      this.target = document.getElementById(id)
+    }
 
     this.forceRender()
   }

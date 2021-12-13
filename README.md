@@ -1,49 +1,102 @@
+# Timeline
 
-This is an example of compiling a Preact component and including it in an HTML page. 
+## An open-source, semi-opinionated timeline view of schedules/itineraries powered by [Preact](https://preactjs.com/)
 
-Developer builds ES2016/ES7:
+#### Note: anything about this library is subject to change as it is in development
 
-    npm run build
+This project is built with TypeScript for ease of development and can be transpiled to support IE11.
 
-Build with IE 11 support with polyfills:
+Timeline aims to be data driven with little intervention from developers without having to include css files.
 
-    npm run build-ie
+Date parsing is powered by a tiny library [dayjs](https://github.com/iamkun/dayjs)
 
-Status:
+# Using
 
-- [x] Typescript
-- [x] Babel
-    - [x] Browserlist-based transpilation
-    - [x] Browserlist-based Polyfill
-    - [ ] Tail call optimization
-    - [ ] Closure elimination
-- [x] Rollup
-  - [ ] Common code in separate chunk
-- [-] Sourcemap (shows es7 or es5, not src/*.tsx)
-- [ ] Minification
-- [ ] Efficient/fast
+1. Create a `div` to target
 
-## TypeScript Configuration
+```html
+<div id="abc123" style="height: 100%; width: 100%;"></div>
+```
 
-TypeScript configuration is in `tsconfig.json`, reference info [here](http://www.typescriptlang.org/docs/handbook/compiler-options.html). Usage:
+2. Create your data and timeline configuration
 
-- `"target": "es2016"` only transpile code that is not supported on Chrome, iOS, Edge, Safari, or FF.
-- `"module": "es2015",` says our modules are ES2015 (not CommonJS, SystemJS, etc).
-- `"jsx": "react",` says we have markup inlined in the code, and it should be transformed for the browser.
-- `"jsxFactory": "h",` specifies the function name to use for the JSX transformations. Must set to "h" for Preact.
-- `"moduleResolution": "node"` says do not use legacy "classic" module resolution. Required for our use of ES2015 modules with `npm` installed dependencies.
+```js
+// Plans and milestones are multi-dimensional arrays to support multiple bars within a task view
+var tasks = [
+  [
+    {
+      name: [
+        label: 'Task 1'
+        ],
+      plans: [
+        [
+          {
+            start: '2012-05-22',
+            end: '2012-06-25'
+          }
+        ]
+      ],
+      milestones: []
+    }
+  ]
+]
 
-## Babel Configuration
+var timelineOptions = {
+  viewMode: 'Day',
+  planDefaults: [
+    {
+      height: 20,
+      progress: 100,
+      backgroundStyle: {
+        fill: 'red',
+        stroke: 'black'
+      },
+      progressStyle: {
+        stroke: 'black',
+        fill: 'rgb(189, 215, 238)'
+      }
+    }
+  ],
+  columns: [
+    {
+      text: 'Task Name',
+      field: 'name',
+      defaults: [
+        {
+          alignment: 'center',
+          backgroundStyle: {
+            background: 'rgb(255,192,0)'
+          }
+        }
+      ]
+    }
+  ]
+}
+```
 
-Babel transforms Javascript specification X to Javascript specification Y. TypeScript already does this, but it does supply polyfills for missing features. Babel has a rich plugin ecosystem, often packaged as "presets". Preset `@babel/env` allows us to transform Javascript to support particular *browsers*, instead of a particular language specification. So, for example, if browser B supports ES5, and some of ES2015, then: supported parts will be left untouched, unsupported syntax will be transpiled, and missing features will be polyfilled (where possible).
+3. Pass your css selector to identify your div and options to a timeline object
 
-The targeted browser list is specified by the `browserslist` array. The browser data, and usage information are [here](https://github.com/browserslist/browserslist).
+```js
+var timeline = new Timeline('#abc123', tasks)
 
-`@babel/env` reference is [here](https://babeljs.io/docs/en/babel-preset-env), see the `babel` and `browserslist` configs in `package.json`. Usage:
-- `"loose": true` results in less verbose, perhaps more performant, code transformations.
-- `"modules": false"` is important to preserve the ES2015 module syntax, which will be post-processed by Rollup.
-- `"useBuiltIns": "usage"`
+or
 
-## Rollup Configuration
+var timeline = new Timeline('#abc123', tasks, timelineOptions)
+```
 
-Rollup processes ES2015 module directives, and bundles them. Configuration reference [here](https://rollupjs.org/guide/en).
+#### See the [example](https://github.com/raiyni/timeline-preact/tree/master/public) for more thourough usage
+
+Additional config options can be seen within each class.
+
+# Contributing
+
+1. Clone this repo.
+2. `cd` into project directory
+3. `yarn`
+4. `yarn run dev`
+
+License: MIT
+
+---
+
+Project maintained by [Ron Young](https://github.com/raiyni)
