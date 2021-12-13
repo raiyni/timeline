@@ -306,6 +306,11 @@ const prepareHighlights = (config: TimelineOptions): Highlight[] => {
   })
 }
 
+export const calculateHeight = (tasks: TaskOptions[]) => {
+  // 68 = header (30) + fake row (20) + scrollbar (18)
+  return 68 + tasks.map((t: TaskOptions) => t.collapsed ? [t.heights[0]] : t.heights).flat(3).reduce((a, b) => a + b) + tasks.length * 2
+}
+
 export const useProcessData = (dispatch: (_action: Action) => void, data: TaskInputOptions[], config: TimelineOptions) => {
   useEffect(() => {
     if (config.viewMode) {
@@ -313,9 +318,7 @@ export const useProcessData = (dispatch: (_action: Action) => void, data: TaskIn
     }
 
     const tasks = data.map((t) => prepareTask(t, config))
-
-    // 68 = header (30) + fake row (20) + scrollbar (18)
-    const height = 68 + tasks.map((t: TaskOptions) => t.heights).flat(3).reduce((a, b) => a + b) + tasks.length * 2
+    const height = calculateHeight(tasks)
 
     dispatch(setTasks(tasks))
     dispatch(setHeight(height))

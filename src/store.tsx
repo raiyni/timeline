@@ -2,6 +2,7 @@ import { Action, Actions } from './actions'
 import { Highlight, TaskOptions, Tick, VIEW_MODE } from './types'
 
 import { createContext } from 'preact'
+import { calculateHeight } from './util/useProcessData'
 
 interface State {
   tasks: TaskOptions[]
@@ -86,9 +87,12 @@ export const reducer = (state: any, action: Action) => {
       const task = tasks.find((t: TaskOptions) => t.id == action.payload)
       task.collapsed = !!!task.collapsed
 
+      const height = calculateHeight(tasks)
+
       return {
         ...state,
-        tasks: tasks
+        tasks: tasks,
+        height: height
       }
     case Actions.SET_HIGHLIGHTS: {
       return {
