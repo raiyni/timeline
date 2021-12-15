@@ -4,40 +4,40 @@ var tasks = [
     plans: [
       [
         {
-          start: '02-09-2020',
-          end: '02-26-2020'
+          start: '2020-02-09',
+          end: '2020-02-26'
         }
       ],
       [
         {
-          start: '01-29-2020',
-          end: '02-08-2020',
+          start: '2020-01-29',
+          end: '2020-02-08',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '02-12-2020',
-          end: '02-22-2020'
+          start: '2020-02-12',
+          end: '2020-02-22'
         }
       ],
       [
         {
-          start: '01-29-2020',
-          end: '02-06-2020',
+          start: '2020-01-29',
+          end: '2020-02-06',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '02-14-2020',
-          end: '02-24-2020'
+          start: '2020-02-14',
+          end: '2020-02-24'
         }
       ],
       [
         {
-          start: '02-16-2020',
-          end: '02-26-2020',
+          start: '2020-02-16',
+          end: '2020-02-26',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
@@ -67,44 +67,44 @@ var tasks = [
       [
         {
           shape: 'triangle',
-          date: '12-12-2019'
+          date: '2019-12-12'
         },
         {
           shape: 'square',
-          date: '12-17-2019',
+          date: '2019-12-17',
           rotate: 45
         },
         {
           shape: 'circle',
           height: 25,
           width: 25,
-          date: '01-16-2020'
+          date: '2020-01-16'
         },
         {
           shape: 'square',
-          date: '01-19-2020'
+          date: '2020-01-19'
         },
         {
           shape: 'arrow',
-          start: '01-30-2020',
-          end: '02-09-2020'
+          start: '2020-01-30',
+          end: '2020-02-09'
         },
         {
-          start: '02-30-2020',
-          end: '03-09-2020'
+          start: '2020-02-30',
+          end: '2020-03-09'
         },
         {
           shape: 'dash',
-          date: '02-20-2020'
+          date: '2020-02-20'
         },
         {
           shape: 'arrow',
-          start: '03-15-2020',
-          end: '02-26-2020'
+          start: '2020-03-15',
+          end: '2020-02-26'
         },
         {
           shape: 'star',
-          date: '01-30-2020',
+          date: '2020-01-30',
           height: 20,
           width: 20,
           style: {
@@ -114,7 +114,7 @@ var tasks = [
         },
         {
           href: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefox_logo%2C_2019.svg/1200px-Firefox_logo%2C_2019.svg.png',
-          date: '04-01-2020'
+          date: '2020-04-01'
         }
       ]
     ]
@@ -123,28 +123,28 @@ var tasks = [
     plans: [
       [
         {
-          start: '02-09-2020',
-          end: '02-26-2020'
+          start: '2020-02-09',
+          end: '2020-02-26'
         }
       ],
       [
         {
-          start: '01-29-2020',
-          end: '02-08-2020',
+          start: '2020-01-29',
+          end: '2020-02-08',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '02-12-2020',
-          end: '02-28-2020',
-          progress: '02-26-2020'
+          start: '2020-02-12',
+          end: '2020-02-28',
+          progress: '2020-02-26'
         }
       ],
       [
         {
-          start: '01-29-2020',
-          end: '02-06-2020',
+          start: '2020-01-29',
+          end: '2020-02-06',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
@@ -174,14 +174,14 @@ var tasks = [
       [
         {
           shape: 'triangle',
-          date: '12-12-2019',
+          date: '2019-12-12',
           style: {
             stroke: 'red'
           }
         },
         {
           shape: 'triangle',
-          date: '12-14-2019',
+          date: '2019-12-14',
           style: {
             fill: 'red',
             stroke: 'red'
@@ -189,7 +189,7 @@ var tasks = [
         },
         {
           shape: 'square',
-          date: '12-17-2019',
+          date: '2019-12-17',
           skew: 15,
           style: {
             fill: 'green',
@@ -203,40 +203,40 @@ var tasks = [
     plans: [
       [
         {
-          start: '02-17-2020',
-          end: '03-18-2020'
+          start: '2020-02-17',
+          end: '2020-03-18'
         }
       ],
       [
         {
-          start: '01-23-2020',
-          end: '02-15-2020',
+          start: '2020-01-23',
+          end: '2020-02-15',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '02-20-2020',
-          end: '03-14-2020'
+          start: '2020-02-20',
+          end: '2020-03-14'
         }
       ],
       [
         {
-          start: '01-28-2020',
-          end: '02-13-2020',
+          start: '2020-01-28',
+          end: '2020-02-13',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '02-21-2020',
-          end: '03-16-2020'
+          start: '2020-02-21',
+          end: '2020-03-16'
         }
       ],
       [
         {
-          start: '02-24-2020',
-          end: '03-18-2020',
+          start: '2020-02-24',
+          end: '2020-03-18',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
@@ -267,27 +267,27 @@ var tasks = [
     plans: [
       [
         {
-          start: '02-28-2020',
-          end: '04-06-2020'
+          start: '2020-02-28',
+          end: '2020-04-06'
         }
       ],
       [
         {
-          start: '02-10-2020',
-          end: '02-24-2020',
+          start: '2020-02-10',
+          end: '2020-02-24',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '03-01-2020',
-          end: '04-03-2020'
+          start: '2020-03-01',
+          end: '2020-04-03'
         }
       ],
       [
         {
-          start: '02-10-2020',
-          end: '02-22-2020',
+          start: '2020-02-10',
+          end: '2020-02-22',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
@@ -309,40 +309,40 @@ var tasks = [
     plans: [
       [
         {
-          start: '03-06-2020',
-          end: '03-25-2020'
+          start: '2020-03-06',
+          end: '2020-03-25'
         }
       ],
       [
         {
-          start: '02-09-2020',
-          end: '03-05-2020',
+          start: '2020-02-09',
+          end: '2020-03-05',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '03-08-2020',
-          end: '03-23-2020'
+          start: '2020-03-08',
+          end: '2020-03-23'
         }
       ],
       [
         {
-          start: '02-12-2020',
-          end: '03-02-2020',
+          start: '2020-02-12',
+          end: '2020-03-02',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '03-10-2020',
-          end: '03-26-2020'
+          start: '2020-03-10',
+          end: '2020-03-26'
         }
       ],
       [
         {
-          start: '03-12-2020',
-          end: '03-28-2020',
+          start: '2020-03-12',
+          end: '2020-03-28',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
@@ -362,8 +362,8 @@ var tasks = [
   },
   {
     plan: {
-      start: '03-10-2020',
-      end: '03-26-2020'
+      start: '2020-03-10',
+      end: '2020-03-26'
     },
     name: {
       label: 'FP Charlie 1',
@@ -378,27 +378,27 @@ var tasks = [
     plans: [
       [
         {
-          start: '03-18-2020',
-          end: '04-01-2020'
+          start: '2020-03-18',
+          end: '2020-04-01'
         }
       ],
       [
         {
-          start: '03-06-2020',
-          end: '03-14-2020',
+          start: '2020-03-06',
+          end: '2020-03-14',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '03-20-2020',
-          end: '04-04-2020'
+          start: '2020-03-20',
+          end: '2020-04-04'
         }
       ],
       [
         {
-          start: '03-06-2020',
-          end: '03-13-2020',
+          start: '2020-03-06',
+          end: '2020-03-13',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
@@ -420,27 +420,27 @@ var tasks = [
     plans: [
       [
         {
-          start: '04-20-2020',
-          end: '05-02-2020'
+          start: '2020-04-20',
+          end: '2020-05-02'
         }
       ],
       [
         {
-          start: '04-08-2020',
-          end: '04-18-2020',
+          start: '2020-04-08',
+          end: '2020-04-18',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
         },
         {
-          start: '04-22-2020',
-          end: '05-01-2020'
+          start: '2020-04-22',
+          end: '2020-05-01'
         }
       ],
       [
         {
-          start: '04-08-2020',
-          end: '04-16-2020',
+          start: '2020-04-08',
+          end: '2020-04-16',
           progressStyle: {
             fill: 'rgb(169, 208, 142)'
           }
@@ -507,13 +507,13 @@ var options = {
   ],
   highlights: [
     {
-      start: '02-16-2020',
-      end: '03-04-2020',
+      start: '2020-02-16',
+      end: '2020-03-04',
       fill: 'blue'
     },
     {
-      start: '02-16-2020',
-      end: '03-04-2020',
+      start: '2020-02-16',
+      end: '2020-03-04',
       fill: 'blue'
     }
   ],
