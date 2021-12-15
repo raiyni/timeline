@@ -31,13 +31,10 @@ const plugins = [
 ]
 
 if (!production) {
-  plugins.push(
-    serve({
-      contentBase: ['examples/live', 'examples']
-    }),
-
-    livereload()
-  )
+  plugins.push(serve({
+      contentBase: ['examples/live', 'dist']
+    }))
+  plugins.push(livereload())
 }
 
 export default {
