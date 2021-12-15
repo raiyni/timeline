@@ -89,7 +89,6 @@ var tasks = [
           start: '01-30-2020',
           end: '02-09-2020'
         },
-        ,
         {
           start: '02-30-2020',
           end: '03-09-2020'
@@ -114,7 +113,7 @@ var tasks = [
           }
         },
         {
-          href: 'https://blog.mozilla.org/firefox/files/2017/12/firefox-logo-300x310.png',
+          href: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Firefox_logo%2C_2019.svg/1200px-Firefox_logo%2C_2019.svg.png',
           date: '04-01-2020'
         }
       ]
@@ -461,7 +460,7 @@ var tasks = [
   }
 ]
 
-var timeline = new Timeline('test1', tasks, {
+var options = {
   viewMode: 'week',
   planDefaults: [
     {
@@ -557,4 +556,9 @@ var timeline = new Timeline('test1', tasks, {
       }
     }
   ]
-})
+}
+
+var timeline = new Timeline('test1', tasks, options)
+
+
+

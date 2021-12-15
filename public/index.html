@@ -16,8 +16,69 @@
 <title></title>
 </head>
 <body>
-<div id="test1" style="height: 100%; width: 100%;"></div>
+  <div style="display: flex; width: 100%; height: 100%;">
+  <div id="trybar" style="width: 600px; height: 100%; display: flex; flex-direction: column;">
+    <button id='changer' style="width: 100%; padding: 10px">Change Code</button>
+    <div style="flex:1; display: flex">
+      <div id="settings-editor" style="flex: 1">
+
+      </div>
+      <div id="data-editor" style="flex: 1">
+
+      </div>
+    </div>
+
+
+  </div>
+<div id="test1" style="flex: 1; overflow: auto;"></div>
+</div>
 <script src="timeline.js"></script>
 <script src="index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.min.js"  type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/mode-javascript.min.js" integrity="sha512-37ta5K4KVYs+MEmIg2xnZxJrdiQmBSKt+JInvyPrq9uz7aF67lMJT/t91EYoYj520jEcGlih41kCce7BRTmE3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/theme-monokai.min.js" integrity="sha512-wZYGbdk0giM73l8BLDNfSEziApAmH8DvXey6zNLG3QUgDeDsMAPm3FIdjhLwrGOWO0vdVHkVxeUzOBR0Hc/xBA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-error_marker.min.js" integrity="sha512-4J/0fXV7jbSwrb4fio0hSnjUgwbQaznUWkeeV/MyVq5O+kFMPDmDOddUJz/Log6cGJ3sCMheo0gvrathVL6Ylg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-hardwrap.min.js" integrity="sha512-S7tN/jiXKVujB7Ezoq3BuUTogHRo023J+Tn5iAg5Sw1lqE2aziIjq2VNXHUo5DgUjx9ZJuprDtRtWfBQdyKKSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ext-language_tools.min.js" integrity="sha512-S7Whi8oQAQu/MK6AhBWufIJIyOvqORj+/1YDM9MaHeRalsZjzyYS7Usk4fsh+6J77PUhuk5v/BxaMDXRdWd1KA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  var dataEditor = ace.edit("data-editor");
+  dataEditor.setTheme("ace/theme/monokai");
+  dataEditor.session.setMode("ace/mode/javascript");
+  dataEditor.setValue(JSON.stringify(tasks, null, 2))
+  dataEditor.session.setTabSize(2)
+  dataEditor.setOption('selectionStyle', 'text')
+  dataEditor.setOption('showLineNumbers', false)
+  dataEditor.setOptions({
+    showLineNumbers: false,
+    selectionStyle: 'text',
+    showPrintMargin: false,
+    showFoldwidgets: false,
+    showGutter: false
+  })
+
+  var settingsEditor = ace.edit("settings-editor");
+  settingsEditor.setTheme("ace/theme/monokai");
+  settingsEditor.session.setMode("ace/mode/javascript");
+  settingsEditor.setValue(JSON.stringify(options, null, 2))
+  settingsEditor.session.setTabSize(2)
+  settingsEditor.setOptions({
+    showLineNumbers: false,
+    selectionStyle: 'text',
+    showPrintMargin: false,
+    showFoldwidgets: false,
+    showGutter: false
+  })
+
+  var btn = document.getElementById('changer')
+  btn.addEventListener('click', function(e) {
+    var data = dataEditor.getValue()
+    var jsonData = JSON.parse(data)
+
+    var config = settingsEditor.getValue()
+    var jsonConfig = JSON.parse(config)
+
+    timeline.update(jsonData, jsonConfig)
+  })
+</script>
 </body>
 </html>
