@@ -16,7 +16,6 @@ export default class Timeline {
 
   constructor(id: string, data: any[], config: TimelineOptions) {
     dayjs.extend(minMax)
-    this.data = data
     this.config = config || {}
     if (id.indexOf('.') === 0) {
 
@@ -24,15 +23,26 @@ export default class Timeline {
       this.target = document.getElementById(id)
     }
 
-    this.forceRender()
+    this.updateData(data)
   }
 
   forceRender() {
-    render(null, this.target)
+     render(null, this.target)
     render(<View data={this.data} config={this.config}/>, this.target)
   }
 
+  updateConfig(config: TimelineOptions) {
+    this.config = config || {}
+    this.forceRender()
+  }
+
   updateData(data: any[]) {
+    this.data = data
+    this.forceRender()
+  }
+
+  update(data: any[], config: TimelineOptions) {
+    this.config = config || {}
     this.data = data
     this.forceRender()
   }
