@@ -32,7 +32,7 @@ const plugins = [
 
 if (!production) {
   plugins.push(serve({
-      contentBase: ['examples/live', 'dist']
+      contentBase: ['examples/live', 'examples']
     }))
   plugins.push(livereload())
 }
@@ -49,15 +49,6 @@ export default {
 
   output: [{
     file: 'examples/timeline.js',
-    sourcemap: true,
-    format: 'iife',
-    name,
-
-    // https://rollupjs.org/guide/en/#outputglobals
-    globals: {},
-  },
-  {
-    file: 'dist/timeline.js',
     sourcemap: true,
     format: 'iife',
     name,
