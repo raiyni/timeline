@@ -4,6 +4,9 @@ import livereload from 'rollup-plugin-livereload'
 import resolve from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve'
 import sizes from 'rollup-plugin-sizes'
+import injectProcessEnv from 'rollup-plugin-inject-process-env'
+import getRepoInfo from 'git-repo-info'
+import pkg from "./package.json";
 
 const production = !!process.env.production
 
@@ -13,12 +16,21 @@ const extensions = [
 
 const name = 'Timeline';
 
+const git = getRepoInfo();
+
 const plugins = [
   // Allows node_modules resolution
   resolve({ extensions }),
 
   // Allow bundling cjs modules. Rollup doesn't understand cjs
   commonjs(),
+
+  injectProcessEnv({
+    VERSION: pkg.version,
+    SHA: git.abbreviatedSha,
+    COMMIT_DATE: git.committerDate,
+    TAG: git.tag
+  }),
 
   // Compile TypeScript/JavaScript files
   babel({

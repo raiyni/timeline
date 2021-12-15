@@ -16,7 +16,16 @@ export default class Timeline {
   data: any[]
   config: TimelineOptions
 
+  static version:string = process.env.VERSION
+  static git: any = {
+    sha: process.env.SHA,
+    tag: process.env.TAG,
+    date: process.env.COMMIT_DATE
+  }
+  static SHA:string = process.env.GIT
+
   constructor(id: string, data: any[], config: TimelineOptions) {
+
     dayjs.extend(minMax)
     dayjs.extend(customParseFormat)
     this.config = config || {}
