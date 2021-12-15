@@ -5,11 +5,40 @@ import resolve from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve'
 import sizes from 'rollup-plugin-sizes'
 
+const production = !!process.env.production
+
 const extensions = [
   '.js', '.jsx', '.ts', '.tsx',
 ];
 
 const name = 'Timeline';
+
+const plugins = [
+  // Allows node_modules resolution
+  resolve({ extensions }),
+
+  // Allow bundling cjs modules. Rollup doesn't understand cjs
+  commonjs(),
+
+  // Compile TypeScript/JavaScript files
+  babel({
+    extensions,
+    babelHelpers: 'bundled',
+    include: ['src/**/*'],
+    exclude: ['node_modules/**/*']
+  }),
+  sizes()
+]
+
+if (!production) {
+  plugins.push(
+    serve({
+      contentBase: ['public', 'dist']
+    }),
+
+    livereload()
+  )
+}
 
 export default {
   input: './src/index.tsx',
@@ -19,25 +48,7 @@ export default {
   // https://rollupjs.org/guide/en/#external
   external: [],
 
-  plugins: [
-    // Allows node_modules resolution
-    resolve({ extensions }),
-    // Allow bundling cjs modules. Rollup doesn't understand cjs
-    commonjs(),
-
-    // Compile TypeScript/JavaScript files
-    babel({
-      extensions,
-      babelHelpers: 'bundled',
-      include: ['src/**/*'],
-      exclude: ['node_modules/**/*']
-    }),
-    sizes(),
-    serve({
-      contentBase: ['public', 'dist']
-    }),
-    livereload()
-  ],
+  plugins: plugins,
 
   output: [{
     file: 'dist/timeline.js',
