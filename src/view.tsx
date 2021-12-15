@@ -1,10 +1,10 @@
+
 import { Config, DEFAULT_STATE, reducer } from "./store";
 import { useEffect, useReducer, useRef } from "preact/hooks";
 
 import { Column } from "./column";
 import { Grid } from "./grid";
 import { Header } from "./header";
-import { Highlights } from './highlights';
 import { ViewProps } from "./types";
 import { h } from 'preact'
 import { setWidth } from "./actions";
