@@ -508,9 +508,9 @@ var options = {
   ],
   highlights: [
     {
-      start: '02-16-2020',
-      end: '03-04-2020',
-      fill: 'blue'
+      "start": "12-16-2019",
+      "end": "01-04-2020",
+      "fill": "red"
     },
     {
       start: '02-16-2020',
