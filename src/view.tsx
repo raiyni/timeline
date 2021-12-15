@@ -37,11 +37,11 @@ export function View ({data, config}: ViewProps) {
     useEffect(() => {
       if (headerRef.current == null || gridRef.current == null) return;
 
-      gridRef.current.addEventListener('scroll', (e: any) => {
+      const scroll = gridRef.current.addEventListener('scroll', (e: any) => {
         headerRef.current.scrollLeft = e.target.scrollLeft
         columnsRef.current.forEach((ref: any) => ref.scrollTop = e.target.scrollTop)
       })
-      return () => gridRef.current.removeEventListener('scroll')
+      return () => gridRef.current.removeEventListener('scroll', scroll)
     }, [headerRef, gridRef])
 
     useProcessData(dispatch, data, config)
