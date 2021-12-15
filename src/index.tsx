@@ -7,6 +7,7 @@ import { View } from './view'
 import dayjs from 'dayjs'
 import { h } from 'preact'
 import minMax from 'dayjs/plugin/minMax'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { render } from 'preact'
 
 export default class Timeline {
@@ -16,6 +17,7 @@ export default class Timeline {
 
   constructor(id: string, data: any[], config: TimelineOptions) {
     dayjs.extend(minMax)
+    dayjs.extend(customParseFormat)
     this.config = config || {}
     if (id.indexOf('.') === 0) {
 

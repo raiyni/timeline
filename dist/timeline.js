@@ -1599,9 +1599,15 @@ var Timeline = (function () {
 
   var t,u,r,o=0,i=[],c=l$2.__b,f=l$2.__r,e=l$2.diffed,a=l$2.__c,v=l$2.unmount;function m(t,r){l$2.__h&&l$2.__h(u,t,o||r),o=0;var i=u.__H||(u.__H={__:[],__h:[]});return t>=i.__.length&&i.__.push({}),i.__[t]}function l(n){return o=1,p(w,n)}function p(n,r,o){var i=m(t++,2);return i.t=n,i.__c||(i.__=[o?o(r):w(void 0,r),function(n){var t=i.t(i.__[0],n);i.__[0]!==t&&(i.__=[t,i.__[1]],i.__c.setState({}));}],i.__c=u),i.__}function y(r,o){var i=m(t++,3);!l$2.__s&&k(i.__H,o)&&(i.__=r,i.__H=o,u.__H.__h.push(i));}function s(n){return o=5,d(function(){return {current:n}},[])}function d(n,u){var r=m(t++,7);return k(r.__H,u)&&(r.__=n(),r.__H=u,r.__h=n),r.__}function A(n,t){return o=8,d(function(){return n},t)}function F(n){var r=u.context[n.__c],o=m(t++,9);return o.c=n,r?(null==o.__&&(o.__=!0,r.sub(u)),r.props.value):n.__}function x(){var t;for(i.sort(function(n,t){return n.__v.__b-t.__v.__b});t=i.pop();)if(t.__P)try{t.__H.__h.forEach(g),t.__H.__h.forEach(j),t.__H.__h=[];}catch(u){t.__H.__h=[],l$2.__e(u,t.__v);}}l$2.__b=function(n){u=null,c&&c(n);},l$2.__r=function(n){f&&f(n),t=0;var r=(u=n.__c).__H;r&&(r.__h.forEach(g),r.__h.forEach(j),r.__h=[]);},l$2.diffed=function(t){e&&e(t);var o=t.__c;o&&o.__H&&o.__H.__h.length&&(1!==i.push(o)&&r===l$2.requestAnimationFrame||((r=l$2.requestAnimationFrame)||function(n){var t,u=function(){clearTimeout(r),b&&cancelAnimationFrame(t),setTimeout(n);},r=setTimeout(u,100);b&&(t=requestAnimationFrame(u));})(x)),u=null;},l$2.__c=function(t,u){u.some(function(t){try{t.__h.forEach(g),t.__h=t.__h.filter(function(n){return !n.__||j(n)});}catch(r){u.some(function(n){n.__h&&(n.__h=[]);}),u=[],l$2.__e(r,t.__v);}}),a&&a(t,u);},l$2.unmount=function(t){v&&v(t);var u,r=t.__c;r&&r.__H&&(r.__H.__.forEach(function(n){try{g(n);}catch(n){u=n;}}),u&&l$2.__e(u,r.__v));};var b="function"==typeof requestAnimationFrame;function g(n){var t=u,r=n.__c;"function"==typeof r&&(n.__c=void 0,r()),u=t;}function j(n){var t=u;n.__c=n.__(),u=t;}function k(n,t){return !n||n.length!==t.length||t.some(function(t,u){return t!==n[u]})}function w(n,t){return "function"==typeof t?t(n):t}
 
-  var prepareLabel = function prepareLabel(input) {
-    var defaults = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var dayjsF = function dayjsF(input, format) {
+    if (format) {
+      return dayjs_min(input, format);
+    }
 
+    return dayjs_min(input);
+  };
+
+  var prepareLabel = function prepareLabel(input, defaults, config) {
     if (typeof input == 'string') {
       return _objectSpread2(_objectSpread2({
         alignment: 'left'
@@ -1627,17 +1633,17 @@ var Timeline = (function () {
       }
 
       obj.icons = icons.map(function (i) {
-        return prepareIcon(i);
+        return prepareIcon(i, config);
       });
     }
 
     return obj;
   };
 
-  var preparePlan = function preparePlan(options, defaults) {
+  var preparePlan = function preparePlan(options, defaults, config) {
     var plan = {
-      start: dayjs_min(options.start),
-      end: dayjs_min(options.end),
+      start: dayjsF(options.start, options.dateFormat || defaults.dateFormat || config.dateFormat),
+      end: dayjsF(options.end, options.dateFormat || defaults.dateFormat || config.dateFormat),
       height: options.height || defaults.height || 30,
       progressStyle: _objectSpread2(_objectSpread2({
         fill: '#f2c329'
@@ -1648,15 +1654,15 @@ var Timeline = (function () {
     };
 
     if (options.label) {
-      plan.label = prepareLabel(options.label, defaults.label);
+      plan.label = prepareLabel(options.label, defaults.label, config);
     }
 
     if (options.startText) {
-      plan.startText = prepareLabel(options.startText);
+      plan.startText = prepareLabel(options.startText, {}, config);
     }
 
     if (options.endText) {
-      plan.endText = prepareLabel(options.endText);
+      plan.endText = prepareLabel(options.endText, {}, config);
     }
 
     var progress = options.progress || defaults.progress || 0;
@@ -1665,13 +1671,13 @@ var Timeline = (function () {
       var diff = clamp(progress / 100, 0, 1) * (plan.end.unix() - plan.start.unix());
       plan.progress = dayjs_min.unix(plan.start.unix() + diff);
     } else {
-      plan.progress = dayjs_min(options.progress);
+      plan.progress = dayjsF(options.progress, options.dateFormat || defaults.dateFormat || config.dateFormat);
     }
 
     return plan;
   };
 
-  var prepareIcon = function prepareIcon(source) {
+  var prepareIcon = function prepareIcon(source, config) {
     var copy = _objectSpread2({
       width: 15,
       height: 15,
@@ -1679,42 +1685,42 @@ var Timeline = (function () {
     }, source);
 
     if (source.date) {
-      copy.date = dayjs_min(source.date);
+      copy.date = dayjsF(source.date, source.dateFormat || config.dateFormat);
     }
 
     return copy;
   };
 
-  var prepareLine = function prepareLine(source) {
+  var prepareLine = function prepareLine(source, config) {
     return {
       style: _objectSpread2({
         stroke: 'black',
         strokeWidth: 2
       }, source.style),
-      start: dayjs_min(source.start),
-      end: dayjs_min(source.end)
+      start: dayjsF(source.start, source.dateFormat || config.dateFormat),
+      end: dayjsF(source.end, source.dateFormat || config.dateFormat)
     };
   };
 
-  var prepareArrow = function prepareArrow(source) {
+  var prepareArrow = function prepareArrow(source, config) {
     var arrow = {
       shape: ShapeType.ARROW,
       style: _objectSpread2({
         stroke: 'black',
         strokeWidth: 2
       }, source.style),
-      start: dayjs_min(source.start),
-      end: dayjs_min(source.end)
+      start: dayjsF(source.start, source.dateFormat || config.dateFormat),
+      end: dayjsF(source.end, source.dateFormat || config.dateFormat)
     };
     return arrow;
   };
 
-  var prepareShape = function prepareShape(source) {
+  var prepareShape = function prepareShape(source, config) {
     return _objectSpread2(_objectSpread2({
       width: 15,
       height: 15
     }, source), {}, {
-      date: dayjs_min(source.date),
+      date: dayjsF(source.date, source.dateFormat || config.dateFormat),
       style: _objectSpread2({
         stroke: '#000',
         fill: '#fff',
@@ -1729,27 +1735,27 @@ var Timeline = (function () {
       return _objectSpread2({
         x: options.x,
         y: options.y
-      }, prepareIcon(options));
+      }, prepareIcon(options, config));
     }
 
     if (isLine(options)) {
-      return prepareLine(options);
+      return prepareLine(options, config);
     }
 
     if (isArrow(options)) {
-      return prepareArrow(options);
+      return prepareArrow(options, config);
     }
 
     if (isShape(options)) {
-      return prepareShape(options);
+      return prepareShape(options, config);
     }
 
     return options;
   };
 
-  var prepareColumns = function prepareColumns(task, config, plans) {
+  var prepareColumns = function prepareColumns(task, columns, plans, config) {
     var labels = {};
-    config.forEach(function (c) {
+    columns.forEach(function (c) {
       var options = task[c.field] || [];
 
       if (!Array.isArray(options)) {
@@ -1773,7 +1779,7 @@ var Timeline = (function () {
           defaults = defaults[idx] || {};
         }
 
-        options[idx] = prepareLabel(v, defaults);
+        options[idx] = prepareLabel(v, defaults, config);
       });
       labels[c.field] = options;
     });
@@ -1785,24 +1791,24 @@ var Timeline = (function () {
     var planDefaults = config.planDefaults || {};
 
     if (options.plan) {
-      task.plans = [[preparePlan(options.plan, planDefaults[0] || {})]];
+      task.plans = [[preparePlan(options.plan, planDefaults[0] || {}, config)]];
     } else if (options.plans && Array.isArray(options.plans)) {
       // @ts-ignore
       task.plans = options.plans.map(function (p, idx) {
         if (!Array.isArray(p)) {
           if (Array.isArray(planDefaults)) {
-            return [preparePlan(p, planDefaults[idx] || {})];
+            return [preparePlan(p, planDefaults[idx] || {}, config)];
           }
 
-          return [preparePlan(p, planDefaults)];
+          return [preparePlan(p, planDefaults, config)];
         }
 
         return p.map(function (pl) {
           if (Array.isArray(planDefaults)) {
-            return preparePlan(pl, planDefaults[idx] || {});
+            return preparePlan(pl, planDefaults[idx] || {}, config);
           }
 
-          return preparePlan(pl, planDefaults);
+          return preparePlan(pl, planDefaults, config);
         });
       });
     } else if (options.plans) {
@@ -1814,11 +1820,11 @@ var Timeline = (function () {
     if (options.milestones && Array.isArray(options.milestones)) {
       task.milestones = options.milestones.map(function (m) {
         if (!Array.isArray(m)) {
-          return [prepareMilestone(m)];
+          return [prepareMilestone(m, config)];
         }
 
         return m.map(function (ml) {
-          return prepareMilestone(ml);
+          return prepareMilestone(ml, config);
         });
       });
     }
@@ -1847,7 +1853,7 @@ var Timeline = (function () {
     });
 
     if (config.columns && config.columns.length > 0) {
-      task.labels = prepareColumns(options, config.columns, task.plans.length);
+      task.labels = prepareColumns(options, config.columns, task.plans.length, config);
     }
 
     task.collapsed = options.collapsed;
@@ -1866,8 +1872,8 @@ var Timeline = (function () {
       return {
         fill: h.fill,
         headerOnly: !!h.headerOnly,
-        start: dayjs_min(h.start),
-        end: dayjs_min(h.end)
+        start: dayjs_min(h.start, h.dateFormat || config.dateFormat),
+        end: dayjs_min(h.end, h.dateFormat || config.dateFormat)
       };
     });
   };
@@ -3802,11 +3808,16 @@ var Timeline = (function () {
   !function(e,n){module.exports=n();}(commonjsGlobal,(function(){return function(e,n,t){var i=function(e,n){if(!n||!n.length||!n[0]||1===n.length&&!n[0].length)return null;var t;1===n.length&&n[0].length>0&&(n=n[0]);t=n[0];for(var i=1;i<n.length;i+=1)n[i].isValid()&&!n[i][e](t)||(t=n[i]);return t};t.max=function(){var e=[].slice.call(arguments,0);return i("isAfter",e)},t.min=function(){var e=[].slice.call(arguments,0);return i("isBefore",e)};}}));
   });
 
+  var customParseFormat = createCommonjsModule(function (module, exports) {
+  !function(t,e){module.exports=e();}(commonjsGlobal,(function(){var t={LTS:"h:mm:ss A",LT:"h:mm A",L:"MM/DD/YYYY",LL:"MMMM D, YYYY",LLL:"MMMM D, YYYY h:mm A",LLLL:"dddd, MMMM D, YYYY h:mm A"},e=/(\[[^[]*\])|([-:/.()\s]+)|(A|a|YYYY|YY?|MM?M?M?|Do|DD?|hh?|HH?|mm?|ss?|S{1,3}|z|ZZ?)/g,n=/\d\d/,r=/\d\d?/,i=/\d*[^\s\d-_:/()]+/,o={},s=function(t){return (t=+t)+(t>68?1900:2e3)};var a=function(t){return function(e){this[t]=+e;}},f=[/[+-]\d\d:?(\d\d)?|Z/,function(t){(this.zone||(this.zone={})).offset=function(t){if(!t)return 0;if("Z"===t)return 0;var e=t.match(/([+-]|\d\d)/g),n=60*e[1]+(+e[2]||0);return 0===n?0:"+"===e[0]?-n:n}(t);}],u=function(t){var e=o[t];return e&&(e.indexOf?e:e.s.concat(e.f))},h=function(t,e){var n,r=o.meridiem;if(r){for(var i=1;i<=24;i+=1)if(t.indexOf(r(i,0,e))>-1){n=i>12;break}}else n=t===(e?"pm":"PM");return n},d={A:[i,function(t){this.afternoon=h(t,!1);}],a:[i,function(t){this.afternoon=h(t,!0);}],S:[/\d/,function(t){this.milliseconds=100*+t;}],SS:[n,function(t){this.milliseconds=10*+t;}],SSS:[/\d{3}/,function(t){this.milliseconds=+t;}],s:[r,a("seconds")],ss:[r,a("seconds")],m:[r,a("minutes")],mm:[r,a("minutes")],H:[r,a("hours")],h:[r,a("hours")],HH:[r,a("hours")],hh:[r,a("hours")],D:[r,a("day")],DD:[n,a("day")],Do:[i,function(t){var e=o.ordinal,n=t.match(/\d+/);if(this.day=n[0],e)for(var r=1;r<=31;r+=1)e(r).replace(/\[|\]/g,"")===t&&(this.day=r);}],M:[r,a("month")],MM:[n,a("month")],MMM:[i,function(t){var e=u("months"),n=(u("monthsShort")||e.map((function(t){return t.substr(0,3)}))).indexOf(t)+1;if(n<1)throw new Error;this.month=n%12||n;}],MMMM:[i,function(t){var e=u("months").indexOf(t)+1;if(e<1)throw new Error;this.month=e%12||e;}],Y:[/[+-]?\d+/,a("year")],YY:[n,function(t){this.year=s(t);}],YYYY:[/\d{4}/,a("year")],Z:f,ZZ:f};function c(n){var r,i;r=n,i=o&&o.formats;for(var s=(n=r.replace(/(\[[^\]]+])|(LTS?|l{1,4}|L{1,4})/g,(function(e,n,r){var o=r&&r.toUpperCase();return n||i[r]||t[r]||i[o].replace(/(\[[^\]]+])|(MMMM|MM|DD|dddd)/g,(function(t,e,n){return e||n.slice(1)}))}))).match(e),a=s.length,f=0;f<a;f+=1){var u=s[f],h=d[u],c=h&&h[0],l=h&&h[1];s[f]=l?{regex:c,parser:l}:u.replace(/^\[|\]$/g,"");}return function(t){for(var e={},n=0,r=0;n<a;n+=1){var i=s[n];if("string"==typeof i)r+=i.length;else {var o=i.regex,f=i.parser,u=t.substr(r),h=o.exec(u)[0];f.call(e,h),t=t.replace(h,"");}}return function(t){var e=t.afternoon;if(void 0!==e){var n=t.hours;e?n<12&&(t.hours+=12):12===n&&(t.hours=0),delete t.afternoon;}}(e),e}}return function(t,e,n){n.p.customParseFormat=!0,t&&t.parseTwoDigitYear&&(s=t.parseTwoDigitYear);var r=e.prototype,i=r.parse;r.parse=function(t){var e=t.date,r=t.utc,s=t.args;this.$u=r;var a=s[1];if("string"==typeof a){var f=!0===s[2],u=!0===s[3],h=f||u,d=s[2];u&&(d=s[2]),o=this.$locale(),!f&&d&&(o=n.Ls[d]),this.$d=function(t,e,n){try{if(["x","X"].indexOf(e)>-1)return new Date(("X"===e?1e3:1)*t);var r=c(e)(t),i=r.year,o=r.month,s=r.day,a=r.hours,f=r.minutes,u=r.seconds,h=r.milliseconds,d=r.zone,l=new Date,m=s||(i||o?1:l.getDate()),M=i||l.getFullYear(),Y=0;i&&!o||(Y=o>0?o-1:l.getMonth());var p=a||0,v=f||0,D=u||0,g=h||0;return d?new Date(Date.UTC(M,Y,m,p,v,D,g+60*d.offset*1e3)):n?new Date(Date.UTC(M,Y,m,p,v,D,g)):new Date(M,Y,m,p,v,D,g)}catch(t){return new Date("")}}(e,a,r),this.init(),d&&!0!==d&&(this.$L=this.locale(d).$L),h&&e!=this.format(a)&&(this.$d=new Date("")),o={};}else if(a instanceof Array)for(var l=a.length,m=1;m<=l;m+=1){s[1]=a[m-1];var M=n.apply(this,s);if(M.isValid()){this.$d=M.$d,this.$L=M.$L,this.init();break}m===l&&(this.$d=new Date(""));}else i.call(this,t);};}}));
+  });
+
   var Timeline = /*#__PURE__*/function () {
     function Timeline(id, data, config) {
       _classCallCheck(this, Timeline);
 
       dayjs_min.extend(minMax);
+      dayjs_min.extend(customParseFormat);
       this.config = config || {};
 
       if (id.indexOf('.') === 0) ; else {

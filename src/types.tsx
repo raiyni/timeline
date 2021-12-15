@@ -17,6 +17,7 @@ export interface BasePlanOptions {
   progressStyle?: Style
   backgroundStyle?: Style
   labelStyle?: Style
+  dateFormat?: string
 }
 
 export type PlanOptions = BasePlanOptions & {
@@ -53,6 +54,7 @@ export interface Image {
   height?: number
   style?: Style
   skew?: 'left' | 'right'
+  dateFormat?: string
 }
 
 export const isImage = (obj: any): obj is Image => {
@@ -64,6 +66,7 @@ export interface Arrow {
   start?: string | Tick
   end?: string | Tick
   style?: Style
+  dateFormat?: string
 }
 
 export const isArrow = (obj: any): obj is Arrow => {
@@ -78,6 +81,7 @@ export interface Shape  {
   rotate?: number
   skew?: 'left' | 'right'
   style?: Style
+  dateFormat?: string
 }
 
 export const isShape = (obj: any): obj is Shape => {
@@ -88,6 +92,7 @@ export interface Line {
   start?: string | Tick
   end?: string | Tick
   style?: Style
+  dateFormat?: string
 }
 
 export const isLine = (obj: any): obj is Line => {
@@ -143,6 +148,7 @@ export interface Highlight {
   end: Tick | string
   fill: string
   headerOnly?: boolean
+  dateFormat?: string
 }
 
 export interface TimelineOptions {
@@ -152,6 +158,7 @@ export interface TimelineOptions {
   taskMargin ?: number
   wrapper?: any
   highlights?: Highlight[]
+  dateFormat?: string
 }
 
 export interface Rect {

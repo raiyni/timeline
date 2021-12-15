@@ -31,7 +31,15 @@ import flat from 'core-js-pure/features/array/flat'
 import from from 'core-js-pure/features/array/from'
 import { useEffect } from 'preact/hooks'
 
-const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions = {} as LabelOptions): LabelOptions => {
+const dayjsF = (input: string, format: string) => {
+  if (format) {
+    return dayjs(input, format)
+  }
+
+  return dayjs(input)
+}
+
+const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions, config: TimelineOptions): LabelOptions => {
   if (typeof input == 'string') {
     return {
       alignment: 'left',
@@ -66,16 +74,16 @@ const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions = {} 
       icons = [icons]
     }
 
-    obj.icons = icons.map((i: Icon) => prepareIcon(i))
+    obj.icons = icons.map((i: Icon) => prepareIcon(i, config))
   }
 
   return obj
 }
 
-const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions): PlanOptions => {
+const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions, config: TimelineOptions): PlanOptions => {
   const plan: PlanOptions = {
-    start: dayjs(options.start),
-    end: dayjs(options.end),
+    start: dayjsF(options.start, options.dateFormat || defaults.dateFormat || config.dateFormat),
+    end: dayjsF(options.end, options.dateFormat || defaults.dateFormat || config.dateFormat),
     height: options.height || defaults.height || 30,
     progressStyle: {
       fill: '#f2c329',
@@ -90,15 +98,15 @@ const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions): Pla
   }
 
   if (options.label) {
-    plan.label = prepareLabel(options.label, defaults.label)
+    plan.label = prepareLabel(options.label, defaults.label, config)
   }
 
   if (options.startText) {
-    plan.startText = prepareLabel(options.startText)
+    plan.startText = prepareLabel(options.startText, {} as LabelOptions, config)
   }
 
   if (options.endText) {
-    plan.endText = prepareLabel(options.endText)
+    plan.endText = prepareLabel(options.endText, {} as LabelOptions, config)
   }
 
   const progress = options.progress || defaults.progress || 0
@@ -106,13 +114,13 @@ const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions): Pla
     const diff = clamp(progress / 100, 0, 1) * (plan.end.unix() - plan.start.unix())
     plan.progress = dayjs.unix(plan.start.unix() + diff)
   } else {
-    plan.progress = dayjs(options.progress)
+    plan.progress = dayjsF(options.progress as string, options.dateFormat || defaults.dateFormat || config.dateFormat)
   }
 
   return plan
 }
 
-const prepareIcon = (source: Icon): Icon => {
+const prepareIcon = (source: Icon, config: TimelineOptions): Icon => {
   const copy: Icon = {
     width: 15,
     height: 15,
@@ -121,25 +129,25 @@ const prepareIcon = (source: Icon): Icon => {
   }
 
   if (source.date) {
-    copy.date = dayjs(source.date)
+    copy.date = dayjsF(source.date as string, source.dateFormat || config.dateFormat)
   }
 
   return copy
 }
 
-const prepareLine = (source: Line): Line => {
+const prepareLine = (source: Line, config: TimelineOptions): Line => {
   return {
     style: {
       stroke: 'black',
       strokeWidth: 2,
       ...source.style
     },
-    start: dayjs(source.start),
-    end: dayjs(source.end),
+    start: dayjsF(source.start as string, source.dateFormat || config.dateFormat),
+    end: dayjsF(source.end as string, source.dateFormat || config.dateFormat),
   }
 }
 
-const prepareArrow = (source: Arrow): Arrow => {
+const prepareArrow = (source: Arrow, config: TimelineOptions): Arrow => {
   const arrow: Arrow = {
     shape: ShapeType.ARROW,
     style: {
@@ -147,19 +155,19 @@ const prepareArrow = (source: Arrow): Arrow => {
       strokeWidth: 2,
       ...source.style
     },
-    start: dayjs(source.start),
-    end: dayjs(source.end),
+    start: dayjsF(source.start as string, source.dateFormat || config.dateFormat),
+    end: dayjsF(source.end as string, source.dateFormat || config.dateFormat),
   }
 
   return arrow
 }
 
-const prepareShape = (source: Shape): Shape => {
+const prepareShape = (source: Shape, config: TimelineOptions): Shape => {
   return {
     width: 15,
     height: 15,
     ...source,
-    date: dayjs(source.date),
+    date: dayjsF(source.date as string, source.dateFormat || config.dateFormat),
     style: {
       stroke: '#000',
       fill: '#fff',
@@ -175,29 +183,29 @@ const prepareMilestone = (options: MilestoneOptions, config: TimelineOptions): M
     return {
       x: options.x,
       y: options.y,
-      ...prepareIcon(options),
+      ...prepareIcon(options, config),
     }
   }
 
   if (isLine(options)) {
-    return prepareLine(options)
+    return prepareLine(options, config)
   }
 
   if (isArrow(options)) {
-    return prepareArrow(options as Arrow)
+    return prepareArrow(options as Arrow, config)
   }
 
   if (isShape(options)) {
-    return prepareShape(options)
+    return prepareShape(options, config)
   }
 
   return options
 }
 
-const prepareColumns = (task: TaskInputOptions, config: ColumnOptions[], plans: number): { [key: string]: LabelOptions[] } => {
+const prepareColumns = (task: TaskInputOptions, columns: ColumnOptions[], plans: number, config: TimelineOptions): { [key: string]: LabelOptions[] } => {
   const labels: { [key: string]: LabelOptions[] } = {}
 
-  config.forEach((c: ColumnOptions) => {
+  columns.forEach((c: ColumnOptions) => {
     let options = task[c.field] || []
 
     if (!Array.isArray(options)) {
@@ -218,7 +226,7 @@ const prepareColumns = (task: TaskInputOptions, config: ColumnOptions[], plans: 
         defaults = defaults[idx] || {}
       }
 
-      options[idx] = prepareLabel(v, defaults as LabelOptions)
+      options[idx] = prepareLabel(v, defaults as LabelOptions, config)
     })
 
     labels[c.field] = options
@@ -233,24 +241,24 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   const planDefaults: BasePlanOptions | BasePlanOptions[] = config.planDefaults || {}
 
   if (options.plan) {
-    task.plans = [[preparePlan(options.plan, (planDefaults as BasePlanOptions[])[0] || {})]]
+    task.plans = [[preparePlan(options.plan, (planDefaults as BasePlanOptions[])[0] || {}, config)]]
   } else if (options.plans && Array.isArray(options.plans)) {
     // @ts-ignore
     task.plans = options.plans.map((p: PlanInputOptions | PlanInputOptions[], idx: number) => {
       if (!Array.isArray(p)) {
         if (Array.isArray(planDefaults)) {
-          return [preparePlan(p, planDefaults[idx] || {})]
+          return [preparePlan(p, planDefaults[idx] || {}, config)]
         }
 
-        return [preparePlan(p, planDefaults)]
+        return [preparePlan(p, planDefaults, config)]
       }
 
       return p.map((pl: PlanInputOptions) => {
         if (Array.isArray(planDefaults)) {
-          return preparePlan(pl, planDefaults[idx] || {})
+          return preparePlan(pl, planDefaults[idx] || {}, config)
         }
 
-        return preparePlan(pl, planDefaults)
+        return preparePlan(pl, planDefaults, config)
       })
     })
   } else if (options.plans) {
@@ -279,7 +287,7 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   task.heights = task.plans.map((pos: PlanOptions[]) => Math.max.apply(null, pos.map((p: PlanOptions) => p.height)))
 
   if (config.columns && config.columns.length > 0) {
-    task.labels = prepareColumns(options, config.columns, task.plans.length)
+    task.labels = prepareColumns(options, config.columns, task.plans.length, config)
   }
 
   task.collapsed = options.collapsed
@@ -300,8 +308,8 @@ const prepareHighlights = (config: TimelineOptions): Highlight[] => {
     return {
       fill: h.fill,
       headerOnly: !!h.headerOnly,
-      start: dayjs(h.start),
-      end: dayjs(h.end)
+      start: dayjs(h.start, h.dateFormat || config.dateFormat),
+      end: dayjs(h.end, h.dateFormat || config.dateFormat)
     }
   })
 }
