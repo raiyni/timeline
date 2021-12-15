@@ -83,8 +83,6 @@ const getBoundingDates = (
     4
   )
 
-  console.log(milestones)
-
   const milestoneDates = flat(
     milestones.map((m: any) => m.date || [m.start, m.end]),
     2

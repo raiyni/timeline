@@ -2446,9 +2446,7 @@ var Timeline = (function () {
   var Grid = function Grid(_ref) {
     var forwardedRef = _ref.forwardedRef;
     var store = useConfig();
-    var state = store.state;
     var tasks = store.state.tasks;
-    y(function () {}, [state.height]);
     return v$1("div", {
       ref: forwardedRef,
       style: {
@@ -2632,7 +2630,6 @@ var Timeline = (function () {
     var plans = flat(tasks.map(function (t) {
       return t.plans;
     }), 4);
-    console.log(milestones);
     var milestoneDates = flat(milestones.map(function (m) {
       return m.date || [m.start, m.end];
     }), 2);

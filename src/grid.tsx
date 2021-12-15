@@ -8,11 +8,7 @@ import { useEffect } from 'preact/hooks';
 
 export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
   const store = useConfig()
-  const state = store.state
   const tasks = store.state.tasks
-
-  useEffect(() => {
-  }, [state.height])
 
   return (
     <div ref={forwardedRef} style={{
