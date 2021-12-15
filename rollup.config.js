@@ -7,16 +7,20 @@ import sizes from 'rollup-plugin-sizes'
 import injectProcessEnv from 'rollup-plugin-inject-process-env'
 import getRepoInfo from 'git-repo-info'
 import pkg from "./package.json";
+import * as fs from 'fs'
 
 const production = !!process.env.production
 
 const extensions = [
   '.js', '.jsx', '.ts', '.tsx',
-];
+]
 
-const name = 'Timeline';
+const name = 'Timeline'
+const git = getRepoInfo()
 
-const git = getRepoInfo();
+const polyfills = fs.readdirSync('./src/polyfills').map( file => {
+  return fs.readFileSync("./src/polyfills/" + file, "utf8");
+}).join("\n")
 
 const plugins = [
   // Allows node_modules resolution
@@ -47,6 +51,7 @@ if (!production) {
       contentBase: ['examples/live', 'examples']
     }))
   plugins.push(livereload())
+} else {
 }
 
 export default {
@@ -63,6 +68,7 @@ export default {
     file: 'examples/timeline.js',
     sourcemap: true,
     format: 'iife',
+    banner: polyfills,
     name,
 
     // https://rollupjs.org/guide/en/#outputglobals

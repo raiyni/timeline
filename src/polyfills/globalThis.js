@@ -13,4 +13,3 @@
     delete Object.prototype._T_;
   }
 }(Object));
-module.exports = globalThis;

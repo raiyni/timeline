@@ -1,8 +1,5 @@
 // Must be the first import
-
 import 'preact/debug'
-import './util/array.js'
-import './util/globalThis.js'
 
 import { TimelineOptions } from './types'
 import { View } from './view'
