@@ -35,7 +35,7 @@ export function View ({data, config}: ViewProps) {
     }, 150, [width, leftRef])
 
     useEffect(() => {
-      if (headerRef.current == null || gridRef.current == null) return;
+      if (headerRef.current == null || gridRef.current == null) return () => {};
 
       const scroll = gridRef.current.addEventListener('scroll', (e: any) => {
         headerRef.current.scrollLeft = e.target.scrollLeft

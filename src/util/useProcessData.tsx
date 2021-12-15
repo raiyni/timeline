@@ -316,7 +316,7 @@ const prepareHighlights = (config: TimelineOptions): Highlight[] => {
 
 export const calculateHeight = (tasks: TaskOptions[]) => {
   // 68 = header (30) + fake row (20) + scrollbar (18)
-  return 68 + flat(tasks.map((t: TaskOptions) => t.collapsed ? [t.heights[0]] : t.heights), 3).reduce((a, b) => a + b) + tasks.length * 2
+  return 68 + flat(tasks.map((t: TaskOptions) => t.collapsed ? [t.heights[0]] : t.heights), 3).reduce((a: number, b:number) => a + b) + tasks.length * 2
 }
 
 export const useProcessData = (dispatch: (_action: Action) => void, data: TaskInputOptions[], config: TimelineOptions) => {
