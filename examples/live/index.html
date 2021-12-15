@@ -44,28 +44,26 @@
   var dataEditor = ace.edit("data-editor");
   dataEditor.setTheme("ace/theme/monokai");
   dataEditor.session.setMode("ace/mode/javascript");
-  dataEditor.setValue(JSON.stringify(tasks, null, 2))
+  dataEditor.setValue(JSON.stringify(tasks, null, 2), 1)
   dataEditor.session.setTabSize(2)
-  dataEditor.setOption('selectionStyle', 'text')
-  dataEditor.setOption('showLineNumbers', false)
   dataEditor.setOptions({
     showLineNumbers: false,
     selectionStyle: 'text',
     showPrintMargin: false,
-    showFoldwidgets: false,
+    showFoldWidgets: false,
     showGutter: false
   })
 
   var settingsEditor = ace.edit("settings-editor");
   settingsEditor.setTheme("ace/theme/monokai");
   settingsEditor.session.setMode("ace/mode/javascript");
-  settingsEditor.setValue(JSON.stringify(options, null, 2))
+  settingsEditor.setValue(JSON.stringify(options, null, 2), 1)
   settingsEditor.session.setTabSize(2)
   settingsEditor.setOptions({
     showLineNumbers: false,
     selectionStyle: 'text',
     showPrintMargin: false,
-    showFoldwidgets: false,
+    showFoldWidgets: false,
     showGutter: false
   })
 
