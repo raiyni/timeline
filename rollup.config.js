@@ -55,9 +55,8 @@ export default {
 
     // https://rollupjs.org/guide/en/#outputglobals
     globals: {},
-  }],
-
-  output: [{
+  },
+  {
     file: 'dist/timeline.js',
     sourcemap: true,
     format: 'iife',
