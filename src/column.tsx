@@ -121,7 +121,6 @@ export const Column = ({ column, gridRef, forwardedRef, idx }: { column: ColumnO
   const store = useConfig()
   const state = store.state
 
-  console.log(gridRef)
   return (
     <div key={column.field} style={{
       display: 'flex',

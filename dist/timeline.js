@@ -1944,7 +1944,6 @@ var Timeline = (function () {
         idx = _ref5.idx;
     var store = useConfig();
     var state = store.state;
-    console.log(gridRef);
     return v("div", {
       key: column.field,
       style: {
@@ -2170,9 +2169,7 @@ var Timeline = (function () {
     var store = useConfig();
     var state = store.state;
     var tasks = store.state.tasks;
-    y$1(function () {
-      console.log(state.height);
-    }, [state.height]);
+    y$1(function () {}, [state.height]);
     return v("div", {
       ref: forwardedRef,
       style: {
@@ -2343,6 +2340,7 @@ var Timeline = (function () {
     var plans = flat$1(tasks.map(function (t) {
       return t.plans;
     }), 4);
+    console.log(milestones);
     var milestoneDates = flat$1(milestones.map(function (m) {
       return m.date || [m.start, m.end];
     }), 2);
@@ -2367,8 +2365,6 @@ var Timeline = (function () {
       if (state.tasks.length == 0 || !state.width) {
         return;
       }
-
-      console.log('here');
 
       var _getBoundingDates = getBoundingDates(state.tasks),
           minDate = _getBoundingDates.minDate,
@@ -3441,14 +3437,14 @@ var Timeline = (function () {
     }, 150, [width, leftRef]);
     y$1(function () {
       if (headerRef.current == null || gridRef.current == null) return;
-      gridRef.current.addEventListener('scroll', function (e) {
+      var scroll = gridRef.current.addEventListener('scroll', function (e) {
         headerRef.current.scrollLeft = e.target.scrollLeft;
         columnsRef.current.forEach(function (ref) {
           return ref.scrollTop = e.target.scrollTop;
         });
       });
       return function () {
-        return gridRef.current.removeEventListener('scroll');
+        return gridRef.current.removeEventListener('scroll', scroll);
       };
     }, [headerRef, gridRef]);
     useProcessData(dispatch, data, config);
@@ -3522,14 +3518,13 @@ var Timeline = (function () {
       _classCallCheck(this, Timeline);
 
       dayjs_min.extend(minMax);
-      this.data = data;
       this.config = config || {};
 
       if (id.indexOf('.') === 0) ; else {
         this.target = document.getElementById(id);
       }
 
-      this.forceRender();
+      this.updateData(data);
     }
 
     _createClass(Timeline, [{
@@ -3542,8 +3537,21 @@ var Timeline = (function () {
         }), this.target);
       }
     }, {
+      key: "updateConfig",
+      value: function updateConfig(config) {
+        this.config = config || {};
+        this.forceRender();
+      }
+    }, {
       key: "updateData",
       value: function updateData(data) {
+        this.data = data;
+        this.forceRender();
+      }
+    }, {
+      key: "update",
+      value: function update(data, config) {
+        this.config = config || {};
         this.data = data;
         this.forceRender();
       }

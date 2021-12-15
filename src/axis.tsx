@@ -83,6 +83,8 @@ const getBoundingDates = (
     4
   )
 
+  console.log(milestones)
+
   const milestoneDates = flat(
     milestones.map((m: any) => m.date || [m.start, m.end]),
     2
@@ -104,8 +106,6 @@ export const Axis = (props: any) => {
     if (state.tasks.length == 0 || !state.width) {
       return
     }
-
-    console.log('here')
 
     let { minDate, maxDate } = getBoundingDates(state.tasks)
 

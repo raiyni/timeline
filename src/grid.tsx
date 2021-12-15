@@ -12,7 +12,6 @@ export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
   const tasks = store.state.tasks
 
   useEffect(() => {
-    console.log(state.height)
   }, [state.height])
 
   return (
