@@ -10,7 +10,6 @@ import getRepoInfo from 'git-repo-info'
 import pkg from "./package.json";
 import * as fs from 'fs'
 import { terser } from "rollup-plugin-terser"
-import dev from 'rollup-plugin-dev'
 
 const production = process.env.NODE_ENV == 'production'
 const isIe = process.env.BABEL_ENV == 'ie11'
