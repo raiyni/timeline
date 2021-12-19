@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks"
 
-import ResizeObserver from "resize-observer-polyfill"
-
 export const useResizeObserver = (elRef: any): number => {
 
   const [width, setWidth] = useState(0)

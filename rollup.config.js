@@ -9,8 +9,10 @@ import polyfill from 'rollup-plugin-polyfill'
 import getRepoInfo from 'git-repo-info'
 import pkg from "./package.json";
 import * as fs from 'fs'
+import { terser } from "rollup-plugin-terser"
 
-const production = !!process.env.production
+const production = process.env.NODE_ENV == 'production'
+const isIe = process.env.BABEL_ENV == 'ie11'
 
 const extensions = [
   '.js', '.jsx', '.ts', '.tsx',
@@ -29,9 +31,19 @@ const plugins = [
 
   // Allow bundling cjs modules. Rollup doesn't understand cjs
   commonjs(),
+]
 
-  polyfill(['core-js/features/array/flat','core-js/features/array/find','core-js/features/array/from']),
+if (process.env.BABEL_ENV == 'ie11') {
+  plugins.push(polyfill([
+    'resize-observer-polyfill',
+    'core-js/features/array/flat',
+    'core-js/features/array/find',
+    'core-js/features/array/from'
+  ]))
+}
 
+
+plugins.push(
   injectProcessEnv({
     VERSION: pkg.version,
     SHA: git.abbreviatedSha,
@@ -47,14 +59,13 @@ const plugins = [
     exclude: ['node_modules/**/*']
   }),
   sizes()
-]
+)
 
 if (!production) {
   plugins.push(serve({
       contentBase: ['examples/live', 'examples']
     }))
   plugins.push(livereload())
-} else {
 }
 
 export default {
@@ -68,13 +79,26 @@ export default {
   plugins: plugins,
 
   output: [{
-    file: 'examples/timeline.js',
+    file: `dist/timeline${isIe ? '.ie' : '' }.js`,
     sourcemap: true,
     format: 'iife',
-    banner: polyfills,
+    banner: isIe ? polyfills : '',
     name,
 
     // https://rollupjs.org/guide/en/#outputglobals
     globals: {},
+  },
+  {
+    file: `dist/timeline${isIe ? '.ie' : '' }.min.js`,
+    sourcemap: true,
+    format: 'iife',
+    banner: isIe ? polyfills : '',
+    name,
+
+    // https://rollupjs.org/guide/en/#outputglobals
+    globals: {},
+    plugins: [
+      terser()
+    ]
   }]
 };

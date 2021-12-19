@@ -1,4 +1,4 @@
-import { Highlight, PlanOptions, TaskOptions, Tick, VIEW_MODE } from "./types"
+import { Highlight,  TaskOptions, Tick, VIEW_MODE } from "./types"
 
 import  dayjs  from 'dayjs';
 

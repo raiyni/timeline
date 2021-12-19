@@ -1,11 +1,23 @@
 {
+    "env": {
+      "ie11": {
+        "presets": [
+          ["@babel/preset-env",
+            {
+              "modules": false,
+              "targets": {
+                "ie": "11"
+              }
+            }],
+          ["@babel/typescript", { "jsxPragma": "h" }]
+        ],
+      }
+    },
+
     "presets": [
       ["@babel/preset-env",
         {
-          "modules": false,
-          "targets": {
-            "ie": "11"
-          }
+          "modules": false
         }],
       ["@babel/typescript", { "jsxPragma": "h" }]
     ],
