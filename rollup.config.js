@@ -5,6 +5,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import serve from 'rollup-plugin-serve'
 import sizes from 'rollup-plugin-sizes'
 import injectProcessEnv from 'rollup-plugin-inject-process-env'
+import polyfill from 'rollup-plugin-polyfill'
 import getRepoInfo from 'git-repo-info'
 import pkg from "./package.json";
 import * as fs from 'fs'
@@ -28,6 +29,8 @@ const plugins = [
 
   // Allow bundling cjs modules. Rollup doesn't understand cjs
   commonjs(),
+
+  polyfill(['core-js/features/array/flat','core-js/features/array/find','core-js/features/array/from']),
 
   injectProcessEnv({
     VERSION: pkg.version,

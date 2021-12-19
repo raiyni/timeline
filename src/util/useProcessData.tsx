@@ -25,10 +25,6 @@ import { clamp, uid } from './math'
 import { PlanOptions } from '../types'
 import { changeView } from './../actions'
 import dayjs from 'dayjs'
-// @ts-ignore
-import flat from 'core-js-pure/features/array/flat'
-// @ts-ignore
-import from from 'core-js-pure/features/array/from'
 import { useEffect } from 'preact/hooks'
 
 const dayjsF = (input: string, format: string) => {
@@ -277,10 +273,10 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   }
 
   if (task.milestones.length > task.plans.length) {
-    const fill: PlanOptions[][] = from({ length: task.milestones.length - task.plans.length }, (): PlanOptions[] => [])
+    const fill: PlanOptions[][] = Array.from({ length: task.milestones.length - task.plans.length }, (): PlanOptions[] => [])
     task.plans = (task.plans as PlanOptions[][]).concat(fill)
   } else if (task.plans.length > task.milestones.length) {
-    const fill: MilestoneOptions[][] = from({ length: task.plans.length - task.milestones.length }, (): MilestoneOptions[] => [])
+    const fill: MilestoneOptions[][] = Array.from({ length: task.plans.length - task.milestones.length }, (): MilestoneOptions[] => [])
     task.milestones = (task.milestones as MilestoneOptions[][]).concat(fill)
   }
 
@@ -316,7 +312,7 @@ const prepareHighlights = (config: TimelineOptions): Highlight[] => {
 
 export const calculateHeight = (tasks: TaskOptions[]) => {
   // 68 = header (30) + fake row (20) + scrollbar (18)
-  return 68 + flat(tasks.map((t: TaskOptions) => t.collapsed ? [t.heights[0]] : t.heights), 3).reduce((a: number, b:number) => a + b) + tasks.length * 2
+  return 68 +tasks.map((t: TaskOptions) => t.collapsed ? [t.heights[0]] : t.heights).flat(3).reduce((a: number, b:number) => a + b) + tasks.length * 2
 }
 
 export const useProcessData = (dispatch: (_action: Action) => void, data: TaskInputOptions[], config: TimelineOptions) => {

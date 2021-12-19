@@ -4,8 +4,6 @@ import { Highlight, TaskOptions, Tick, VIEW_MODE } from './types'
 import { createContext } from 'preact'
 import { calculateHeight } from './util/useProcessData'
 
-import find from 'core-js-pure/features/array/find'
-
 interface State {
   tasks: TaskOptions[]
   viewMode: VIEW_MODE
@@ -86,7 +84,7 @@ export const reducer = (state: any, action: Action) => {
       }
     case Actions.TOGGLE_TASK:
       const tasks = state.tasks
-      const task = find(tasks, (t: TaskOptions) => t.id == action.payload)
+      const task = tasks.find((t: TaskOptions) => t.id == action.payload)
       task.collapsed = !!!task.collapsed
 
       const height = calculateHeight(tasks)
