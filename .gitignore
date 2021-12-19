@@ -1,4 +1,4 @@
 node_modules
 dist
-examples/timeline.js
-examples/timeline.js.map
+examples
+public/examples

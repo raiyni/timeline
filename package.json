@@ -9,7 +9,8 @@
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "cross-env NODE_ENVyarn=development rollup -c -w",
     "build": "cross-env NODE_ENV=production rollup -c",
-    "build:ie": "cross-env NODE_ENV=production BABEL_ENV=ie11 rollup -c"
+    "build:ie": "cross-env NODE_ENV=production BABEL_ENV=ie11 rollup -c",
+    "copy": "cp -r examples public/examples"
   },
   "author": "Ron Young",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "cross-env": "^7.0.3",
     "git-repo-info": "^2.1.1",
     "rollup": "^2.36.1",
+    "rollup-plugin-dev": "^2.0.1",
     "rollup-plugin-inject-process-env": "^1.3.1",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-polyfill": "^3.0.0",
@@ -40,10 +42,5 @@
     "deepmerge": "^4.2.2",
     "preact": "^10.6.4",
     "resize-observer-polyfill": "^1.5.1"
-  },
-  "browserslist": [
-    "Chrome 90",
-    "Edge 90",
-    "Firefox 90"
-  ]
+  }
 }

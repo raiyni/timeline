@@ -10,6 +10,7 @@ import getRepoInfo from 'git-repo-info'
 import pkg from "./package.json";
 import * as fs from 'fs'
 import { terser } from "rollup-plugin-terser"
+import dev from 'rollup-plugin-dev'
 
 const production = process.env.NODE_ENV == 'production'
 const isIe = process.env.BABEL_ENV == 'ie11'
@@ -42,6 +43,16 @@ if (process.env.BABEL_ENV == 'ie11') {
   ]))
 }
 
+const targets =  [
+  "Chrome 90",
+  "Edge 90",
+  "Firefox 90"
+]
+
+if (isIe) {
+  targets.push('IE 11')
+}
+
 
 plugins.push(
   injectProcessEnv({
@@ -56,16 +67,42 @@ plugins.push(
     extensions,
     babelHelpers: 'bundled',
     include: ['src/**/*'],
-    exclude: ['node_modules/**/*']
+    exclude: ['node_modules/**/*'],
+    targets: targets
   }),
   sizes()
 )
 
 if (!production) {
-  plugins.push(serve({
-      contentBase: ['examples/live', 'examples']
-    }))
+  plugins.push(serve())
   plugins.push(livereload())
+}
+
+const output = [{
+  file: `dist/timeline${isIe ? '.ie' : '' }.js`,
+  sourcemap: true,
+  format: 'iife',
+  banner: isIe ? polyfills : '',
+  name,
+
+  // https://rollupjs.org/guide/en/#outputglobals
+  globals: {},
+}]
+
+if (production) {
+  output.push({
+    file: `dist/timeline${isIe ? '.ie' : '' }.min.js`,
+    sourcemap: true,
+    format: 'iife',
+    banner: isIe ? polyfills : '',
+    name,
+
+    // https://rollupjs.org/guide/en/#outputglobals
+    globals: {},
+    plugins: [
+      terser()
+    ]
+  })
 }
 
 export default {
@@ -78,27 +115,5 @@ export default {
 
   plugins: plugins,
 
-  output: [{
-    file: `dist/timeline${isIe ? '.ie' : '' }.js`,
-    sourcemap: true,
-    format: 'iife',
-    banner: isIe ? polyfills : '',
-    name,
-
-    // https://rollupjs.org/guide/en/#outputglobals
-    globals: {},
-  },
-  {
-    file: `dist/timeline${isIe ? '.ie' : '' }.min.js`,
-    sourcemap: true,
-    format: 'iife',
-    banner: isIe ? polyfills : '',
-    name,
-
-    // https://rollupjs.org/guide/en/#outputglobals
-    globals: {},
-    plugins: [
-      terser()
-    ]
-  }]
+  output: output
 };
