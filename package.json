@@ -11,7 +11,7 @@
     "build": "cross-env NODE_ENV=production rollup -c",
     "build:ie": "cross-env NODE_ENV=production BABEL_ENV=ie11 rollup -c",
     "build:all": "yarn build && yarn build:ie",
-    "copy": "cp -r examples public/examples && cp -r dist public/dist",
+    "copy": "mkdir public && cp -r examples public && cp -r dist public",
     "deploy": "yarn build:all && yarn copy"
   },
   "author": "Ron Young",
