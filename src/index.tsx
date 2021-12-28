@@ -2,18 +2,23 @@
 // Must be the first import
 import "preact/debug"
 
-import { TimelineOptions } from './types'
-import { View } from './view'
+import { PointerCallback, TimelineOptions } from './types'
 import dayjs from 'dayjs'
 import { h } from 'preact'
 import minMax from 'dayjs/plugin/minMax'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { render } from 'preact'
+import Wrapper from "./wrapper"
+
+const addStyle = (() => {
+  const style = document.createElement('style');
+  document.head.append(style);
+  return (styleString: string) => style.textContent = styleString;
+})();
 
 export default class Timeline {
   target: any
-  data: any[]
-  config: TimelineOptions
+  wrapper: any
 
   static version:string = process.env.VERSION
   static git: any = {
@@ -23,38 +28,75 @@ export default class Timeline {
   }
   static SHA:string = process.env.GIT
 
-  constructor(id: string, data: any[], config: TimelineOptions) {
-
+  constructor(id: string, data: any[] = [], config: TimelineOptions = {}) {
     dayjs.extend(minMax)
     dayjs.extend(customParseFormat)
-    this.config = config || {}
+
     if (id.indexOf('.') === 0) {
 
     } else {
       this.target = document.getElementById(id)
     }
 
-    this.updateData(data)
+    addStyle(`
+      .timeline-plan:hover {
+        filter: opacity(0.75);
+        pointer-events: fill;
+      }
+
+      .timeline-milestone {
+        pointer-events: visible;
+      }
+
+      .timeline-milestone:hover {
+        filter: opacity(0.65) drop-shadow(0 0 4px rgba(235, 210, 52, 1));
+
+      }
+    `)
+
+    this.initialRender(data, config)
+    console.log(this)
   }
 
-  forceRender() {
-     render(null, this.target)
-    render(<View data={this.data} config={this.config}/>, this.target)
+  initialRender(data: any[], config: TimelineOptions) {
+    render(<Wrapper ref={(wrapper: any) => this.wrapper = wrapper} data={data} config={config} />, this.target)
   }
 
   updateConfig(config: TimelineOptions) {
-    this.config = config || {}
-    this.forceRender()
+    if (this.wrapper) {
+      this.wrapper.setState({
+        config: config || {}
+      })
+    }
   }
 
   updateData(data: any[]) {
-    this.data = data
-    this.forceRender()
+    if (this.wrapper) {
+      this.wrapper.setState({
+        data: data
+      })
+    }
   }
 
   update(data: any[], config: TimelineOptions) {
-    this.config = config || {}
-    this.data = data
-    this.forceRender()
+    if (this.wrapper) {
+      this.wrapper.setState({
+        data: data,
+        config: config || {}
+      })
+    }
+  }
+
+  on(key: string, callback: PointerCallback) {
+    if (this.wrapper) {
+      const events = {
+        ...this.wrapper.state.events
+      }
+
+      events[key] =  callback
+      this.wrapper.setState({
+        events: events
+      })
+    }
   }
 }

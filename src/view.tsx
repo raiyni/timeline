@@ -5,14 +5,14 @@ import { useEffect, useReducer, useRef } from "preact/hooks";
 import { Column } from "./column";
 import { Grid } from "./grid";
 import { Header } from "./header";
-import { ViewProps } from "./types";
+import {  ViewProps } from "./types";
 import { h } from 'preact'
-import { setWidth } from "./actions";
+import {  setEvents, setWidth } from "./actions";
 import { useDebounce } from "./util/useDebounce";
 import { useProcessData } from './util/useProcessData';
 import { useResizeObserver } from './util/useResizeObserver';
 
-export function View ({data, config}: ViewProps) {
+export function View ({data, config, ...events}: ViewProps) {
     const [state, dispatch] = useReducer(reducer, DEFAULT_STATE)
     const store = {state, dispatch}
 
@@ -25,6 +25,7 @@ export function View ({data, config}: ViewProps) {
     const columnsRef = useRef([])
 
     const width = useResizeObserver(bodyRef)
+
     useDebounce(() => {
       if (leftRef.current == null) {
         return
@@ -43,6 +44,10 @@ export function View ({data, config}: ViewProps) {
       })
       return () => gridRef.current.removeEventListener('scroll', scroll)
     }, [headerRef, gridRef])
+
+    useEffect(() => {
+      dispatch(setEvents(events))
+    }, [events])
 
     useProcessData(dispatch, data, config)
 
