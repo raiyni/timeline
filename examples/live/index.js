@@ -67,7 +67,10 @@ var tasks = [
       [
         {
           shape: 'triangle',
-          date: '12-12-2019'
+          date: '12-12-2019',
+          style: {
+            fill: 'black'
+          }
         },
         {
           shape: 'square',
@@ -88,14 +91,6 @@ var tasks = [
           shape: 'arrow',
           start: '01-30-2020',
           end: '02-09-2020'
-        },
-        {
-          start: '02-30-2020',
-          end: '03-09-2020'
-        },
-        {
-          shape: 'dash',
-          date: '02-20-2020'
         },
         {
           shape: 'arrow',
@@ -195,6 +190,14 @@ var tasks = [
             fill: 'green',
             stroke: 'green'
           }
+        },
+        {
+          shape: 'dash',
+          date: '02-20-2020'
+        },
+        {
+          start: '02-30-2020',
+          end: '03-09-2020'
         },
       ]
     ]
