@@ -1,5 +1,5 @@
 import { Action, Actions } from './actions'
-import { Highlight, TaskOptions, Tick, VIEW_MODE } from './types'
+import { Highlight, PointerCallback, TaskOptions, Tick, VIEW_MODE } from './types'
 
 import { createContext } from 'preact'
 import { calculateHeight } from './util/useProcessData'
@@ -14,6 +14,7 @@ interface State {
   scrollWidth: number
   height: number
   highlights: Highlight[]
+  events: { [key: string]: PointerCallback }
   x: (tick: string | Tick) => number
 }
 
@@ -27,7 +28,13 @@ export const DEFAULT_STATE: State = {
   scrollWidth: 0,
   height: 0,
   highlights: [],
+  events: {},
   x: (tick: string | Tick) => 0
+}
+
+export interface Store {
+  state: State
+  dispatch: any
 }
 
 export const Config = createContext({
@@ -99,6 +106,15 @@ export const reducer = (state: any, action: Action) => {
         ...state,
         highlights: action.payload
       }
+    }
+
+    case Actions.SET_EVENTS: {
+      const events =  action.payload
+      state.events = {
+        ...events
+      }
+
+      return state
     }
   }
 

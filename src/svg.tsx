@@ -2,9 +2,9 @@ import { Icon as IconOptions, Shape as ShapeOptions, ShapeType, Style } from './
 
 import { h } from 'preact'
 
-export const Icon = ({ options, width, height, x, y, style = {} }: {options: IconOptions, width: number, height: number, x?: number, y?: number, style?: Style}) => {
+export const Icon = ({ options, width, height, x, y, style = {}, className = '' }: {options: IconOptions, width: number, height: number, x?: number, y?: number, style?: Style, className?: string}) => {
   return (
-    <svg x={x} y={y} width={width} height={height} preserveAspectRatio='none' viewBox='0 0 20 20' style={{overflow: 'visible', ...style}}>
+    <svg className={className} x={x} y={y} width={width} height={height} preserveAspectRatio='none' viewBox='0 0 20 20' style={{overflow: 'visible', ...style}}>
       {/* <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
         <path d="M-1,1 l2,-2
                 M0,4 l4,-4
@@ -30,8 +30,8 @@ export const Shape = ({ options }: {options: ShapeOptions}) => {
     case ShapeType.SQUARE:
       return (
         <g transform='translate(10, 10)'>
-          <g transform={`rotate(${options.rotate || 0})`}>
-            <rect x={1} y={1} width={18} height={18} style={options.style} transform={`translate(-10, -10) skewX(${options.skew ? options.skew : 0})`}></rect>
+          <g transform={`rotate(${options.rotate || 0})`}  >
+            <rect  x={1} y={1} width={18} height={18} style={options.style} transform={`translate(-10, -10) skewX(${options.skew ? options.skew : 0})`}></rect>
           </g>
         </g>
       )

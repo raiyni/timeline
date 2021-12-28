@@ -1,4 +1,4 @@
-import { Highlight,  TaskOptions, Tick, VIEW_MODE } from "./types"
+import { Highlight,  PointerCallback,  TaskOptions, Tick, VIEW_MODE } from "./types"
 
 import  dayjs  from 'dayjs';
 
@@ -12,7 +12,8 @@ export enum Actions {
   SET_SCROLL_WIDTH,
   SET_X,
   TOGGLE_TASK,
-  SET_HIGHLIGHTS
+  SET_HIGHLIGHTS,
+  SET_EVENTS
 }
 
 export interface Action {
@@ -64,6 +65,11 @@ export const toggleTask = (id: string): Action => {
 export const setHighlights = (highlights: Highlight[]): Action => {
   return createAction(Actions.SET_HIGHLIGHTS, highlights)
 }
+
+export const setEvents = (events: any): Action => {
+  return createAction(Actions.SET_EVENTS, events)
+}
+
 
 export const interpolate = (
   width: number,
