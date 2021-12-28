@@ -5,12 +5,12 @@ import { Plan } from './plan';
 import { h } from 'preact';
 import { useConfig } from './util/useConfig';
 
-export const Task = ({ task }: { task: TaskOptions}) => {
+export const Task = ({ task, idx }: { task: TaskOptions, idx: number}) => {
   const store = useConfig()
   const state = store.state
 
   return (
-    <div className="task-group" style={{
+    <div className="timeline-task" data-task-idx={idx} style={{
       width: state.scrollWidth,
       borderTop: '2px solid black'
     }}
@@ -18,7 +18,7 @@ export const Task = ({ task }: { task: TaskOptions}) => {
       {task.plans.map((plans: PlanOptions[], row: number) => {
         const milestones = task.milestones[row]
           return (
-            <div className="task-row" style={{
+            <div className="timeline-task-row" style={{
               height: task.heights[row],
               width: state.scrollWidth,
               backgroundColor: '#fff',
