@@ -9,9 +9,9 @@ export enum VIEW_MODE {
 }
 
 export enum POINTER_EVENT {
-  pointerdown,
-  pointerup,
-  pointermove
+  pointerdown = 'pointerdown',
+  pointerup = 'pointerup',
+  pointermove = 'pointermove'
 }
 
 export type Style = {[key: string]: any;}

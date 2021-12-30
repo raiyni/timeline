@@ -1,5 +1,5 @@
 import { Action, Actions } from './actions'
-import { Highlight, PointerCallback, TaskOptions, Tick, VIEW_MODE } from './types'
+import { Highlight, PointerCallback, PointerEvents, TaskOptions, Tick, VIEW_MODE } from './types'
 
 import { createContext } from 'preact'
 import { calculateHeight } from './util/useProcessData'
@@ -39,6 +39,14 @@ export interface Store {
 
 export const Config = createContext({
   state: DEFAULT_STATE,
+  dispatch: (_action: Action) => {}
+})
+
+export const EMPTY_EVENTS: PointerEvents = {
+}
+
+export const Events = createContext({
+  state: EMPTY_EVENTS,
   dispatch: (_action: Action) => {}
 })
 
@@ -107,15 +115,24 @@ export const reducer = (state: any, action: Action) => {
         highlights: action.payload
       }
     }
+  }
 
+  return state
+}
+
+
+export const eventsReducer = (state: any, action: Action) => {
+  switch (action.type) {
     case Actions.SET_EVENTS: {
       const events =  action.payload
-      state.events = {
-        ...events
-      }
+      for (let key in events) {
 
+      }
       return state
     }
+
+    case Actions.ADD_EVENT:
+      return state
   }
 
   return state

@@ -1,5 +1,5 @@
 
-import { Config, DEFAULT_STATE, reducer } from "./store";
+import { Config, DEFAULT_STATE, EMPTY_EVENTS, Events, eventsReducer, reducer } from "./store";
 import { useEffect, useReducer, useRef } from "preact/hooks";
 
 import { Column } from "./column";
@@ -15,6 +15,9 @@ import { useResizeObserver } from './util/useResizeObserver';
 export function View ({data, config, ...events}: ViewProps) {
     const [state, dispatch] = useReducer(reducer, DEFAULT_STATE)
     const store = {state, dispatch}
+
+    const [eventsState, eventsDispatch] = useReducer(eventsReducer, EMPTY_EVENTS)
+    const eventsStore = {state: eventsState, dispatch: eventsDispatch}
 
     const bodyRef = useRef(null)
     const leftRef = useRef(null)
@@ -46,7 +49,8 @@ export function View ({data, config, ...events}: ViewProps) {
     }, [headerRef, gridRef])
 
     useEffect(() => {
-      dispatch(setEvents(events))
+      console.log('loop')
+      eventsDispatch(setEvents(events))
     }, [events])
 
     useProcessData(dispatch, data, config)
@@ -55,6 +59,7 @@ export function View ({data, config, ...events}: ViewProps) {
 
     return (
         <Config.Provider value={store}>
+          <Events.Provider value={eventsStore}>
           <div ref={bodyRef} style={{
             width: '100%',
             height: '100vh',
@@ -101,6 +106,7 @@ export function View ({data, config, ...events}: ViewProps) {
             </div>
 
           </div>
+          </Events.Provider>
         </Config.Provider>
     )
 }

@@ -13,7 +13,8 @@ export enum Actions {
   SET_X,
   TOGGLE_TASK,
   SET_HIGHLIGHTS,
-  SET_EVENTS
+  SET_EVENTS,
+  ADD_EVENT
 }
 
 export interface Action {
@@ -70,6 +71,9 @@ export const setEvents = (events: any): Action => {
   return createAction(Actions.SET_EVENTS, events)
 }
 
+export const addEvent = (key: string, callback: PointerCallback): Action => {
+  return createAction(Actions.ADD_EVENT, {key, callback})
+}
 
 export const interpolate = (
   width: number,
