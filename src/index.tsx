@@ -93,7 +93,7 @@ export default class Timeline {
         ...this.wrapper.state.events
       }
 
-      events[key] =  callback
+      events[key] = callback
       this.wrapper.setState({
         events: events
       })

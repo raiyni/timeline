@@ -1,12 +1,14 @@
 import { PlanOptions } from './types'
 import {h} from 'preact'
-import { useConfig } from './util/useConfig';
+import {  useConfig, useEvents } from './util/useConfig';
 import deepmerge from 'deepmerge';
 
 
 export const Plan = ({ plan }: {plan: PlanOptions}) => {
-  const store = useConfig()
-  const state = store.state
+  const events = useEvents()
+  const config = useConfig()
+
+  const state = config.state
 
   const start = state.x(plan.start)
   const end = state.x(plan.end)
@@ -16,8 +18,9 @@ export const Plan = ({ plan }: {plan: PlanOptions}) => {
 
   return (
     <g className="timeline-plan" onPointerDown={(e) => {
-      if (state.events.pointerdown) {
-        state.events.pointerdown(e, null, plan)
+      console.log(events.state)
+      if (events.state.pointerdown) {
+        events.state.pointerdown(e, null, plan)
       }
     }}>
         <rect x={start} width={end - start} height={plan.height} style={plan.backgroundStyle}></rect>
