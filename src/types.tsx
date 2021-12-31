@@ -193,8 +193,8 @@ export type PointerCallback = (e: PointerEvent, task: TaskOptions, target: PlanO
 
 export type PointerEvents =  { [key in POINTER_EVENT]?: PointerCallback }
 
-export interface ViewProps {
+export type ViewProps = {
   data?: TaskInputOptions[]
   config?: TimelineOptions
-  events?: PointerEvents
-}
+} & PointerEvents
+
