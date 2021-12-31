@@ -10,7 +10,7 @@ import { useDebounce } from './util/useDebounce'
 import { useProcessData } from './util/useProcessData'
 import { useResizeObserver } from './util/useResizeObserver'
 
-export function View({ data, config, ...events }: ViewProps) {
+export function View({ data, config, ...props }: ViewProps) {
   const [state, dispatch] = useReducer(reducer, DEFAULT_STATE)
   const store = { state, dispatch }
 
@@ -47,8 +47,8 @@ export function View({ data, config, ...events }: ViewProps) {
   }, [headerRef, gridRef])
 
   useEffect(() => {
-    dispatch(setEvents(events))
-  }, [events])
+    dispatch(setEvents(props.events))
+  }, [props.events])
 
   useProcessData(dispatch, data, config)
 
