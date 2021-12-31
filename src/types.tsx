@@ -196,5 +196,5 @@ export type PointerEvents =  { [key in POINTER_EVENT]?: PointerCallback }
 export interface ViewProps {
   data?: TaskInputOptions[]
   config?: TimelineOptions
-  events?: PointerEvents
+  events?: { [key: string]: PointerCallback }
 }

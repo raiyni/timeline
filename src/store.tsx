@@ -28,7 +28,7 @@ export const DEFAULT_STATE: State = {
   height: 0,
   highlights: [],
   events: {},
-  x: (tick: string | Tick) => 0,
+  x: (tick: string | Tick) => 0
 }
 
 export interface Store {
@@ -38,7 +38,7 @@ export interface Store {
 
 export const Config = createContext({
   state: DEFAULT_STATE,
-  dispatch: (_action: Action) => {},
+  dispatch: (_action: Action) => {}
 })
 
 export const reducer = (state: any, action: Action) => {
@@ -46,46 +46,46 @@ export const reducer = (state: any, action: Action) => {
     case Actions.CHANGE_VIEW:
       return {
         ...state,
-        viewMode: action.payload,
+        viewMode: action.payload
       }
     case Actions.SET_WIDTH:
       return {
         ...state,
-        width: action.payload,
+        width: action.payload
       }
     case Actions.SET_HEIGHT:
       return {
         ...state,
-        height: action.payload,
+        height: action.payload
       }
     case Actions.SET_TASKS:
       return {
         ...state,
-        tasks: action.payload,
+        tasks: action.payload
       }
     case Actions.UPDATE_TICKS:
       return {
         ...state,
-        ticks: action.payload,
+        ticks: action.payload
       }
     case Actions.SET_DATES: {
       const { minDate, maxDate } = action.payload
       return {
         ...state,
         minDate,
-        maxDate,
+        maxDate
       }
     }
     case Actions.SET_SCROLL_WIDTH: {
       return {
         ...state,
-        scrollWidth: action.payload,
+        scrollWidth: action.payload
       }
     }
     case Actions.SET_X:
       return {
         ...state,
-        x: action.payload,
+        x: action.payload
       }
     case Actions.TOGGLE_TASK:
       const tasks = state.tasks
@@ -97,12 +97,12 @@ export const reducer = (state: any, action: Action) => {
       return {
         ...state,
         tasks: tasks,
-        height: height,
+        height: height
       }
     case Actions.SET_HIGHLIGHTS: {
       return {
         ...state,
-        highlights: action.payload,
+        highlights: action.payload
       }
     }
 
@@ -110,8 +110,8 @@ export const reducer = (state: any, action: Action) => {
       return {
         ...state,
         events: {
-          ...action.payload,
-        },
+          ...action.payload
+        }
       }
     }
 
