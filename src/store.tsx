@@ -1,7 +1,6 @@
-import { Action, Actions } from './actions'
-import { Highlight, PointerCallback, PointerEvents, TaskOptions, Tick, VIEW_MODE } from './types'
-
 import { createContext } from 'preact'
+import { Action, Actions } from './actions'
+import { Highlight, PointerEvents, TaskOptions, Tick, VIEW_MODE } from './types'
 import { calculateHeight } from './util/useProcessData'
 
 interface State {
@@ -14,7 +13,7 @@ interface State {
   scrollWidth: number
   height: number
   highlights: Highlight[]
-  events: { [key: string]: PointerCallback }
+  events: PointerEvents
   x: (tick: string | Tick) => number
 }
 
@@ -29,7 +28,7 @@ export const DEFAULT_STATE: State = {
   height: 0,
   highlights: [],
   events: {},
-  x: (tick: string | Tick) => 0
+  x: (tick: string | Tick) => 0,
 }
 
 export interface Store {
@@ -39,15 +38,7 @@ export interface Store {
 
 export const Config = createContext({
   state: DEFAULT_STATE,
-  dispatch: (_action: Action) => {}
-})
-
-export const EMPTY_EVENTS: PointerEvents = {
-}
-
-export const Events = createContext({
-  state: EMPTY_EVENTS,
-  dispatch: (_action: Action) => {}
+  dispatch: (_action: Action) => {},
 })
 
 export const reducer = (state: any, action: Action) => {
@@ -60,12 +51,12 @@ export const reducer = (state: any, action: Action) => {
     case Actions.SET_WIDTH:
       return {
         ...state,
-        width: action.payload
+        width: action.payload,
       }
     case Actions.SET_HEIGHT:
       return {
         ...state,
-        height: action.payload
+        height: action.payload,
       }
     case Actions.SET_TASKS:
       return {
@@ -75,7 +66,7 @@ export const reducer = (state: any, action: Action) => {
     case Actions.UPDATE_TICKS:
       return {
         ...state,
-        ticks: action.payload
+        ticks: action.payload,
       }
     case Actions.SET_DATES: {
       const { minDate, maxDate } = action.payload
@@ -85,17 +76,16 @@ export const reducer = (state: any, action: Action) => {
         maxDate,
       }
     }
-    case Actions.SET_SCROLL_WIDTH:
-      {
-        return {
-          ...state,
-          scrollWidth: action.payload
-        }
+    case Actions.SET_SCROLL_WIDTH: {
+      return {
+        ...state,
+        scrollWidth: action.payload,
       }
+    }
     case Actions.SET_X:
       return {
         ...state,
-        x: action.payload
+        x: action.payload,
       }
     case Actions.TOGGLE_TASK:
       const tasks = state.tasks
@@ -107,28 +97,22 @@ export const reducer = (state: any, action: Action) => {
       return {
         ...state,
         tasks: tasks,
-        height: height
+        height: height,
       }
     case Actions.SET_HIGHLIGHTS: {
       return {
         ...state,
-        highlights: action.payload
+        highlights: action.payload,
       }
     }
-  }
 
-  return state
-}
-
-
-export const eventsReducer = (state: any, action: Action) => {
-  switch (action.type) {
     case Actions.SET_EVENTS: {
-      const events =  action.payload
-      for (let key in events) {
-
+      return {
+        ...state,
+        events: {
+          ...action.payload,
+        },
       }
-      return state
     }
 
     case Actions.ADD_EVENT:
