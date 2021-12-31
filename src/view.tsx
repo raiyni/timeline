@@ -1,11 +1,11 @@
 import { h } from 'preact'
-import { useEffect, useReducer, useRef } from 'preact/hooks'
+import { useCallback, useEffect, useReducer, useRef } from 'preact/hooks'
 import { setEvents, setWidth } from './actions'
 import { Column } from './column'
 import { Grid } from './grid'
 import { Header } from './header'
 import { Config, DEFAULT_STATE, reducer } from './store'
-import { ViewProps } from './types'
+import { POINTER_EVENT, ViewProps } from './types'
 import { useDebounce } from './util/useDebounce'
 import { useProcessData } from './util/useProcessData'
 import { useResizeObserver } from './util/useResizeObserver'
@@ -46,9 +46,10 @@ export function View({ data, config, ...events }: ViewProps) {
     return () => gridRef.current.removeEventListener('scroll', scroll)
   }, [headerRef, gridRef])
 
+
   useEffect(() => {
     dispatch(setEvents(events))
-  }, [events.pointerdown])
+  }, Object.values(events))
 
   useProcessData(dispatch, data, config)
 
