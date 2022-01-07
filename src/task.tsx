@@ -26,7 +26,7 @@ export const Task = ({ task, idx }: { task: TaskOptions, idx: number}) => {
             }}
             >
               <svg height={task.heights[row]} width={state.scrollWidth}>
-               {plans.map((plan: PlanOptions) => <Plan plan={plan} />)}
+               {plans.map((plan: PlanOptions, planIdx: number) => <Plan plan={plan} key={'plan'+row+'-'+planIdx} />)}
                {milestones.map((milestone: MilestoneOptions) => <Milestone options={milestone} height={task.heights[row]} />)}
               </svg>
             </div>

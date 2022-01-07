@@ -1,14 +1,17 @@
 import { Highlights } from './highlights';
-import { Ref } from 'preact/hooks';
+import { Ref, useCallback } from 'preact/hooks';
 import { Task } from './task';
 import { TaskOptions } from './types';
 import { h } from 'preact'
 import { useConfig } from './util/useConfig';
-import { useEffect } from 'preact/hooks';
+import { useEvent } from './util/useEvent';
 
 export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
   const store = useConfig()
-  const tasks = store.state.tasks
+  const state = store.state
+  const tasks = state.tasks
+
+  useEvent(forwardedRef, 'pointerdown', state.events.pointerdown)
 
   return (
     <div ref={forwardedRef} style={{
