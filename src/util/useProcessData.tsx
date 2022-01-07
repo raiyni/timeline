@@ -282,10 +282,9 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   }
 
   const planHeights = task.plans.map((pos: PlanOptions[]) => Math.max.apply(null, pos.map((p: PlanOptions) => p.height)))
-  const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) => Math.max.apply(null, pos.map((p: any) => p.height || 15)))
+  const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) => Math.max.apply(null, pos.map((p: any) => p.height || 20)))
 
-  task.heights = planHeights.map((n: number, idx: number) => Math.max(n, milestoneHeights[idx]))
-  console.log(task.heights)
+  task.heights = planHeights.map((n: number, idx: number) => Math.max(clampHeight(n), clampHeight(milestoneHeights[idx])))
 
   if (config.columns && config.columns.length > 0) {
     task.labels = prepareColumns(options, config.columns, task.plans.length, config)
@@ -313,6 +312,14 @@ const prepareHighlights = (config: TimelineOptions): Highlight[] => {
       end: dayjs(h.end, h.dateFormat || config.dateFormat)
     }
   })
+}
+
+const clampHeight = (h: number) => {
+  if (h < 0) {
+    return 20
+  }
+
+  return h
 }
 
 export const calculateHeight = (tasks: TaskOptions[]) => {

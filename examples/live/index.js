@@ -1,6 +1,7 @@
 var tasks = [
   {
     collapsible: true,
+    plans: [[],[]],
     name: [
       {
         label: 'FP Alpha 1 (2-3 ID ABCT)',
