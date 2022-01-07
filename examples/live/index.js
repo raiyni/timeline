@@ -1,7 +1,7 @@
 var tasks = [
   {
     collapsible: true,
-    plans: [[],[]],
+    plans: [],
     name: [
       {
         label: 'FP Alpha 1 (2-3 ID ABCT)',
@@ -14,12 +14,9 @@ var tasks = [
             stroke: 'black'
           }
         }]
-      },
-      {
-        label: 'Mode Source: CHARTER'
       }
     ],
-    sqft: '395k',
+    sqft: ['395k', '200k'],
     pcs: 2314,
     milestones: [
       [
@@ -71,7 +68,8 @@ var tasks = [
         }
       ]
     ]
-  },{
+  },
+  {
     plans: [
       [
         {

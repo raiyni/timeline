@@ -200,8 +200,11 @@ const prepareMilestone = (options: MilestoneOptions, config: TimelineOptions): M
 
 const prepareColumns = (task: TaskInputOptions, columns: ColumnOptions[], plans: number, config: TimelineOptions): { [key: string]: LabelOptions[] } => {
   const labels: { [key: string]: LabelOptions[] } = {}
+  const columnOptions: { [key: string]: ColumnOptions } = {}
 
   columns.forEach((c: ColumnOptions) => {
+    columnOptions[c.field] = c
+
     let options = task[c.field] || []
 
     if (!Array.isArray(options)) {
@@ -226,6 +229,25 @@ const prepareColumns = (task: TaskInputOptions, columns: ColumnOptions[], plans:
     })
 
     labels[c.field] = options
+  })
+
+  const maxRows = Math.max.apply(null, Object.values(labels).map(o => o.length))
+  Object.entries(labels).forEach(([key, value]) => {
+    const options = columnOptions[key]
+    if (value.length < maxRows) {
+      const diff = maxRows - value.length
+      const startIdx = value.length
+
+      labels[key] = value.concat((new Array(diff)).fill({}))
+      for (let idx = startIdx; idx < labels[key].length; idx++) {
+        let defaults = options.defaults || {}
+        if (Array.isArray(defaults)) {
+          defaults = defaults[idx] || {}
+        }
+
+        labels[key][idx] = prepareLabel(labels[key][idx], defaults as LabelOptions, config)
+      }
+    }
   })
 
   return labels
@@ -273,30 +295,56 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
     })
   }
 
-  if (task.milestones.length > task.plans.length) {
-    const fill: PlanOptions[][] = Array.from({ length: task.milestones.length - task.plans.length }, (): PlanOptions[] => [])
-    task.plans = (task.plans as PlanOptions[][]).concat(fill)
-  } else if (task.plans.length > task.milestones.length) {
-    const fill: MilestoneOptions[][] = Array.from({ length: task.plans.length - task.milestones.length }, (): MilestoneOptions[] => [])
-    task.milestones = (task.milestones as MilestoneOptions[][]).concat(fill)
-  }
-
-  const planHeights = task.plans.map((pos: PlanOptions[]) => Math.max.apply(null, pos.map((p: PlanOptions) => p.height)))
-  const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) => Math.max.apply(null, pos.map((p: any) => p.height || 20)))
-
-  task.heights = planHeights.map((n: number, idx: number) => Math.max(clampHeight(n), clampHeight(milestoneHeights[idx])))
+  fillPlans(task)
+  fillMilestones(task)
 
   if (config.columns && config.columns.length > 0) {
     task.labels = prepareColumns(options, config.columns, task.plans.length, config)
   }
 
+  fillPlans(task)
+  fillMilestones(task)
+
+  task.heights = createTaskHeights(task)
+
   task.collapsed = options.collapsed
   task.collapsible = options.collapsible
   task.id = uid()
 
-  // TODO: apply default heights to missing plans
-
   return task
+}
+
+const fillPlans = (task: TaskOptions) => {
+  let max = Math.max(task.plans.length, task.milestones.length)
+  if (task.labels) {
+    const maxRows = Math.max.apply(null, Object.values(task.labels).map(o => o.length))
+    max = Math.max(max, maxRows)
+  }
+
+  if (max > task.plans.length) {
+    const fill: PlanOptions[][] = Array.from({ length: max - task.plans.length }, (): PlanOptions[] => [])
+    task.plans = (task.plans as PlanOptions[][]).concat(fill)
+  }
+}
+
+const fillMilestones = (task: TaskOptions) => {
+  let max = Math.max(task.plans.length, task.milestones.length)
+  if (task.labels) {
+    const maxRows = Math.max.apply(null, Object.values(task.labels).map(o => o.length))
+    max = Math.max(max, maxRows)
+  }
+
+  if (max > task.milestones.length) {
+    const fill: MilestoneOptions[][] = Array.from({ length: max - task.milestones.length }, (): MilestoneOptions[] => [])
+    task.milestones = (task.milestones as MilestoneOptions[][]).concat(fill)
+  }
+}
+
+const createTaskHeights = (task: TaskOptions): number[] => {
+  const planHeights = task.plans.map((pos: PlanOptions[]) => Math.max.apply(null, pos.map((p: PlanOptions) => p.height)))
+  const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) => Math.max.apply(null, pos.map((p: any) => p.height || 20)))
+
+  return planHeights.map((n: number, idx: number) => Math.max(clampHeight(n), clampHeight(milestoneHeights[idx])))
 }
 
 const prepareHighlights = (config: TimelineOptions): Highlight[] => {
