@@ -73,7 +73,11 @@ plugins.push(
 )
 
 if (!production) {
-  plugins.push(serve())
+  plugins.push(serve({
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
+  }))
   plugins.push(livereload())
 }
 
