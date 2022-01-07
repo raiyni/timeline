@@ -236,6 +236,7 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
 
   const planDefaults: BasePlanOptions | BasePlanOptions[] = config.planDefaults || {}
 
+  task.plans = []
   if (options.plan) {
     task.plans = [[preparePlan(options.plan, (planDefaults as BasePlanOptions[])[0] || {}, config)]]
   } else if (options.plans && Array.isArray(options.plans)) {
@@ -280,7 +281,11 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
     task.milestones = (task.milestones as MilestoneOptions[][]).concat(fill)
   }
 
-  task.heights = task.plans.map((pos: PlanOptions[]) => Math.max.apply(null, pos.map((p: PlanOptions) => p.height)))
+  const planHeights = task.plans.map((pos: PlanOptions[]) => Math.max.apply(null, pos.map((p: PlanOptions) => p.height)))
+  const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) => Math.max.apply(null, pos.map((p: any) => p.height || 15)))
+
+  task.heights = planHeights.map((n: number, idx: number) => Math.max(n, milestoneHeights[idx]))
+  console.log(task.heights)
 
   if (config.columns && config.columns.length > 0) {
     task.labels = prepareColumns(options, config.columns, task.plans.length, config)

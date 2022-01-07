@@ -1,49 +1,6 @@
 var tasks = [
   {
     collapsible: true,
-    plans: [
-      [
-        {
-          start: '02-09-2020',
-          end: '02-26-2020'
-        }
-      ],
-      [
-        {
-          start: '01-29-2020',
-          end: '02-08-2020',
-          progressStyle: {
-            fill: 'rgb(169, 208, 142)'
-          }
-        },
-        {
-          start: '02-12-2020',
-          end: '02-22-2020'
-        }
-      ],
-      [
-        {
-          start: '01-29-2020',
-          end: '02-06-2020',
-          progressStyle: {
-            fill: 'rgb(169, 208, 142)'
-          }
-        },
-        {
-          start: '02-14-2020',
-          end: '02-24-2020'
-        }
-      ],
-      [
-        {
-          start: '02-16-2020',
-          end: '02-26-2020',
-          progressStyle: {
-            fill: 'rgb(169, 208, 142)'
-          }
-        }
-      ]
-    ],
     name: [
       {
         label: 'FP Alpha 1 (2-3 ID ABCT)',
