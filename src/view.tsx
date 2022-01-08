@@ -61,8 +61,9 @@ export function View({ data, config, ...events }: ViewProps) {
         ref={bodyRef}
         style={{
           width: '100%',
-          height: '100vh',
-          maxHeight: store.state.height,
+          height: '100%',
+          flex: 1,
+          // maxHeight: store.state.height,
           display: 'flex',
           'flex-direction': 'row',
           'align-items': 'stretch',

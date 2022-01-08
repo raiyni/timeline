@@ -38,6 +38,8 @@ export default class Timeline {
       this.target = document.getElementById(id)
     }
 
+    this.target.innerHTML = ''
+
     addStyle(`
       .timeline-plan:hover {
         filter: opacity(0.75);
