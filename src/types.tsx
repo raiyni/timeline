@@ -5,7 +5,7 @@ export enum VIEW_MODE {
   WEEK = 'week',
   MONTH = 'month',
   YEAR = 'year',
-  FILL = 'fill',
+  FIT = 'fit',
 }
 
 export enum POINTER_EVENT {

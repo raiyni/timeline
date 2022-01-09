@@ -107,14 +107,14 @@ export const Axis = (props: any) => {
 
     const ticks = []
     let step = 1
-    if (state.viewMode == VIEW_MODE.FILL) {
+    if (state.viewMode == VIEW_MODE.FIT) {
       const stepDate = deinterpolate(scrollWidth, minDate, maxDate, 100)
       step = stepDate.diff(minDate, 'day')
       modeWidth = scrollWidth
     }
 
     let currentTick = nextDate(state.viewMode, minDate, step)
-    const referenceDate = state.viewMode == VIEW_MODE.FILL ? maxDate : currentTick.clone()
+    const referenceDate = state.viewMode == VIEW_MODE.FIT ? maxDate : currentTick.clone()
     while (interpolate(modeWidth, minDate, referenceDate, currentTick) < scrollWidth) {
       ticks.push(currentTick)
       currentTick = nextDate(state.viewMode, currentTick, step)
