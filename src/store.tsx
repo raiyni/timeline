@@ -44,6 +44,10 @@ export const Config = createContext({
 export const reducer = (state: any, action: Action) => {
   switch (action.type) {
     case Actions.CHANGE_VIEW:
+      if (!(Object.values(VIEW_MODE).indexOf(action.payload) > -1)) {
+        console.error('View mode must be of type VIEW_MODE:', JSON.stringify(Object.values(VIEW_MODE)))
+        return state
+      }
       return {
         ...state,
         viewMode: action.payload
