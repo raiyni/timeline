@@ -167,7 +167,7 @@ export interface TimelineOptions {
   highlights?: Highlight[]
   dateFormat?: string
   hoverEffects?: boolean
-  prepareTask?: (task: TaskOptions, options: TaskInputOptions) => {}
+  prepareTask?: (options: TaskInputOptions) => {}
 }
 
 export interface Rect {

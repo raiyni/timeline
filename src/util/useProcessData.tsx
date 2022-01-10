@@ -263,7 +263,7 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   task.milestones = []
 
   if (config.prepareTask) {
-    config.prepareTask(task, options)
+    config.prepareTask(options)
   }
 
   if (options.plan) {
@@ -287,8 +287,6 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
         return preparePlan(pl, planDefaults, config)
       })
     }))
-  } else if (options.plans) {
-    console.error('Plans object is not an array')
   }
 
   if (options.milestones && Array.isArray(options.milestones)) {
