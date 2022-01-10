@@ -260,11 +260,17 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   const planDefaults: BasePlanOptions | BasePlanOptions[] = config.planDefaults || {}
 
   task.plans = []
+  task.milestones = []
+
+  if (config.prepareTask) {
+    config.prepareTask(task, options)
+  }
+
   if (options.plan) {
-    task.plans = [[preparePlan(options.plan, (planDefaults as BasePlanOptions[])[0] || {}, config)]]
+    task.plans = task.plans.concat([[preparePlan(options.plan, (planDefaults as BasePlanOptions[])[0] || {}, config)]])
   } else if (options.plans && Array.isArray(options.plans)) {
     // @ts-ignore
-    task.plans = options.plans.map((p: PlanInputOptions | PlanInputOptions[], idx: number) => {
+    task.plans = task.plans.concat(options.plans.map((p: PlanInputOptions | PlanInputOptions[], idx: number) => {
       if (!Array.isArray(p)) {
         if (Array.isArray(planDefaults)) {
           return [preparePlan(p, planDefaults[idx] || {}, config)]
@@ -280,24 +286,19 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
 
         return preparePlan(pl, planDefaults, config)
       })
-    })
+    }))
   } else if (options.plans) {
     console.error('Plans object is not an array')
   }
 
-  task.milestones = []
   if (options.milestones && Array.isArray(options.milestones)) {
-    task.milestones = (options.milestones as MilestoneOptions[]).map((m: MilestoneOptions) => {
+    task.milestones = task.milestones.concat((options.milestones as MilestoneOptions[]).map((m: MilestoneOptions) => {
       if (!Array.isArray(m)) {
         return [prepareMilestone(m, config)]
       }
 
       return m.map((ml: MilestoneOptions) => prepareMilestone(ml, config))
-    })
-  }
-
-  if (config.prepareTask) {
-    config.prepareTask(task, options)
+    }))
   }
 
   fillPlans(task)
