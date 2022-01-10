@@ -255,6 +255,10 @@ const prepareColumns = (task: TaskInputOptions, columns: ColumnOptions[], plans:
 
 const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOptions => {
   const task: TaskOptions = {}
+  task.properties = options
+  if (config.prepareTask) {
+    config.prepareTask(task, options)
+  }
 
   const planDefaults: BasePlanOptions | BasePlanOptions[] = config.planDefaults || {}
 

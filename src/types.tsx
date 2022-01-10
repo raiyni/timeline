@@ -124,6 +124,7 @@ export type TaskOptions  = obj & {
   milestones?: MilestoneOptions[][]
   id?: string
   labels?: { [key: string]: LabelOptions[] }
+  properties?: any
 }
 
 export type TaskInputOptions = obj & {
@@ -166,6 +167,7 @@ export interface TimelineOptions {
   highlights?: Highlight[]
   dateFormat?: string
   hoverEffects?: boolean
+  prepareTask?: (task: TaskOptions, options: TaskInputOptions) => {}
 }
 
 export interface Rect {
