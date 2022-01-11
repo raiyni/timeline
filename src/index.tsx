@@ -2,19 +2,9 @@
 // Must be the first import
 import "preact/debug"
 
-import { PointerCallback, TimelineOptions } from './types'
-import dayjs from 'dayjs'
 import { h } from 'preact'
-import minMax from 'dayjs/plugin/minMax'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { render } from 'preact'
 import Wrapper from "./wrapper"
-
-const addStyle = (() => {
-  const style = document.createElement('style');
-  document.head.append(style);
-  return (styleString: string) => style.textContent = styleString;
-})();
 
 export default class Timeline {
   target: any
@@ -28,10 +18,7 @@ export default class Timeline {
   }
   static SHA:string = process.env.GIT
 
-  constructor(id: string, data: any[] = [], config: TimelineOptions = {}) {
-    dayjs.extend(minMax)
-    dayjs.extend(customParseFormat)
-
+  constructor(id: string, data: any[] = [], config: any = {}) {
     if (id.indexOf('.') === 0) {
 
     } else {
@@ -40,31 +27,16 @@ export default class Timeline {
 
     this.target.innerHTML = ''
 
-    addStyle(`
-      .timeline-plan:hover {
-        filter: opacity(0.75);
-        pointer-events: fill;
-      }
-
-      .timeline-milestone {
-        pointer-events: visible;
-      }
-
-      .timeline-milestone:hover {
-        filter: opacity(0.65) drop-shadow(0 0 4px rgba(235, 210, 52, 1));
-
-      }
-    `)
 
     this.initialRender(data, config)
     console.log(this)
   }
 
-  initialRender(data: any[], config: TimelineOptions) {
+  initialRender(data: any[], config: any) {
     render(<Wrapper ref={(wrapper: any) => this.wrapper = wrapper} data={data} config={config} />, this.target)
   }
 
-  updateConfig(config: TimelineOptions) {
+  updateConfig(config: any) {
     if (this.wrapper) {
       this.wrapper.setState({
         config: config || {}
@@ -80,24 +52,11 @@ export default class Timeline {
     }
   }
 
-  update(data: any[], config: TimelineOptions) {
+  update(data: any[], config: any) {
     if (this.wrapper) {
       this.wrapper.setState({
         data: data,
         config: config || {}
-      })
-    }
-  }
-
-  on(key: string, callback: PointerCallback) {
-    if (this.wrapper) {
-      const events = {
-        ...this.wrapper.state.events
-      }
-
-      events[key] = callback
-      this.wrapper.setState({
-        events: events
       })
     }
   }
