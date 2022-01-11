@@ -125,6 +125,7 @@ export type TaskOptions  = obj & {
   id?: string
   labels?: { [key: string]: LabelOptions[] }
   properties?: any
+  over?: boolean
 }
 
 export type TaskInputOptions = obj & {

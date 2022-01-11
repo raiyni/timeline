@@ -14,6 +14,7 @@ interface State {
   height: number
   highlights: Highlight[]
   events: PointerEvents
+  overTasks: { [key: string]: boolean }
   x: (tick: string | Tick) => number
 }
 
@@ -28,6 +29,7 @@ export const DEFAULT_STATE: State = {
   height: 0,
   highlights: [],
   events: {},
+  overTasks: {},
   x: (tick: string | Tick) => 0
 }
 
@@ -121,6 +123,17 @@ export const reducer = (state: any, action: Action) => {
 
     case Actions.ADD_EVENT:
       return state
+
+    case Actions.SET_OVER_TASKS: {
+      const over = {
+        ...state.overTasks
+      }
+      over[action.payload.id] = action.payload.over
+      return {
+        ...state,
+        overTasks: over
+      }
+    }
   }
 
   return state

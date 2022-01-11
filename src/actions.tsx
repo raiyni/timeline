@@ -14,7 +14,8 @@ export enum Actions {
   TOGGLE_TASK,
   SET_HIGHLIGHTS,
   SET_EVENTS,
-  ADD_EVENT
+  ADD_EVENT,
+  SET_OVER_TASKS
 }
 
 export interface Action {
@@ -29,6 +30,10 @@ const createAction = (action: Actions, payload: any) => {
 
 export const changeView = (viewMode: VIEW_MODE): Action => {
   return createAction(Actions.CHANGE_VIEW, viewMode)
+}
+
+export const setOverTask = (id: string, over: boolean): Action => {
+  return createAction(Actions.SET_OVER_TASKS, {id, over})
 }
 
 export const setWidth = (width: number): Action => {

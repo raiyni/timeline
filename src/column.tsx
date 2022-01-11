@@ -5,7 +5,7 @@ import { Icon } from './svg';
 import { Icon as IconOptions } from './types';
 import { toggleTask } from './actions';
 import { useConfig } from './util/useConfig';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 const CollapseButton = ({collapsed, id} : {collapsed: boolean, id: string}) => {
   const store = useConfig()
@@ -107,12 +107,21 @@ const Label = ({ label, height, idx, row, task }: {label: LabelOptions, height: 
   )
 }
 
-const LabelSection = ({ task, field, idx }: {task: TaskOptions, field: string, idx: number}) => {
+const LabelSection = ({ task, field, idx}: {task: TaskOptions, field: string, idx: number}) => {
+  const store = useConfig()
+  const state = store.state
+
+  const [over, setOver] = useState(false)
+  useEffect(() => {
+    setOver(!!state.overTasks[task.id])
+  }, [state.overTasks[task.id]])
+
   return (
     <div style={{
-      borderTop: '2px solid black'
+      borderTop: '2px solid black',
+      backgroundColor: state.over ? 'blue' : 'inherit'
     }}>
-      {task.labels[field].map((label: LabelOptions, row: number) => <Label label={label} height={task.heights[row]} idx={idx} row={row} task={task}/>)}
+      {task.labels[field].map((label: LabelOptions, row: number) => <Label key={`section-${field}-row-${row}-${idx}`} label={label} height={task.heights[row]} idx={idx} row={row} task={task}/>)}
     </div>
   )
 }
@@ -144,7 +153,7 @@ export const Column = ({ column, gridRef, forwardedRef, idx }: { column: ColumnO
         flexDirection: 'column',
         whiteSpace: 'nowrap'
       }}>
-        {state.tasks.map((task: TaskOptions) => <LabelSection task={task} field={column.field} idx={idx}/>)}
+        {state.tasks.map((task: TaskOptions) => <LabelSection task={task} field={column.field} idx={idx} key={`col-${task.id}-section-${idx}-${column.field}`} />)}
         <div><div style={{height: 40}}> </div></div>
       </div>
     </div>

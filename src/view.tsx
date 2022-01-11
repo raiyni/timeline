@@ -82,7 +82,7 @@ export function View({ data, config, ...events }: ViewProps) {
           }}
         >
           {columns.map((c, idx) => (
-            <Column gridRef={gridRef} forwardedRef={(dom: any) => (columnsRef.current[idx] = dom)} column={c} idx={idx} />
+            <Column gridRef={gridRef} forwardedRef={(dom: any) => (columnsRef.current[idx] = dom)} column={c} idx={idx} key={'column' + idx} />
           ))}
         </div>
 

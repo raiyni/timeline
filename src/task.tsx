@@ -4,6 +4,7 @@ import { Milestone } from './milestone';
 import { Plan } from './plan';
 import { h } from 'preact';
 import { useConfig } from './util/useConfig';
+import { setOverTask } from './actions';
 
 export const Task = ({ task, idx }: { task: TaskOptions, idx: number}) => {
   const store = useConfig()
@@ -14,6 +15,8 @@ export const Task = ({ task, idx }: { task: TaskOptions, idx: number}) => {
       width: state.scrollWidth,
       borderTop: '2px solid black'
     }}
+    onPointerOver={(e) => { store.dispatch(setOverTask(task.id, true))}}
+    onPointerOut={(e) => { store.dispatch(setOverTask(task.id, false))}}
     >
       {task.plans.map((plans: PlanOptions[], row: number) => {
         const milestones = task.milestones[row]
