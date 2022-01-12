@@ -5,6 +5,7 @@ import { Column } from './column'
 import { Grid } from './grid'
 import { Header } from './header'
 import { Config, DEFAULT_STATE, reducer } from './store'
+import { Tooltip } from './tooltip'
 import { ViewProps } from './types'
 import { useDebounce } from './util/useDebounce'
 import { useProcessData } from './util/useProcessData'
@@ -116,6 +117,8 @@ export function View({ data, config, ...events }: ViewProps) {
             <Grid forwardedRef={gridRef} />
           </div>
         </div>
+
+        <Tooltip />
       </div>
     </Config.Provider>
   )

@@ -1,8 +1,8 @@
 import { useEffect } from "preact/hooks"
 
-type eventCallback = (e?: CustomEvent) => {}
+export type EventCallback = (e?: CustomEvent) => {}
 
-const subscribe = (key: string, callback: eventCallback) => {
+const subscribe = (key: string, callback: EventCallback) => {
   if (!key) return undefined
   if (!callback) return undefined
 
@@ -13,7 +13,7 @@ const subscribe = (key: string, callback: eventCallback) => {
   }
 }
 
-export const dispatch = (key: string, detail: any) => {
+export const publish = (key: string, detail: any = {}) => {
   const event = new CustomEvent(key, {
     detail
   })
@@ -21,10 +21,10 @@ export const dispatch = (key: string, detail: any) => {
   document.dispatchEvent(event)
 }
 
-const useBus = (key: string, callback: eventCallback, deps: any[] = []) => {
+const useBus = (key: string, callback: EventCallback, deps: any[] = []) => {
   useEffect(() => subscribe(key, callback), deps)
 
-  return dispatch
+  return publish
 }
 
 export default useBus
