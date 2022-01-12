@@ -1,5 +1,5 @@
 import { Component } from "preact";
-import { View } from "./view";
+import { View } from "./view-context";
 
 import { h } from 'preact'
 
@@ -15,9 +15,8 @@ export default class Wrapper extends Component<any, any> {
   }
 
   render() {
-    const events = this.state.events
     return (
-      <View data={this.state.data} config={this.state.config} {...events} />
+      <View />
     )
   }
 }
