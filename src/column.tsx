@@ -5,7 +5,8 @@ import { Icon } from './svg';
 import { Icon as IconOptions } from './types';
 import { toggleTask } from './actions';
 import { useConfig } from './util/useConfig';
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
+import { useEvent } from './util/useBus';
 
 const CollapseButton = ({collapsed, id} : {collapsed: boolean, id: string}) => {
   const store = useConfig()
@@ -108,10 +109,21 @@ const Label = ({ label, height, idx, row, task }: {label: LabelOptions, height: 
 }
 
 const LabelSection = ({ task, field, idx }: {task: TaskOptions, field: string, idx: number}) => {
+  const store = useConfig()
+  const state = store.state
+
+  const eventTarget = useRef(null)
+
+  Object.entries(state.events).forEach(([key, callback]) => {
+    useEvent(key, (e) => callback(e, task), eventTarget.current)
+  })
+
   return (
     <div style={{
       borderTop: '2px solid black'
-    }}>
+    }}
+    ref={eventTarget}
+    >
       {task.labels[field].map((label: LabelOptions, row: number) => <Label label={label} height={task.heights[row]} idx={idx} row={row} task={task}/>)}
     </div>
   )

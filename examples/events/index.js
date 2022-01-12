@@ -563,6 +563,9 @@ var options = {
 }
 
 var timeline = new Timeline('test1', tasks, options)
+timeline.on('pointermove', function(e, task) {
+  console.log(task)
+})
 
 
 

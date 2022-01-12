@@ -14,6 +14,7 @@ export enum POINTER_EVENT {
   pointermove = 'pointermove'
 }
 
+
 export type Style = {[key: string]: any;}
 export type obj = { [key: string]: any }
 export type Tick = dayjs.Dayjs
@@ -191,7 +192,7 @@ export interface LabelBaseOptions {
 
 export type LabelOptions = LabelBaseOptions & Alignment
 
-export type PointerCallback = (e: PointerEvent, task: TaskOptions, target: PlanOptions | MilestoneOptions) => {}
+export type PointerCallback = (e: PointerEvent, task: TaskOptions) => {}
 
 export type PointerEvents =  { [key in POINTER_EVENT]?: PointerCallback }
 

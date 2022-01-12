@@ -1,10 +1,9 @@
-import { Highlights } from './highlights';
+import { h } from 'preact';
 import { Ref } from 'preact/hooks';
+import { Highlights } from './highlights';
 import { Task } from './task';
 import { TaskOptions } from './types';
-import { h } from 'preact'
 import { useConfig } from './util/useConfig';
-import { useEffect } from 'preact/hooks';
 
 export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
   const store = useConfig()
@@ -18,7 +17,7 @@ export const Grid = ({ forwardedRef }: {forwardedRef: Ref<any> }) => {
     }}
     >
       <Highlights />
-      {tasks.map((task: TaskOptions) => <Task task={task} key={task.id}/>)}
+      {tasks.map((task: TaskOptions, idx: number) => <Task task={task} key={task.id} idx={idx} />)}
       <div style={{ height: 20 }}></div>
 
     </div>
