@@ -1,6 +1,6 @@
-import { Highlight,  PointerCallback,  TaskOptions, Tick, VIEW_MODE } from "./types"
+import { Highlight, PointerCallback, TaskOptions, Tick, VIEW_MODE } from './types'
 
-import  dayjs  from 'dayjs';
+import dayjs from 'dayjs'
 
 export enum Actions {
   CHANGE_VIEW,
@@ -21,7 +21,6 @@ export interface Action {
   type: Actions
   payload: any
 }
-
 
 const createAction = (action: Actions, payload: any) => {
   return { type: action, payload }
@@ -48,7 +47,7 @@ export const setTasks = (data: TaskOptions[]): Action => {
 }
 
 export const setDates = (minDate: Tick, maxDate: Tick): Action => {
-  return createAction(Actions.SET_DATES, {minDate, maxDate})
+  return createAction(Actions.SET_DATES, { minDate, maxDate })
 }
 
 export const setScrollWidth = (width: number): Action => {
@@ -72,15 +71,10 @@ export const setEvents = (events: any): Action => {
 }
 
 export const addEvent = (key: string, callback: PointerCallback): Action => {
-  return createAction(Actions.ADD_EVENT, {key, callback})
+  return createAction(Actions.ADD_EVENT, { key, callback })
 }
 
-export const interpolate = (
-  width: number,
-  start: Tick,
-  end: Tick,
-  input: Tick
-): number => {
+export const interpolate = (width: number, start: Tick, end: Tick, input: Tick): number => {
   const distance = end.diff(start)
   const inputDistance = input.diff(start)
   const ratio = inputDistance / distance

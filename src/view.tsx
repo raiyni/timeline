@@ -25,7 +25,8 @@ export function View({ data, config, ...events }: ViewProps) {
 
   const width = useResizeObserver(bodyRef)
 
-  useDebounce(() => {
+  useDebounce(
+    () => {
       if (leftRef.current == null) {
         return
       }
@@ -46,7 +47,6 @@ export function View({ data, config, ...events }: ViewProps) {
     })
     return () => gridRef.current.removeEventListener('scroll', scroll)
   }, [headerRef, gridRef])
-
 
   useEffect(() => {
     dispatch(setEvents(events))
@@ -69,7 +69,7 @@ export function View({ data, config, ...events }: ViewProps) {
           'flex-direction': 'row',
           'align-items': 'stretch',
           overflow: 'hidden',
-          'background-color': 'white',
+          'background-color': 'white'
         }}
       >
         {/* Left side */}
@@ -79,7 +79,7 @@ export function View({ data, config, ...events }: ViewProps) {
             display: 'flex',
             flexDirection: 'row',
             overflow: 'hidden',
-            flexShrink: 0,
+            flexShrink: 0
           }}
         >
           {columns.map((c, idx) => (
@@ -92,7 +92,7 @@ export function View({ data, config, ...events }: ViewProps) {
           style={{
             display: 'flex',
             flex: '1 1 0%',
-            overflow: 'hidden',
+            overflow: 'hidden'
           }}
         >
           <div
@@ -100,7 +100,7 @@ export function View({ data, config, ...events }: ViewProps) {
             style={{
               overflow: 'hidden',
               borderRight: '1px solid #000',
-              position: 'relative',
+              position: 'relative'
             }}
           ></div>
           <div
@@ -110,7 +110,7 @@ export function View({ data, config, ...events }: ViewProps) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'stretch',
-              overflow: 'hidden',
+              overflow: 'hidden'
             }}
           >
             <Header forwardedRef={headerRef} />

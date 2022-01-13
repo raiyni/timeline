@@ -1,10 +1,9 @@
-import { Fragment, h } from 'preact'
-import { TaskOptions, Tick, VIEW_MODE } from './types'
-import { deinterpolate, interpolate, setDates, setScrollWidth, setX, updateTicks } from './actions'
-import { useContext, useEffect } from 'preact/hooks'
-
-import { Config } from './store'
 import dayjs from 'dayjs'
+import { Fragment, h } from 'preact'
+import { useContext, useEffect } from 'preact/hooks'
+import { deinterpolate, interpolate, setDates, setScrollWidth, setX, updateTicks } from './actions'
+import { Config } from './store'
+import { TaskOptions, Tick, VIEW_MODE } from './types'
 
 const getModeWidth = (viewMode: VIEW_MODE): number => {
   switch (viewMode) {
@@ -69,9 +68,7 @@ const startDate = (viewMode: VIEW_MODE, date: Tick) => {
   return date.subtract(1, 'day')
 }
 
-const getBoundingDates = (
-  tasks: TaskOptions[]
-): { minDate: Tick; maxDate: Tick } => {
+const getBoundingDates = (tasks: TaskOptions[]): { minDate: Tick; maxDate: Tick } => {
   const milestones = tasks.map((t) => t.milestones).flat(4)
   const plans = tasks.map((t) => t.plans).flat(4)
   const milestoneDates = milestones.map((m: any) => m.date || [m.start, m.end]).flat(2)
@@ -125,7 +122,6 @@ export const Axis = (props: any) => {
     store.dispatch(setDates(minDate, maxDate))
     store.dispatch(updateTicks(ticks))
   }, [state.tasks, state.width, state.viewMode])
-
 
   return <Fragment>{props.children}</Fragment>
 }

@@ -18,7 +18,7 @@ import {
   isImage,
   isLine,
   isShape,
-  obj,
+  obj
 } from './../types'
 import { clamp, uid } from './math'
 
@@ -42,11 +42,11 @@ const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions, conf
       ...defaults,
       label: input,
       labelStyle: {
-        ...defaults.labelStyle,
+        ...defaults.labelStyle
       },
       backgroundStyle: {
-        ...defaults.backgroundStyle,
-      },
+        ...defaults.backgroundStyle
+      }
     }
   }
 
@@ -56,12 +56,12 @@ const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions, conf
     ...input,
     labelStyle: {
       ...defaults.labelStyle,
-      ...input.labelStyle,
+      ...input.labelStyle
     },
     backgroundStyle: {
       ...defaults.backgroundStyle,
-      ...input.backgroundStyle,
-    },
+      ...input.backgroundStyle
+    }
   }
 
   if (input.icons || defaults.icons) {
@@ -84,13 +84,13 @@ const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions, conf
     progressStyle: {
       fill: '#f2c329',
       ...defaults.progressStyle,
-      ...options.progressStyle,
+      ...options.progressStyle
     },
     backgroundStyle: {
       fill: '#acacac',
       ...defaults.backgroundStyle,
-      ...options.backgroundStyle,
-    },
+      ...options.backgroundStyle
+    }
   }
 
   if (options.label) {
@@ -139,7 +139,7 @@ const prepareLine = (source: Line, config: TimelineOptions): Line => {
       ...source.style
     },
     start: dayjsF(source.start as string, source.dateFormat || config.dateFormat),
-    end: dayjsF(source.end as string, source.dateFormat || config.dateFormat),
+    end: dayjsF(source.end as string, source.dateFormat || config.dateFormat)
   }
 }
 
@@ -152,7 +152,7 @@ const prepareArrow = (source: Arrow, config: TimelineOptions): Arrow => {
       ...source.style
     },
     start: dayjsF(source.start as string, source.dateFormat || config.dateFormat),
-    end: dayjsF(source.end as string, source.dateFormat || config.dateFormat),
+    end: dayjsF(source.end as string, source.dateFormat || config.dateFormat)
   }
 
   return arrow
@@ -179,7 +179,7 @@ const prepareMilestone = (options: MilestoneOptions, config: TimelineOptions): M
     return {
       x: options.x,
       y: options.y,
-      ...prepareIcon(options, config),
+      ...prepareIcon(options, config)
     }
   }
 
@@ -198,8 +198,7 @@ const prepareMilestone = (options: MilestoneOptions, config: TimelineOptions): M
   return options
 }
 
-
-const prepareColumns = (task: TaskInputOptions,  config: TimelineOptions): { [key: string]: LabelOptions[] } => {
+const prepareColumns = (task: TaskInputOptions, config: TimelineOptions): { [key: string]: LabelOptions[] } => {
   const labels: { [key: string]: LabelOptions[] } = {}
   const columns = config.columns
 
@@ -210,7 +209,7 @@ const prepareColumns = (task: TaskInputOptions,  config: TimelineOptions): { [ke
       options = [options]
     }
 
-    (options as obj[]).forEach((v: any, idx: number) => {
+    ;(options as obj[]).forEach((v: any, idx: number) => {
       if (typeof v == 'string' || typeof v == 'number') {
         v = { label: v }
       }
@@ -246,33 +245,37 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
     task.plans = task.plans.concat([[preparePlan(options.plan, (planDefaults as BasePlanOptions[])[0] || {}, config)]])
   } else if (options.plans && Array.isArray(options.plans)) {
     // @ts-ignore
-    task.plans = task.plans.concat(options.plans.map((p: PlanInputOptions | PlanInputOptions[], idx: number) => {
-      if (!Array.isArray(p)) {
-        if (Array.isArray(planDefaults)) {
-          return [preparePlan(p, planDefaults[idx] || {}, config)]
+    task.plans = task.plans.concat(
+      options.plans.map((p: PlanInputOptions | PlanInputOptions[], idx: number) => {
+        if (!Array.isArray(p)) {
+          if (Array.isArray(planDefaults)) {
+            return [preparePlan(p, planDefaults[idx] || {}, config)]
+          }
+
+          return [preparePlan(p, planDefaults, config)]
         }
 
-        return [preparePlan(p, planDefaults, config)]
-      }
+        return p.map((pl: PlanInputOptions) => {
+          if (Array.isArray(planDefaults)) {
+            return preparePlan(pl, planDefaults[idx] || {}, config)
+          }
 
-      return p.map((pl: PlanInputOptions) => {
-        if (Array.isArray(planDefaults)) {
-          return preparePlan(pl, planDefaults[idx] || {}, config)
-        }
-
-        return preparePlan(pl, planDefaults, config)
+          return preparePlan(pl, planDefaults, config)
+        })
       })
-    }))
+    )
   }
 
   if (options.milestones && Array.isArray(options.milestones)) {
-    task.milestones = task.milestones.concat((options.milestones as MilestoneOptions[]).map((m: MilestoneOptions) => {
-      if (!Array.isArray(m)) {
-        return [prepareMilestone(m, config)]
-      }
+    task.milestones = task.milestones.concat(
+      (options.milestones as MilestoneOptions[]).map((m: MilestoneOptions) => {
+        if (!Array.isArray(m)) {
+          return [prepareMilestone(m, config)]
+        }
 
-      return m.map((ml: MilestoneOptions) => prepareMilestone(ml, config))
-    }))
+        return m.map((ml: MilestoneOptions) => prepareMilestone(ml, config))
+      })
+    )
   }
 
   if (config.columns && config.columns.length > 0) {
@@ -299,7 +302,10 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
 const maxRows = (task: TaskOptions): number => {
   let max = Math.max(task.plans.length, task.milestones.length)
   if (task.labels) {
-    const maxRows = Math.max.apply(null, Object.values(task.labels).map(o => o.length))
+    const maxRows = Math.max.apply(
+      null,
+      Object.values(task.labels).map((o) => o.length)
+    )
     return Math.max(max, maxRows)
   }
 
@@ -334,7 +340,7 @@ const fillColumns = (task: TaskOptions, config: TimelineOptions) => {
   const max = maxRows(task)
 
   const columnOptions: { [key: string]: ColumnOptions } = {}
-  config.columns.forEach(c => columnOptions[c.field] = c)
+  config.columns.forEach((c) => (columnOptions[c.field] = c))
 
   Object.entries(task.labels).forEach(([key, value]) => {
     const options = columnOptions[key]
@@ -356,8 +362,18 @@ const fillColumns = (task: TaskOptions, config: TimelineOptions) => {
 }
 
 const createTaskHeights = (task: TaskOptions): number[] => {
-  const planHeights = task.plans.map((pos: PlanOptions[]) => Math.max.apply(null, pos.map((p: PlanOptions) => p.height)))
-  const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) => Math.max.apply(null, pos.map((p: any) => p.height || 20)))
+  const planHeights = task.plans.map((pos: PlanOptions[]) =>
+    Math.max.apply(
+      null,
+      pos.map((p: PlanOptions) => p.height)
+    )
+  )
+  const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) =>
+    Math.max.apply(
+      null,
+      pos.map((p: any) => p.height || 20)
+    )
+  )
 
   return planHeights.map((n: number, idx: number) => Math.max(clampHeight(n), clampHeight(milestoneHeights[idx])))
 }
@@ -387,7 +403,14 @@ const clampHeight = (h: number) => {
 
 export const calculateHeight = (tasks: TaskOptions[]) => {
   // 68 = header (30) + fake row (20) + scrollbar (18)
-  return 68 +tasks.map((t: TaskOptions) => t.collapsed ? [t.heights[0]] : t.heights).flat(3).reduce((a: number, b:number) => a + b) + tasks.length * 2
+  return (
+    68 +
+    tasks
+      .map((t: TaskOptions) => (t.collapsed ? [t.heights[0]] : t.heights))
+      .flat(3)
+      .reduce((a: number, b: number) => a + b) +
+    tasks.length * 2
+  )
 }
 
 export const useProcessData = (dispatch: (_action: Action) => void, data: TaskInputOptions[], config: TimelineOptions) => {

@@ -1,39 +1,37 @@
 // Must be the first import
-// Must be the first import
-import "preact/debug"
+import 'preact/debug'
 
-import { PointerCallback, TimelineOptions } from './types'
 import dayjs from 'dayjs'
-import { h } from 'preact'
-import minMax from 'dayjs/plugin/minMax'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { render } from 'preact'
-import Wrapper from "./wrapper"
+import minMax from 'dayjs/plugin/minMax'
+import { h, render } from 'preact'
+import { PointerCallback, TimelineOptions } from './types'
+import Wrapper from './wrapper'
+
 
 const addStyle = (() => {
-  const style = document.createElement('style');
-  document.head.append(style);
-  return (styleString: string) => style.textContent = styleString;
-})();
+  const style = document.createElement('style')
+  document.head.append(style)
+  return (styleString: string) => (style.textContent = styleString)
+})()
 
 export default class Timeline {
   target: any
   wrapper: any
 
-  static version:string = process.env.VERSION
+  static version: string = process.env.VERSION
   static git: any = {
     sha: process.env.SHA,
     tag: process.env.TAG,
     date: process.env.COMMIT_DATE
   }
-  static SHA:string = process.env.GIT
+  static SHA: string = process.env.GIT
 
   constructor(id: string, data: any[] = [], config: TimelineOptions = {}) {
     dayjs.extend(minMax)
     dayjs.extend(customParseFormat)
 
     if (id.indexOf('.') === 0) {
-
     } else {
       this.target = document.getElementById(id)
     }
@@ -61,7 +59,7 @@ export default class Timeline {
   }
 
   initialRender(data: any[], config: TimelineOptions) {
-    render(<Wrapper ref={(wrapper: any) => this.wrapper = wrapper} data={data} config={config} />, this.target)
+    render(<Wrapper ref={(wrapper: any) => (this.wrapper = wrapper)} data={data} config={config} />, this.target)
   }
 
   updateConfig(config: TimelineOptions) {

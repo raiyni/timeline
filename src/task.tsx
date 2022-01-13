@@ -6,7 +6,6 @@ import { MilestoneOptions, PlanOptions, TaskOptions } from './types'
 import { useEvent } from './util/useBus'
 import { useConfig } from './util/useConfig'
 
-
 export const Task = ({ task, idx }: { task: TaskOptions; idx: number }) => {
   const store = useConfig()
   const state = store.state

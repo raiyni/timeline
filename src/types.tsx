@@ -1,11 +1,11 @@
-import dayjs from "dayjs"
+import dayjs from 'dayjs'
 
 export enum VIEW_MODE {
   DAY = 'day',
   WEEK = 'week',
   MONTH = 'month',
   YEAR = 'year',
-  FIT = 'fit',
+  FIT = 'fit'
 }
 
 export enum POINTER_EVENT {
@@ -14,8 +14,7 @@ export enum POINTER_EVENT {
   pointermove = 'pointermove'
 }
 
-
-export type Style = {[key: string]: any;}
+export type Style = { [key: string]: any }
 export type obj = { [key: string]: any }
 export type Tick = dayjs.Dayjs
 
@@ -80,7 +79,7 @@ export const isArrow = (obj: any): obj is Arrow => {
   return obj.shape === ShapeType.ARROW
 }
 
-export interface Shape  {
+export interface Shape {
   date?: string | Tick
   shape?: ShapeType
   width?: number
@@ -117,7 +116,7 @@ export type MilestoneOptions = {
   y?: number
 } & (Icon | Line | Arrow)
 
-export type TaskOptions  = obj & {
+export type TaskOptions = obj & {
   collapsible?: boolean
   collapsed?: boolean
   heights?: number[]
@@ -131,9 +130,9 @@ export type TaskOptions  = obj & {
 export type TaskInputOptions = obj & {
   collapsible?: boolean
   collapsed?: boolean
-  plan ?: PlanInputOptions
-  plans ?: PlanInputOptions[] | PlanInputOptions[][]
-  milestones ?: MilestoneOptions[] | MilestoneOptions[][]
+  plan?: PlanInputOptions
+  plans?: PlanInputOptions[] | PlanInputOptions[][]
+  milestones?: MilestoneOptions[] | MilestoneOptions[][]
 }
 
 export interface ColumnOptions {
@@ -162,8 +161,8 @@ export interface Highlight {
 export interface TimelineOptions {
   columns?: Array<ColumnOptions>
   planDefaults?: BasePlanOptions | BasePlanOptions[]
-  viewMode ?: VIEW_MODE
-  taskMargin ?: number
+  viewMode?: VIEW_MODE
+  taskMargin?: number
   wrapper?: any
   highlights?: Highlight[]
   dateFormat?: string
@@ -180,7 +179,7 @@ export interface Rect {
 }
 
 export interface Offset {
-  x: number,
+  x: number
   y: number
 }
 
@@ -195,10 +194,9 @@ export type LabelOptions = LabelBaseOptions & Alignment
 
 export type PointerCallback = (e: PointerEvent, task: TaskOptions) => {}
 
-export type PointerEvents =  { [key in POINTER_EVENT]?: PointerCallback }
+export type PointerEvents = { [key in POINTER_EVENT]?: PointerCallback }
 
 export type ViewProps = {
   data?: TaskInputOptions[]
   config?: TimelineOptions
 } & PointerEvents
-
