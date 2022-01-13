@@ -370,20 +370,12 @@ const createTaskHeights = (task: TaskOptions): number[] => {
     )
   )
 
-  console.log(planHeights)
-
   const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) =>
     Math.max.apply(
       null,
       pos.map((p: any) => p.height || 20)
     )
   )
-
-  // const labelHeights = Object.values(task.labels).map((pos: MilestoneOptions[]) =>
-  //     pos.map((p: any) => p.height || 0)
-  // )
-
-  // console.log(labelHeights)
 
   return planHeights.map((n: number, idx: number) => Math.max(clampHeight(n), clampHeight(milestoneHeights[idx])))
 }
