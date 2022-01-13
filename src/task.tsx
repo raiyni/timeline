@@ -17,13 +17,17 @@ export const Task = ({ task, idx }: { task: TaskOptions; idx: number }) => {
     useEvent(key, (e) => callback(e, task), eventTarget.current)
   })
 
+  console.log(task.margin)
+
   return (
     <div
       className="timeline-task"
       data-task-idx={idx}
       style={{
         width: state.scrollWidth,
-        borderTop: '2px solid black'
+        borderTop: '2px solid black',
+        paddingBottom: task.padding.paddingBottom,
+        paddingTop: task.padding.paddingTop
       }}
       ref={eventTarget}
     >

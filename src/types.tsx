@@ -123,6 +123,7 @@ export type TaskOptions  = obj & {
   heights?: number[]
   plans?: PlanOptions[][]
   milestones?: MilestoneOptions[][]
+  padding?: Style
   id?: string
   labels?: { [key: string]: LabelOptions[] }
   properties?: any
@@ -131,6 +132,7 @@ export type TaskOptions  = obj & {
 export type TaskInputOptions = obj & {
   collapsible?: boolean
   collapsed?: boolean
+  padding?: PaddingInput
   plan ?: PlanInputOptions
   plans ?: PlanInputOptions[] | PlanInputOptions[][]
   milestones ?: MilestoneOptions[] | MilestoneOptions[][]
@@ -162,8 +164,8 @@ export interface Highlight {
 export interface TimelineOptions {
   columns?: Array<ColumnOptions>
   planDefaults?: BasePlanOptions | BasePlanOptions[]
+  taskDefaults ?: TaskOptions
   viewMode ?: VIEW_MODE
-  taskMargin ?: number
   wrapper?: any
   highlights?: Highlight[]
   dateFormat?: string
@@ -189,6 +191,8 @@ export interface LabelBaseOptions {
   backgroundStyle?: any
   icons?: Icon | Icon[]
 }
+
+export type PaddingInput = number | {[key: string]: number }
 
 export type LabelOptions = LabelBaseOptions & Alignment
 

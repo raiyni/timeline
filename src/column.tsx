@@ -120,7 +120,8 @@ const LabelSection = ({ task, field, idx }: {task: TaskOptions, field: string, i
 
   return (
     <div style={{
-      borderTop: '2px solid black'
+      borderTop: '2px solid black',
+      ...task.padding
     }}
     ref={eventTarget}
     >
