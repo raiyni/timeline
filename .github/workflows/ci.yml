@@ -12,6 +12,18 @@ jobs:
       SHA8: ${GITHUB_SHA::8}
 
     steps:
+      - name: Tag
+        uses: Actions-R-Us/actions-tagger@latest
+        with:
+          publish_latest_tag: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "my_tag"
+          commit-sha: abc123
+
       - name: Checkout
         uses: actions/checkout@v2.3.1
         with:
@@ -39,6 +51,5 @@ jobs:
           name: Master Release
           draft: false
           prerelease: true
-          commit: main
-          tag: main
+          tag: latest
 
