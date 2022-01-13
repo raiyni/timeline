@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SHA8: ${GITHUB_SHA::8}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-      - run: yarn install --frozen-lockfile
-      - run: yarn build:all
+        run: yarn install --frozen-lockfile
+        run: yarn build:all
       - name: Zip
         uses: thedoctor0/zip-release@master
         with:
