@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { Fragment, h } from 'preact'
 import { useContext, useEffect } from 'preact/hooks'
-import { deinterpolate, interpolate, setDates, setScrollWidth, setX, updateTicks } from './actions'
+import { deinterpolate, interpolate, setDates, setScrollWidth, setX, setYears, updateTicks } from './actions'
 import { Config } from './store'
 import { TaskOptions, Tick, VIEW_MODE } from './types'
 
@@ -112,15 +112,20 @@ export const Axis = (props: any) => {
 
     let currentTick = nextDate(state.viewMode, minDate, step)
     const referenceDate = state.viewMode == VIEW_MODE.FIT ? maxDate : currentTick.clone()
+    const years = []
     while (interpolate(modeWidth, minDate, referenceDate, currentTick) < scrollWidth) {
       ticks.push(currentTick)
-      currentTick = nextDate(state.viewMode, currentTick, step)
+      const nextTick = nextDate(state.viewMode, currentTick, step)
+
+      if (nextTick.year() != currentTick.year()) years.push(nextTick.year())
+      currentTick = nextTick
     }
 
     store.dispatch(setX(modeWidth, minDate, referenceDate))
     store.dispatch(setScrollWidth(scrollWidth))
     store.dispatch(setDates(minDate, maxDate))
     store.dispatch(updateTicks(ticks))
+    store.dispatch(setYears(years))
   }, [state.tasks, state.width, state.viewMode])
 
   return <Fragment>{props.children}</Fragment>

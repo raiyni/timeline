@@ -15,6 +15,7 @@ interface State {
   highlights: Highlight[]
   events: PointerEvents
   target?: EventTarget
+  years?: number[]
   x: (tick: string | Tick) => number
 }
 
@@ -29,6 +30,7 @@ export const DEFAULT_STATE: State = {
   height: 0,
   highlights: [],
   events: {},
+  years: [],
   x: (tick: string | Tick) => 0
 }
 
@@ -120,8 +122,12 @@ export const reducer = (state: any, action: Action) => {
       }
     }
 
-    case Actions.ADD_EVENT:
-      return state
+    case Actions.SET_YEARS: {
+      return {
+        ...state,
+        years: action.payload
+      }
+    }
   }
 
   return state

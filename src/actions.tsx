@@ -14,7 +14,8 @@ export enum Actions {
   TOGGLE_TASK,
   SET_HIGHLIGHTS,
   SET_EVENTS,
-  ADD_EVENT
+  ADD_EVENT,
+  SET_YEARS
 }
 
 export interface Action {
@@ -72,6 +73,10 @@ export const setEvents = (events: any): Action => {
 
 export const addEvent = (key: string, callback: PointerCallback): Action => {
   return createAction(Actions.ADD_EVENT, { key, callback })
+}
+
+export const setYears = (years: number[]): Action => {
+  return createAction(Actions.SET_YEARS, years)
 }
 
 export const interpolate = (width: number, start: Tick, end: Tick, input: Tick): number => {
