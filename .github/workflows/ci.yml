@@ -33,13 +33,13 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           type: zip
-          filename: timeline-${SHA8}.zip
+          filename: timeline-${{ SHA8 }}.zip
           path: dist
 
       - name: Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: timeline-${SHA8}.zip
+          artifacts: timeline-${{ SHA8 }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           name: Master Release
