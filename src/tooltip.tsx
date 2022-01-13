@@ -14,7 +14,7 @@ export const Tooltip = () => {
   })
 
   const moveTooltip = useCallback((e: any) => {
-    setState((s) => ({ ...s, x: e.detail.clientX, y: e.detail.clientY }))
+    setState((s) => ({ ...s, x: e.detail.x, y: e.detail.x }))
   }, [])
 
   const toggleTooltip = useCallback((e: any) => {
