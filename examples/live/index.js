@@ -146,7 +146,9 @@ var tasks = [
             fill: 'red',
             stroke: 'red'
           }
-        },
+        }
+      ],
+      [
         {
           shape: 'square',
           date: '12-17-2019',
@@ -159,11 +161,13 @@ var tasks = [
         {
           shape: 'dash',
           date: '02-20-2020'
-        },
+        }
+      ],
+      [
         {
           start: '02-30-2020',
           end: '03-09-2020'
-        },
+        }
       ]
     ]
   },

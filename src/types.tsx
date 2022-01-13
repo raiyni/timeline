@@ -169,6 +169,7 @@ export interface TimelineOptions {
   dateFormat?: string
   hoverEffects?: boolean
   prepareTask?: (options: TaskInputOptions) => {}
+  processTask?: (options: TaskOptions) => {}
 }
 
 export interface Rect {

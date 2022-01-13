@@ -198,21 +198,16 @@ const prepareMilestone = (options: MilestoneOptions, config: TimelineOptions): M
   return options
 }
 
-const prepareColumns = (task: TaskInputOptions, columns: ColumnOptions[], plans: number, config: TimelineOptions): { [key: string]: LabelOptions[] } => {
+
+const prepareColumns = (task: TaskInputOptions,  config: TimelineOptions): { [key: string]: LabelOptions[] } => {
   const labels: { [key: string]: LabelOptions[] } = {}
-  const columnOptions: { [key: string]: ColumnOptions } = {}
+  const columns = config.columns
 
   columns.forEach((c: ColumnOptions) => {
-    columnOptions[c.field] = c
-
     let options = task[c.field] || []
 
     if (!Array.isArray(options)) {
       options = [options]
-    }
-
-    if (options.length < plans) {
-      options = options.concat((new Array(plans - options.length)).fill({}))
     }
 
     (options as obj[]).forEach((v: any, idx: number) => {
@@ -229,25 +224,6 @@ const prepareColumns = (task: TaskInputOptions, columns: ColumnOptions[], plans:
     })
 
     labels[c.field] = options
-  })
-
-  const maxRows = Math.max.apply(null, Object.values(labels).map(o => o.length))
-  Object.entries(labels).forEach(([key, value]) => {
-    const options = columnOptions[key]
-    if (value.length < maxRows) {
-      const diff = maxRows - value.length
-      const startIdx = value.length
-
-      labels[key] = value.concat((new Array(diff)).fill({}))
-      for (let idx = startIdx; idx < labels[key].length; idx++) {
-        let defaults = options.defaults || {}
-        if (Array.isArray(defaults)) {
-          defaults = defaults[idx] || {}
-        }
-
-        labels[key][idx] = prepareLabel(labels[key][idx], defaults as LabelOptions, config)
-      }
-    }
   })
 
   return labels
@@ -299,17 +275,21 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
     }))
   }
 
-  fillPlans(task)
-  fillMilestones(task)
-
   if (config.columns && config.columns.length > 0) {
-    task.labels = prepareColumns(options, config.columns, task.plans.length, config)
+    task.labels = prepareColumns(options, config)
+  }
+
+  if (config.processTask) {
+    config.processTask(task)
   }
 
   fillPlans(task)
   fillMilestones(task)
+  fillColumns(task, config)
 
   task.heights = createTaskHeights(task)
+
+  console.log(task)
 
   task.collapsed = options.collapsed
   task.collapsible = options.collapsible
@@ -318,30 +298,63 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
   return task
 }
 
-const fillPlans = (task: TaskOptions) => {
+const maxRows = (task: TaskOptions): number => {
   let max = Math.max(task.plans.length, task.milestones.length)
   if (task.labels) {
     const maxRows = Math.max.apply(null, Object.values(task.labels).map(o => o.length))
-    max = Math.max(max, maxRows)
+    return Math.max(max, maxRows)
   }
 
+  return max
+}
+
+const fill = <T extends unknown>(length: number, filler: () => T): T[] => {
+  return Array.from({ length }, filler)
+}
+
+const fillPlans = (task: TaskOptions) => {
+  const max = maxRows(task)
+
   if (max > task.plans.length) {
-    const fill: PlanOptions[][] = Array.from({ length: max - task.plans.length }, (): PlanOptions[] => [])
-    task.plans = (task.plans as PlanOptions[][]).concat(fill)
+    task.plans = task.plans.concat(fill(max - task.plans.length, () => []))
   }
 }
 
 const fillMilestones = (task: TaskOptions) => {
-  let max = Math.max(task.plans.length, task.milestones.length)
-  if (task.labels) {
-    const maxRows = Math.max.apply(null, Object.values(task.labels).map(o => o.length))
-    max = Math.max(max, maxRows)
-  }
+  const max = maxRows(task)
 
   if (max > task.milestones.length) {
-    const fill: MilestoneOptions[][] = Array.from({ length: max - task.milestones.length }, (): MilestoneOptions[] => [])
-    task.milestones = (task.milestones as MilestoneOptions[][]).concat(fill)
+    task.milestones = task.milestones.concat(fill(max - task.milestones.length, () => []))
   }
+}
+
+const fillColumns = (task: TaskOptions, config: TimelineOptions) => {
+  if (!task.labels) {
+    return
+  }
+
+  const max = maxRows(task)
+
+  const columnOptions: { [key: string]: ColumnOptions } = {}
+  config.columns.forEach(c => columnOptions[c.field] = c)
+
+  Object.entries(task.labels).forEach(([key, value]) => {
+    const options = columnOptions[key]
+    if (value.length < max) {
+      const diff = max - value.length
+      const startIdx = value.length
+
+      task.labels[key] = value.concat(fill(diff, () => ({} as LabelOptions)))
+      for (let idx = startIdx; idx < task.labels[key].length; idx++) {
+        let defaults = options.defaults || {}
+        if (Array.isArray(defaults)) {
+          defaults = defaults[idx] || {}
+        }
+
+        task.labels[key][idx] = prepareLabel(task.labels[key][idx], defaults as LabelOptions, config)
+      }
+    }
+  })
 }
 
 const createTaskHeights = (task: TaskOptions): number[] => {
