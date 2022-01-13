@@ -83,9 +83,28 @@ var tasks = [
     plans: [
       [
         {
+          height: 10,
           start: '02-09-2020',
           end: '02-26-2020'
-        }
+        },
+        {
+          height: 10,
+          y: 10,
+          start: '02-09-2020',
+          end: '02-26-2020',
+          backgroundStyle: {
+            fill: 'rgb(169, 208, 142)'
+          }
+        },
+        {
+          height: 10,
+          y: 20,
+          start: '02-09-2020',
+          end: '02-26-2020',
+          backgroundStyle: {
+            fill: 'rgb(0, 208, 142)'
+          }
+        },
       ],
       [
         {
@@ -125,7 +144,7 @@ var tasks = [
         }]
       },
       {
-        label: 'Mode Source: CHARTER'
+        label: 'Mode Source: CHARTER',
       }
     ],
     sqft: '99k',

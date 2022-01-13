@@ -81,6 +81,7 @@ const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions, conf
     start: dayjsF(options.start, options.dateFormat || defaults.dateFormat || config.dateFormat),
     end: dayjsF(options.end, options.dateFormat || defaults.dateFormat || config.dateFormat),
     height: options.height || defaults.height || 30,
+    y: options.y || defaults.y || 0,
     progressStyle: {
       fill: '#f2c329',
       ...defaults.progressStyle,
@@ -365,15 +366,24 @@ const createTaskHeights = (task: TaskOptions): number[] => {
   const planHeights = task.plans.map((pos: PlanOptions[]) =>
     Math.max.apply(
       null,
-      pos.map((p: PlanOptions) => p.height)
+      pos.map((p: PlanOptions) => p.y ? p.height + p.y : p.height)
     )
   )
+
+  console.log(planHeights)
+
   const milestoneHeights = task.milestones.map((pos: MilestoneOptions[]) =>
     Math.max.apply(
       null,
       pos.map((p: any) => p.height || 20)
     )
   )
+
+  // const labelHeights = Object.values(task.labels).map((pos: MilestoneOptions[]) =>
+  //     pos.map((p: any) => p.height || 0)
+  // )
+
+  // console.log(labelHeights)
 
   return planHeights.map((n: number, idx: number) => Math.max(clampHeight(n), clampHeight(milestoneHeights[idx])))
 }

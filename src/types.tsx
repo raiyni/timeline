@@ -33,6 +33,7 @@ export type PlanOptions = BasePlanOptions & {
   label?: LabelOptions
   startText?: LabelOptions
   endText?: LabelOptions
+  y?: number
 }
 
 export type PlanInputOptions = BasePlanOptions & {
@@ -42,6 +43,7 @@ export type PlanInputOptions = BasePlanOptions & {
   label?: LabelOptions
   startText?: LabelOptions
   endText?: LabelOptions
+  y?: number
 }
 
 export enum ShapeType {
@@ -185,6 +187,7 @@ export interface Offset {
 
 export interface LabelBaseOptions {
   label: string
+  height?: number
   labelStyle?: any
   backgroundStyle?: any
   icons?: Icon | Icon[]

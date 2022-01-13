@@ -18,9 +18,9 @@ export const Plan = ({ plan }: { plan: PlanOptions }) => {
     <g
       className="timeline-plan"
     >
-      <rect x={start} width={end - start} height={plan.height} style={plan.backgroundStyle}></rect>
+      <rect y={plan.y} x={start} width={end - start} height={plan.height} style={plan.backgroundStyle}></rect>
 
-      <rect x={start} width={progress - start} height={plan.height} style={progressStyle}></rect>
+      <rect y={plan.y} x={start} width={progress - start} height={plan.height} style={progressStyle}></rect>
     </g>
   )
 }
