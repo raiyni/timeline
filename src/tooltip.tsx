@@ -14,7 +14,7 @@ export const Tooltip = () => {
   })
 
   const moveTooltip = useCallback((e: any) => {
-    setState((s) => ({ ...s, x: e.detail.x, y: e.detail.x }))
+    setState((s) => ({ ...s, x: e.detail.x, y: e.detail.y }))
   }, [])
 
   const toggleTooltip = useCallback((e: any) => {
@@ -41,7 +41,7 @@ export const Tooltip = () => {
   return (
     <div
       style={{
-        position: 'absolute',
+        position: 'fixed',
         left: state.x + 20,
         top: state.y + 20,
         display: state.display,
