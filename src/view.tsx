@@ -2,6 +2,7 @@ import { h } from 'preact'
 import { useEffect, useReducer, useRef } from 'preact/hooks'
 import { setEvents, setWidth } from './actions'
 import { Column } from './column'
+import { createBusConfig, EventBus } from './eventbus'
 import { Grid } from './grid'
 import { Header } from './header'
 import { Config, DEFAULT_STATE, reducer } from './store'
@@ -12,7 +13,13 @@ import { useProcessData } from './util/useProcessData'
 import { useResizeObserver } from './util/useResizeObserver'
 
 export function View({ data, config, ...events }: ViewProps) {
-  const [state, dispatch] = useReducer(reducer, DEFAULT_STATE)
+  const [state, dispatch] = useReducer(reducer, {
+    ...DEFAULT_STATE,
+    target: new EventTarget()
+  })
+
+  const [eventBus] = useReducer((state) => state, createBusConfig())
+
   const store = { state, dispatch }
 
   const bodyRef = useRef(null)
@@ -58,6 +65,7 @@ export function View({ data, config, ...events }: ViewProps) {
 
   return (
     <Config.Provider value={store}>
+      <EventBus.Provider value={eventBus}>
       <div
         ref={bodyRef}
         style={{
@@ -120,6 +128,7 @@ export function View({ data, config, ...events }: ViewProps) {
 
         <Tooltip />
       </div>
+      </EventBus.Provider>
     </Config.Provider>
   )
 }

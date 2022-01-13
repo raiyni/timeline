@@ -192,7 +192,7 @@ export interface LabelBaseOptions {
 
 export type LabelOptions = LabelBaseOptions & Alignment
 
-export type PointerCallback = (e: PointerEvent, task: TaskOptions) => {}
+export type PointerCallback = (e: PointerEvent, task: TaskOptions, publish: (key: string, detail?: any) => void) => {}
 
 export type PointerEvents = { [key in POINTER_EVENT]?: PointerCallback }
 

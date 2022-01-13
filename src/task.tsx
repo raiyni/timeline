@@ -1,19 +1,21 @@
 import { h } from 'preact'
 import { useRef } from 'preact/hooks'
+import { useEventBus } from './eventbus'
 import { Milestone } from './milestone'
 import { Plan } from './plan'
 import { MilestoneOptions, PlanOptions, TaskOptions } from './types'
-import { useEvent } from './util/useBus'
 import { useConfig } from './util/useConfig'
 
 export const Task = ({ task, idx }: { task: TaskOptions; idx: number }) => {
   const store = useConfig()
+  const eventBus = useEventBus()
+
   const state = store.state
 
   const eventTarget = useRef(null)
 
   Object.entries(state.events).forEach(([key, callback]) => {
-    useEvent(key, (e) => callback(e, task), eventTarget.current)
+    eventBus.useDomEvent(key, (e) => callback(e, task, eventBus.publish), eventTarget.current)
   })
 
   return (

@@ -1,8 +1,9 @@
 import { h } from 'preact'
 import { useCallback, useState } from 'preact/hooks'
-import useBus, { EventCallback } from './util/useBus'
+import { EventCallback, useEventBus } from './eventbus'
 
 export const Tooltip = () => {
+  const eventBus = useEventBus()
   const [state, setState] = useState({
     x: 0,
     y: 0,
@@ -32,10 +33,10 @@ export const Tooltip = () => {
     setState((s) => ({ ...s, style: { ...e.detail } }))
   }, [])
 
-  useBus('moveTooltip', moveTooltip as EventCallback, [state])
-  useBus('toggleTooltip', toggleTooltip as EventCallback, [state])
-  useBus('tooltipContent', tooltipContent as EventCallback, [state])
-  useBus('tooltipStyle', tooltipStyle as EventCallback, [state])
+  eventBus.useEvent('moveTooltip', moveTooltip as EventCallback)
+  eventBus.useEvent('toggleTooltip', toggleTooltip as EventCallback)
+  eventBus.useEvent('tooltipContent', tooltipContent as EventCallback)
+  eventBus.useEvent('tooltipStyle', tooltipStyle as EventCallback)
 
   return (
     <div

@@ -17,11 +17,6 @@ export const Plan = ({ plan }: { plan: PlanOptions }) => {
   return (
     <g
       className="timeline-plan"
-      onPointerDown={(e) => {
-        if (state.events.pointerdown) {
-          state.events.pointerdown(e, null, plan)
-        }
-      }}
     >
       <rect x={start} width={end - start} height={plan.height} style={plan.backgroundStyle}></rect>
 

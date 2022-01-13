@@ -1,6 +1,7 @@
 var tasks = [
   {
     collapsible: true,
+
     plans: [
       [
         {
@@ -563,8 +564,19 @@ var options = {
 }
 
 var timeline = new Timeline('test1', tasks, options)
-timeline.on('pointermove', function(e, task) {
-  console.log(task)
+timeline.on('pointerenter', function(e, task, publish) {
+  publish('toggleTooltip')
+  publish('tooltipContent', `<div style="width: 200px; height: 100px; padding: 20px; display: flex; align-items: center; justify-content: center">
+  ${task.labels.name[0].label}
+  </div>`)
+})
+
+timeline.on('pointerleave', function(e, task, publish) {
+  publish('toggleTooltip')
+})
+
+timeline.on('pointermove', function(e, task, publish) {
+  publish('moveTooltip', e)
 })
 
 

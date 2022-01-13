@@ -14,6 +14,7 @@ interface State {
   height: number
   highlights: Highlight[]
   events: PointerEvents
+  target?: EventTarget
   x: (tick: string | Tick) => number
 }
 

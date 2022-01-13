@@ -1,9 +1,9 @@
 import { h, Ref, RefObject } from 'preact'
 import { useRef, useState } from 'preact/hooks'
 import { toggleTask } from './actions'
+import { useEventBus } from './eventbus'
 import { Icon } from './svg'
 import { ColumnOptions, Icon as IconOptions, isImage, LabelOptions, TaskOptions } from './types'
-import { useEvent } from './util/useBus'
 import { useConfig } from './util/useConfig'
 
 
@@ -111,12 +111,13 @@ const Label = ({ label, height, idx, row, task }: { label: LabelOptions; height:
 
 const LabelSection = ({ task, field, idx }: { task: TaskOptions; field: string; idx: number }) => {
   const store = useConfig()
+  const eventBus = useEventBus()
   const state = store.state
 
   const eventTarget = useRef(null)
 
   Object.entries(state.events).forEach(([key, callback]) => {
-    useEvent(key, (e) => callback(e, task), eventTarget.current)
+    eventBus.useDomEvent(key, (e) => callback(e, task, eventBus.publish), eventTarget.current)
   })
 
   return (

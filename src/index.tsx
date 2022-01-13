@@ -89,13 +89,17 @@ export default class Timeline {
 
   on(key: string, callback: PointerCallback) {
     if (this.wrapper) {
-      const events = {
-        ...this.wrapper.state.events
-      }
 
-      events[key] = callback
-      this.wrapper.setState({
-        events: events
+      this.wrapper.setState((state: any) => {
+        const events = {
+          ...state.events
+        }
+
+        events[key] = callback
+        return {
+          ...state,
+          events
+        }
       })
     }
   }
