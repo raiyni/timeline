@@ -41,6 +41,9 @@ const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions, conf
       alignment: 'left',
       ...defaults,
       label: input,
+      alignmentStyle: {
+        ...defaults.alignmentStyle
+      },
       labelStyle: {
         ...defaults.labelStyle
       },
@@ -54,6 +57,10 @@ const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions, conf
     alignment: 'left',
     ...defaults,
     ...input,
+    alignmentStyle: {
+      ...defaults.alignmentStyle,
+      ...input.alignmentStyle
+    },
     labelStyle: {
       ...defaults.labelStyle,
       ...input.labelStyle

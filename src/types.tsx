@@ -188,6 +188,7 @@ export interface Offset {
 export interface LabelBaseOptions {
   label: string
   height?: number
+  alignmentStyle?: any
   labelStyle?: any
   backgroundStyle?: any
   icons?: Icon | Icon[]

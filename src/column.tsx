@@ -14,6 +14,7 @@ const CollapseButton = ({ collapsed, id }: { collapsed: boolean; id: string }) =
     <a
       style={{
         width: 20,
+        height: 20,
         display: 'inline',
         border: '0.1em solid rgba(0, 0, 0, 0.63)',
         borderRadius: '0.12em',
@@ -46,28 +47,7 @@ const LabelIcon = ({ options }: { options: IconOptions }) => {
   return <Icon options={options} width={options.width} height={options.height} style={{ marginRight: 4 }} />
 }
 
-const Left = (props: any) => {
-  return <div style={{ display: 'inline-flex', marginRight: 4 }}>{props.children}</div>
-}
-
-const Center = (props: any) => {
-  return <div style={{ display: 'inline-flex' }}>{props.children}</div>
-}
-
-const Right = (props: any) => {
-  return <div style={{ display: 'inline-flex', marginLeft: 4 }}>{props.children}</div>
-}
-
 const Label = ({ label, height, idx, row, task }: { label: LabelOptions; height: number; idx: number; row: number; task: TaskOptions }) => {
-  const spanner = (
-    <span
-      style={{
-        ...label.labelStyle
-      }}
-    >
-      {label.label}
-    </span>
-  )
 
   return (
     <div
@@ -77,34 +57,34 @@ const Label = ({ label, height, idx, row, task }: { label: LabelOptions; height:
         paddingRight: 4,
         display: task.collapsed && row !== 0 ? 'none' : 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
         ...label.backgroundStyle
       }}
     >
-      <Left>
-        {idx === 0 && row === 0 && task.collapsible ? <CollapseButton id={task.id} collapsed={task.collapsed} /> : null}
-        {!!label.icons
+      {idx === 0 && row === 0 && task.collapsible ? <CollapseButton id={task.id} collapsed={task.collapsed} /> : null}
+      {!!label.icons
           ? (label.icons as IconOptions[])
               .filter((i) => !i.alignment || i.alignment == 'left')
               .map((l: IconOptions) => <LabelIcon options={l} />)
           : null}
-        {!label.alignment || label.alignment == 'left' ? spanner : null}
-      </Left>
+      <div style={{
+        display: 'inline-flex',
+        ...label.alignmentStyle
+      }}
+      >
 
-      {/* {!!label.icons ? (label.icons as IconOptions[]).map((l: IconOptions) => <LabelIcon options={l} />) : null} */}
-      <Center>
-        {!!label.icons
-          ? (label.icons as IconOptions[]).filter((i) => i.alignment == 'center').map((l: IconOptions) => <LabelIcon options={l} />)
-          : null}
-        {label.alignment == 'center' ? spanner : null}
-      </Center>
+        <span style={{
+            ...label.labelStyle
+          }}
+        >
+          {label.label}
+        </span>
 
-      <Right>
-        {!!label.icons
+
+      </div>
+
+      {!!label.icons
           ? (label.icons as IconOptions[]).filter((i) => i.alignment == 'right').map((l: IconOptions) => <LabelIcon options={l} />)
           : null}
-        {label.alignment == 'right' ? spanner : null}
-      </Right>
     </div>
   )
 }

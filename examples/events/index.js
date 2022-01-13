@@ -150,15 +150,11 @@ var tasks = [
     name: [
       {
         label: 'FP Alpha 2',
-        icons: [{
-          shape: 'circle',
-          height: 20,
-          width: 20,
-          style: {
-            fill: 'green',
-            stroke: 'black'
-          }
-        }]
+        alignmentStyle: {
+          background: 'red',
+          padding: '3px',
+          width: '100%'
+        }
       },
       {
         label: 'Mode Source: CHARTER'
@@ -528,13 +524,19 @@ var options = {
       field: 'name',
       defaults: [
         {
-          alignment: 'center',
+          alignmentStyle: {
+            flex: 1,
+            justifyContent: 'center'
+          },
           backgroundStyle: {
             background: 'rgb(255,192,0)'
           }
         },
         {
-          alignment: 'right',
+          alignmentStyle: {
+            flex: 1,
+            justifyContent: 'end'
+          },
           backgroundStyle: {
           }
         }
@@ -544,7 +546,10 @@ var options = {
       text: 'Sq/ft',
       field: 'sqft',
       defaults: {
-        alignment: 'center',
+        alignmentStyle: {
+          flex: 1,
+          justifyContent: 'center'
+        },
         backgroundStyle: {
           background: 'rgb(217, 217, 217)'
         }
@@ -554,7 +559,10 @@ var options = {
       text: 'Pcs',
       field: 'pcs',
       defaults: {
-        alignment: 'center',
+        alignmentStyle: {
+          flex: 1,
+          justifyContent: 'center'
+        },
         backgroundStyle: {
           background: 'rgb(217, 217, 217)'
         }
