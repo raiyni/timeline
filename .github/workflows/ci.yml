@@ -39,4 +39,6 @@ jobs:
           name: Master Release
           draft: false
           prerelease: true
+          commit: main
+          tag: main
 
