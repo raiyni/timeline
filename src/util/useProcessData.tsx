@@ -289,8 +289,6 @@ const prepareTask = (options: TaskInputOptions, config: TimelineOptions): TaskOp
 
   task.heights = createTaskHeights(task)
 
-  console.log(task)
-
   task.collapsed = options.collapsed
   task.collapsible = options.collapsible
   task.id = uid()
