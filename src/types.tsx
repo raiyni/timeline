@@ -165,10 +165,8 @@ export interface TimelineOptions {
   planDefaults?: BasePlanOptions | BasePlanOptions[]
   viewMode?: VIEW_MODE
   taskMargin?: number
-  wrapper?: any
   highlights?: Highlight[]
   dateFormat?: string
-  hoverEffects?: boolean
   prepareTask?: (options: TaskInputOptions) => {}
   processTask?: (options: TaskOptions) => {}
 }

@@ -417,7 +417,7 @@ export const calculateHeight = (tasks: TaskOptions[]) => {
     tasks
       .map((t: TaskOptions) => (t.collapsed ? [t.heights[0]] : t.heights))
       .flat(3)
-      .reduce((a: number, b: number) => a + b) +
+      .reduce((a: number, b: number) => a + b, 0) +
     tasks.length * 2
   )
 }

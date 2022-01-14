@@ -15,11 +15,14 @@ interface Bus {
 const on = (target: EventTarget, key: string, callback: EventCallback, options = {}) => {
   if (!key) return
   if (!callback) return
+  if (!target) return
 
   target.addEventListener(key, callback, options)
 }
 
 const off = (target: EventTarget, key: string, callback: EventCallback, options = {}) => {
+  if (!target) return
+
   target.removeEventListener(key, callback, options)
 }
 
