@@ -40,7 +40,6 @@ const dayjsF = (input: string, format: string) => {
 const prepareLabel = (input: string | LabelOptions, defaults: LabelOptions, config: TimelineOptions): LabelOptions => {
   if (typeof input == 'string') {
     return {
-      alignment: 'left',
       ...defaults,
       label: input,
       alignmentStyle: {
@@ -101,18 +100,6 @@ const preparePlan = (options: PlanInputOptions, defaults: PlanInputOptions, conf
       ...defaults.backgroundStyle,
       ...options.backgroundStyle
     }
-  }
-
-  if (options.label) {
-    plan.label = prepareLabel(options.label, defaults.label, config)
-  }
-
-  if (options.startText) {
-    plan.startText = prepareLabel(options.startText, {} as LabelOptions, config)
-  }
-
-  if (options.endText) {
-    plan.endText = prepareLabel(options.endText, {} as LabelOptions, config)
   }
 
   const progress = options.progress || defaults.progress || 0

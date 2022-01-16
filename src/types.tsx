@@ -30,9 +30,6 @@ export type PlanOptions = BasePlanOptions & {
   start?: Tick
   end?: Tick
   progress?: Tick
-  label?: LabelOptions
-  startText?: LabelOptions
-  endText?: LabelOptions
   y?: number
 }
 
@@ -40,9 +37,6 @@ export type PlanInputOptions = BasePlanOptions & {
   start?: string
   end?: string
   progress?: number | string
-  label?: LabelOptions
-  startText?: LabelOptions
-  endText?: LabelOptions
   y?: number
 }
 
