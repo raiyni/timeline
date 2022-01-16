@@ -1,6 +1,6 @@
 import { h } from 'preact'
 import { Icon } from './svg'
-import { isArrow, isImage, isLine, isShape, MilestoneOptions, ShapeType } from './types'
+import { isArrow, isImage, isLine, isShape, isText, MilestoneOptions, ShapeType } from './types'
 import { useConfig } from './util/useConfig'
 
 
@@ -11,6 +11,20 @@ const EmptyBox = ({ x1, x2, height }: { x1: number; x2: number; height: number }
 export const Milestone = ({ options, height }: { options: MilestoneOptions; height: number }) => {
   const store = useConfig()
   const state = store.state
+
+  if (isText(options)) {
+    const y = options.y || (height) / 2
+    const x = state.x(options.date)
+    return(
+      <g className="timeline-milestone">
+        <text x={x} y={y} style={{
+          ...options.style
+        }}>
+          {options.text}
+        </text>
+      </g>
+    )
+  }
 
   if (isImage(options)) {
     const y = (height - options.height) / 2

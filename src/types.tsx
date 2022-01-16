@@ -107,6 +107,18 @@ export const isLine = (obj: any): obj is Line => {
   return 'start' in obj && 'end' in obj && !('shape' in obj)
 }
 
+
+export interface Text {
+  text?: string
+  date?: string | Tick
+  style?: Style
+  dateFormat?: string
+}
+
+export const isText = (obj: any): obj is Text => {
+  return 'text' in obj
+}
+
 export interface Alignment {
   alignment?: 'left' | 'center' | 'right'
 }
@@ -116,7 +128,7 @@ export type Icon = (Image | Shape) & Alignment
 export type MilestoneOptions = {
   x?: number
   y?: number
-} & (Icon | Line | Arrow)
+} & (Icon | Line | Arrow | Text)
 
 export type TaskOptions = obj & {
   collapsible?: boolean

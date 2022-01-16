@@ -11,6 +11,7 @@ import {
   PlanInputOptions,
   Shape,
   ShapeType,
+  Text,
   TaskInputOptions,
   TaskOptions,
   TimelineOptions,
@@ -18,7 +19,8 @@ import {
   isImage,
   isLine,
   isShape,
-  obj
+  obj,
+  isText
 } from './../types'
 import { clamp, uid } from './math'
 
@@ -182,6 +184,18 @@ const prepareShape = (source: Shape, config: TimelineOptions): Shape => {
   }
 }
 
+const prepareText = (source: Text, config: TimelineOptions): Text => {
+  return {
+    ...source,
+    date: dayjsF(source.date as string, source.dateFormat || config.dateFormat),
+    style: {
+      dominantBaseline: 'middle',
+      textAnchor: 'middle',
+      ...source.style
+    }
+  }
+}
+
 const prepareMilestone = (options: MilestoneOptions, config: TimelineOptions): MilestoneOptions => {
   if (isImage(options)) {
     return {
@@ -201,6 +215,10 @@ const prepareMilestone = (options: MilestoneOptions, config: TimelineOptions): M
 
   if (isShape(options)) {
     return prepareShape(options, config)
+  }
+
+  if (isText(options)) {
+    return prepareText(options, config)
   }
 
   return options

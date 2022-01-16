@@ -77,7 +77,18 @@ var tasks = [
           end: '01-12-2020'
         }
       ]
-    ]
+    ],
+    milestones: [
+      [
+        {
+          text: 'Start',
+          date: '12-01-2019',
+          style: {
+            fill: 'red'
+          }
+        }
+      ]
+    ],
   },
   {
     plans: [

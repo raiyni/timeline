@@ -71,7 +71,7 @@ const startDate = (viewMode: VIEW_MODE, date: Tick) => {
 const getBoundingDates = (tasks: TaskOptions[]): { minDate: Tick; maxDate: Tick } => {
   const milestones = tasks.map((t) => t.milestones).flat(4)
   const plans = tasks.map((t) => t.plans).flat(4)
-  const milestoneDates = milestones.map((m: any) => m.date || [m.start, m.end]).flat(2)
+  const milestoneDates = milestones.map((m: any) => m.date || [m.start, m.end]).flat(3)
   const startDates = plans.map((p: any) => p.start).concat(milestoneDates)
   const endDates = plans.map((p: any) => p.end).concat(milestoneDates)
 
