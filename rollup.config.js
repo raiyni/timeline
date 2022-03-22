@@ -49,7 +49,7 @@ const targets =  [
 ]
 
 if (isIe) {
-  targets.push('IE 11')
+  targets.push('Explorer 11')
 }
 
 
