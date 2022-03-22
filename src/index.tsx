@@ -11,7 +11,7 @@ import Wrapper from './wrapper'
 
 const addStyle = (() => {
   const style = document.createElement('style')
-  document.head.append(style)
+  document.head.appendChild(style)
   return (styleString: string) => (style.textContent = styleString)
 })()
 
