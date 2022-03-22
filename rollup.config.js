@@ -35,12 +35,11 @@ const plugins = [
 
 if (process.env.BABEL_ENV == 'ie11') {
   plugins.push(polyfill([
-    'resize-observer-polyfill',
     'core-js/features/object/values',
+    'core-js/features/object/entries',
     'core-js/features/array/flat',
     'core-js/features/array/find',
-    'core-js/features/array/from',
-    'core-js/features/global-this'
+    'core-js/features/array/from'
   ]))
 }
 
