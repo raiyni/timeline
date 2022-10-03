@@ -113,7 +113,8 @@ var tasks = [
           date: '04-01-2020'
         }
       ]
-    ]
+    ],
+    "collapsible": true
   },
   {
     plans: [

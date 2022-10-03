@@ -360,7 +360,8 @@ var tasks = [
       }
     ],
     sqft: '254k',
-    pcs: 1896
+    pcs: 1896,
+    "collapsible": true
   },
   {
     plan: {
@@ -458,7 +459,8 @@ var tasks = [
       }
     ],
     sqft: '133k',
-    pcs: 1066
+    pcs: 1066,
+    "collapsible": true
   }
 ]
 
