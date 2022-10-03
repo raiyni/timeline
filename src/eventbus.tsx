@@ -1,5 +1,5 @@
-import { createContext } from "preact";
-import { useContext, useEffect } from "preact/hooks";
+import { createContext } from 'preact'
+import { useContext, useEffect } from 'preact/hooks'
 
 export type EventCallback = (e: CustomEvent) => void
 
@@ -50,7 +50,6 @@ export const createBusConfig = (): Bus => {
       }, [key, callback, target, JSON.stringify(options)])
     },
     useDomEvent: (key: string, callback: EventCallback, target = document, options = {}) => {
-
       useEffect(() => {
         on(target, key, callback, options)
 

@@ -4,7 +4,6 @@ import { useContext } from 'preact/hooks'
 import { Axis } from './axis'
 import { Config } from './store'
 
-
 export const Header = ({ forwardedRef }: { forwardedRef: Ref<any> }) => {
   const store = useContext(Config)
   const state = store.state
@@ -25,13 +24,13 @@ export const Header = ({ forwardedRef }: { forwardedRef: Ref<any> }) => {
     >
       <Axis>
         <svg width={state.scrollWidth} height={height}>
-          <g transform={`translate(-1, 15)`}  fill="none" font-size="10" font-family="sans-serif"  text-anchor="middle">
+          <g transform={`translate(-1, 15)`} fill="none" font-size="10" font-family="sans-serif" text-anchor="middle">
             {years.map((y) => {
               const tick = dayjs(new Date(y, 0, 0))
               return (
                 <g class="tick" opacity="1" transform={`translate(${state.x(tick)},0)`}>
                   <line stroke="black" y1="3" y2="15"></line>
-                  <text fill="black" >{y}</text>
+                  <text fill="black">{y}</text>
                 </g>
               )
             })}

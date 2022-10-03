@@ -378,7 +378,7 @@ const createTaskHeights = (task: TaskOptions): number[] => {
   const planHeights = task.plans.map((pos: PlanOptions[]) =>
     Math.max.apply(
       null,
-      pos.map((p: PlanOptions) => p.y ? p.height + p.y : p.height)
+      pos.map((p: PlanOptions) => (p.y ? p.height + p.y : p.height))
     )
   )
 

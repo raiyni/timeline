@@ -3,7 +3,6 @@ import { Icon } from './svg'
 import { isArrow, isImage, isLine, isShape, isText, MilestoneOptions, ShapeType } from './types'
 import { useConfig } from './util/useConfig'
 
-
 const EmptyBox = ({ x1, x2, height }: { x1: number; x2: number; height: number }) => {
   return <rect x={x1 < x2 ? x1 : x2} width={Math.abs(x2 - x1)} height={height} fill="transparent" />
 }
@@ -13,13 +12,17 @@ export const Milestone = ({ options, height }: { options: MilestoneOptions; heig
   const state = store.state
 
   if (isText(options)) {
-    const y = options.y || (height) / 2
+    const y = options.y || height / 2
     const x = state.x(options.date)
-    return(
+    return (
       <g className="timeline-milestone">
-        <text x={x} y={y} style={{
-          ...options.style
-        }}>
+        <text
+          x={x}
+          y={y}
+          style={{
+            ...options.style
+          }}
+        >
           {options.text}
         </text>
       </g>

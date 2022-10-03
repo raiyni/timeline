@@ -66,68 +66,68 @@ export function View({ data, config, ...events }: ViewProps) {
   return (
     <Config.Provider value={store}>
       <EventBus.Provider value={eventBus}>
-      <div
-        ref={bodyRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          flex: 1,
-          // maxHeight: store.state.height,
-          display: 'flex',
-          'flex-direction': 'row',
-          'align-items': 'stretch',
-          overflow: 'hidden',
-          'background-color': 'white'
-        }}
-      >
-        {/* Left side */}
         <div
-          ref={leftRef}
+          ref={bodyRef}
           style={{
+            width: '100%',
+            height: '100%',
+            flex: 1,
+            // maxHeight: store.state.height,
             display: 'flex',
-            flexDirection: 'row',
+            'flex-direction': 'row',
+            'align-items': 'stretch',
             overflow: 'hidden',
-            flexShrink: 0
+            'background-color': 'white'
           }}
         >
-          {columns.map((c, idx) => (
-            <Column gridRef={gridRef} forwardedRef={(dom: any) => (columnsRef.current[idx] = dom)} column={c} idx={idx} />
-          ))}
-        </div>
-
-        {/* Right side */}
-        <div
-          style={{
-            display: 'flex',
-            flex: '1 1 0%',
-            overflow: 'hidden'
-          }}
-        >
+          {/* Left side */}
           <div
-            className="column-border"
+            ref={leftRef}
             style={{
-              overflow: 'hidden',
-              borderRight: '1px solid #000',
-              position: 'relative'
-            }}
-          ></div>
-          <div
-            style={{
-              position: 'relative',
-              flex: '1 1 0%',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'stretch',
+              flexDirection: 'row',
+              overflow: 'hidden',
+              flexShrink: 0
+            }}
+          >
+            {columns.map((c, idx) => (
+              <Column gridRef={gridRef} forwardedRef={(dom: any) => (columnsRef.current[idx] = dom)} column={c} idx={idx} />
+            ))}
+          </div>
+
+          {/* Right side */}
+          <div
+            style={{
+              display: 'flex',
+              flex: '1 1 0%',
               overflow: 'hidden'
             }}
           >
-            <Header forwardedRef={headerRef} />
-            <Grid forwardedRef={gridRef} />
+            <div
+              className="column-border"
+              style={{
+                overflow: 'hidden',
+                borderRight: '1px solid #000',
+                position: 'relative'
+              }}
+            ></div>
+            <div
+              style={{
+                position: 'relative',
+                flex: '1 1 0%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'stretch',
+                overflow: 'hidden'
+              }}
+            >
+              <Header forwardedRef={headerRef} />
+              <Grid forwardedRef={gridRef} />
+            </div>
           </div>
-        </div>
 
-        <Tooltip />
-      </div>
+          <Tooltip />
+        </div>
       </EventBus.Provider>
     </Config.Provider>
   )
