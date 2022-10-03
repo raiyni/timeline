@@ -15,9 +15,7 @@ export const Plan = ({ plan }: { plan: PlanOptions }) => {
   const progressStyle = deepmerge(plan.progressStyle, {})
 
   return (
-    <g
-      className="timeline-plan"
-    >
+    <g className="timeline-plan">
       <rect y={plan.y} x={start} width={end - start} height={plan.height} style={plan.backgroundStyle}></rect>
 
       <rect y={plan.y} x={start} width={progress - start} height={plan.height} style={progressStyle}></rect>
