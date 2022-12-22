@@ -75,7 +75,7 @@ var tasks = [
         },
         {
           shape: 'square',
-          date: '12-17-2019',
+          date: '12-13-2019',
           rotate: 45
         },
         {
