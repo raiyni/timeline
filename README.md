@@ -95,7 +95,7 @@ Additional config options can be seen within each class.
 3. `yarn`
 4. `yarn run dev`
 
-License: MIT
+License: ISC
 
 ---
 
