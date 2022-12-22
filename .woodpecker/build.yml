@@ -1,4 +1,10 @@
 pipeline:
+  tag:
+    image: docker:git
+    commands:
+      - git tag latest
+      - git push origin latest
+
   build:
     image: node:18.12
     commands:
