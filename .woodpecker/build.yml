@@ -4,7 +4,6 @@ pipeline:
     commands:
       - yarn install --frozen-lockfile
       - yarn build:all
-      - go test
 
   zip:
     image: lunagod/drone-zip
