@@ -1,13 +1,11 @@
-trigger:
-  event:
-    - tag
-
 pipeline:
   build:
     image: node:18.12
     commands:
       - yarn install --frozen-lockfile
       - yarn build:all
+    when:
+      event: tag
 
   zip:
     image: lunagod/drone-zip
@@ -15,6 +13,8 @@ pipeline:
       input:
         - dist
       output: timeline-latest.zip
+    when:
+      event: tag
 
   release:
     image: plugins/gitea-release
