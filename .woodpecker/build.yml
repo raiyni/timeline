@@ -1,0 +1,27 @@
+pipeline:
+  build:
+    image: node:18.12
+    commands:
+      - yarn install --frozen-lockfile
+      - yarn build:all
+      - go test
+
+  zip:
+    image: lunagod/drone-zip
+    settings:
+      input:
+        - dist
+      output: timeline-latest.zip
+
+  release:
+    image: plugins/gitea-release
+    settings:
+      api_key:
+        from_secret: gitea_token
+      base_url:
+        from_secret: gitea_host
+      title: Master Release
+      draft: false
+      prerelease: true
+      files:
+        - timeline-latest.zip
