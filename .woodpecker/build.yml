@@ -2,17 +2,6 @@ when:
   event: tag
 
 pipeline:
-  tag:
-    image: docker:git
-    secrets:
-      - GIT_EMAIL
-      - GIT_USERNAME
-    commands:
-      - git config --global user.email "${GIT_EMAIL}"
-      - git config --global user.name "${GIT_USERNAME}"
-      - git tag latest
-      - git push origin latest
-
   build:
     image: node:18.12
     commands:
