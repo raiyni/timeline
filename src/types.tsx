@@ -101,7 +101,6 @@ export const isLine = (obj: any): obj is Line => {
   return 'start' in obj && 'end' in obj && !('shape' in obj)
 }
 
-
 export interface Text {
   text?: string
   date?: string | Tick

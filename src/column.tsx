@@ -6,7 +6,6 @@ import { Icon } from './svg'
 import { ColumnOptions, Icon as IconOptions, isImage, LabelOptions, TaskOptions } from './types'
 import { useConfig } from './util/useConfig'
 
-
 const CollapseButton = ({ collapsed, id }: { collapsed: boolean; id: string }) => {
   const store = useConfig()
   const [hover, setHover] = useState(false)
@@ -48,7 +47,6 @@ const LabelIcon = ({ options }: { options: IconOptions }) => {
 }
 
 const Label = ({ label, height, idx, row, task }: { label: LabelOptions; height: number; idx: number; row: number; task: TaskOptions }) => {
-
   return (
     <div
       style={{
@@ -62,29 +60,28 @@ const Label = ({ label, height, idx, row, task }: { label: LabelOptions; height:
     >
       {idx === 0 && row === 0 && task.collapsible ? <CollapseButton id={task.id} collapsed={task.collapsed} /> : null}
       {!!label.icons
-          ? (label.icons as IconOptions[])
-              .filter((i) => !i.alignment || i.alignment == 'left')
-              .map((l: IconOptions) => <LabelIcon options={l} />)
-          : null}
-      <div style={{
-        display: 'inline-flex',
-        ...label.alignmentStyle
-      }}
+        ? (label.icons as IconOptions[])
+            .filter((i) => !i.alignment || i.alignment == 'left')
+            .map((l: IconOptions) => <LabelIcon options={l} />)
+        : null}
+      <div
+        style={{
+          display: 'inline-flex',
+          ...label.alignmentStyle
+        }}
       >
-
-        <span style={{
+        <span
+          style={{
             ...label.labelStyle
           }}
         >
           {label.label}
         </span>
-
-
       </div>
 
       {!!label.icons
-          ? (label.icons as IconOptions[]).filter((i) => i.alignment == 'right').map((l: IconOptions) => <LabelIcon options={l} />)
-          : null}
+        ? (label.icons as IconOptions[]).filter((i) => i.alignment == 'right').map((l: IconOptions) => <LabelIcon options={l} />)
+        : null}
     </div>
   )
 }

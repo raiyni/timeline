@@ -8,7 +8,6 @@ import { h, render } from 'preact'
 import { PointerCallback, TimelineOptions } from './types'
 import Wrapper from './wrapper'
 
-
 const addStyle = (() => {
   const style = document.createElement('style')
   document.head.appendChild(style)
@@ -89,7 +88,6 @@ export default class Timeline {
 
   on(key: string, callback: PointerCallback) {
     if (this.wrapper) {
-
       this.wrapper.setState((state: any) => {
         const events = {
           ...state.events

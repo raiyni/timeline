@@ -1,7 +1,6 @@
 import { Component, h } from 'preact'
 import { View } from './view'
 
-
 export default class Wrapper extends Component<any, any> {
   constructor(props: any) {
     super()
