@@ -528,13 +528,19 @@ var options = {
       field: 'name',
       defaults: [
         {
-          alignment: 'center',
+          alignmentStyle: {
+            "flex": "1",
+            "justify-content": "center"
+          },
           backgroundStyle: {
             background: 'rgb(255,192,0)'
           }
         },
         {
-          alignment: 'right',
+          "alignmentStyle": {
+            "flex": "1",
+            "justify-content": "right"
+          },
           backgroundStyle: {
           }
         }
@@ -544,7 +550,10 @@ var options = {
       text: 'Sq/ft',
       field: 'sqft',
       defaults: {
-        alignment: 'center',
+        "alignmentStyle": {
+          "flex": "1",
+          "justify-content": "center"
+        },
         backgroundStyle: {
           background: 'rgb(217, 217, 217)'
         }
@@ -554,7 +563,10 @@ var options = {
       text: 'Pcs',
       field: 'pcs',
       defaults: {
-        alignment: 'center',
+        "alignmentStyle": {
+          "flex": "1",
+          "justify-content": "center"
+        },
         backgroundStyle: {
           background: 'rgb(217, 217, 217)'
         }
